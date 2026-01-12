@@ -23,7 +23,12 @@ export function RootComponent() {
           <AlertProvider />
 
           <FlexColumn
-            style={{ maxHeight: '100vh', overflow: 'hidden', backgroundColor: '#0a0a0a' }}
+            style={{
+              height: '100vh',
+              maxHeight: '100vh',
+              overflow: 'hidden',
+              backgroundColor: '#0a0a0a',
+            }}
           >
             <Outlet />
           </FlexColumn>

@@ -17,33 +17,33 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     links: [
       {
         rel: 'icon',
-        href: `${process.env.VITE_PRODUCTION_API_URL}/logo.svg`,
+        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo.svg`,
         type: 'image/svg+xml',
       },
       {
         rel: 'icon',
-        href: `${process.env.VITE_PRODUCTION_API_URL}/logo_48x48.png`,
+        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_48x48.png`,
         type: 'image/png',
         sizes: '48x48',
       },
       {
         rel: 'icon',
-        href: `${process.env.VITE_PRODUCTION_API_URL}/logo_96x96.png`,
+        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_96x96.png`,
         type: 'image/png',
         sizes: '96x96',
       },
       {
         rel: 'icon',
-        href: `${process.env.VITE_PRODUCTION_API_URL}/logo_144x144.png`,
+        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_144x144.png`,
         type: 'image/png',
         sizes: '144x144',
       },
       {
         rel: 'apple-touch-icon',
-        href: `${process.env.VITE_PRODUCTION_API_URL}/logo_180x180.png`,
+        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_180x180.png`,
         sizes: '180x180',
       },
-      { rel: 'canonical', href: `${process.env.VITE_PRODUCTION_API_URL}` },
+      { rel: 'canonical', href: `${import.meta.env.VITE_PRODUCTION_API_URL}` },
       {
         rel: 'preload',
         href: '/fonts/PretendardVariable.woff2',
@@ -66,7 +66,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       // PWA & Mobile
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-      { name: 'apple-mobile-web-app-title', content: 'Futur' },
+      { name: 'apple-mobile-web-app-title', content: 'SpecLens' },
       { name: 'mobile-web-app-capable', content: 'yes' },
       { name: 'format-detection', content: 'telephone=no' },
 
@@ -77,22 +77,22 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       // Verification (Placeholders)
       // { name: 'naver-site-verification', content: 'YOUR_NAVER_VERIFICATION_CODE' },
       // { name: 'google-site-verification', content: 'YOUR_GOOGLE_VERIFICATION_CODE' },
-      { title: "Futur - Building Tomorrow's Technology Today" },
+      { title: 'SpecLens - OpenAPI Spec Viewer' },
       {
         name: 'description',
         content:
-          '혁신적인 SI 솔루션으로 비즈니스의 미래를 설계합니다. 맞춤형 시스템 통합, 엔터프라이즈 솔루션, IT 전략 컨설팅을 제공합니다.',
+          'OpenAPI/Swagger 스펙 JSON 파일을 업로드하여 API 문서를 쉽게 시각화하고 탐색할 수 있는 뷰어입니다.',
       },
       {
         name: 'keywords',
-        content: 'SI, 시스템통합, 소프트웨어개발, 기술컨설팅, 익산, 웹개발, 앱개발',
+        content: 'OpenAPI, Swagger, API문서, 스펙뷰어, JSON, REST API, API시각화',
       },
       // Basic SEO
-      { name: 'application-name', content: 'Futur' },
+      { name: 'application-name', content: 'SpecLens' },
       { name: 'referrer', content: 'origin-when-cross-origin' },
-      { name: 'author', content: 'Futur' },
-      { name: 'creator', content: 'Futur Team' },
-      { name: 'publisher', content: 'Futur' },
+      { name: 'author', content: 'SpecLens' },
+      { name: 'creator', content: 'SpecLens Team' },
+      { name: 'publisher', content: 'SpecLens' },
       {
         name: 'robots',
         content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
@@ -100,46 +100,46 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: 'theme-color', content: '#0a0a0a' },
       { name: 'color-scheme', content: 'dark light' },
 
-      // Geo / Location (Iksan, Jeonbuk based on keywords)
-      { name: 'geo.region', content: 'KR-46' }, // Jeollabuk-do
-      { name: 'geo.placename', content: 'Iksan-si' },
-      { name: 'geo.position', content: '35.9483;126.9578' }, // Approx center of Iksan
-      { name: 'ICBM', content: '35.9483, 126.9578' },
-
       // Open Graph / Facebook / Naver Blog
-      { property: 'og:title', content: "Futur - Building Tomorrow's Technology Today" },
+      { property: 'og:title', content: 'SpecLens - OpenAPI Spec Viewer' },
       {
         property: 'og:description',
         content:
-          '혁신적인 SI 솔루션으로 비즈니스의 미래를 설계합니다. 맞춤형 시스템 통합, 엔터프라이즈 솔루션, IT 전략 컨설팅을 제공합니다.',
+          'OpenAPI/Swagger 스펙 JSON 파일을 업로드하여 API 문서를 쉽게 시각화하고 탐색할 수 있는 뷰어입니다.',
       },
-      { property: 'og:url', content: `${process.env.VITE_PRODUCTION_API_URL}` },
+      { property: 'og:url', content: `${import.meta.env.VITE_PRODUCTION_API_URL}` },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
-      { property: 'og:site_name', content: 'Futur' },
+      { property: 'og:site_name', content: 'SpecLens' },
       // Main Image
-      { property: 'og:image', content: `${process.env.VITE_PRODUCTION_API_URL}/futur_main.png` },
+      {
+        property: 'og:image',
+        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
+      },
       {
         property: 'og:image:secure_url',
-        content: `${process.env.VITE_PRODUCTION_API_URL}/futur_main.png`,
+        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
       },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
-      { property: 'og:image:alt', content: 'Futur - Future Technology Solutions' },
+      { property: 'og:image:alt', content: 'SpecLens - OpenAPI Spec Viewer' },
       { property: 'og:image:type', content: 'image/png' },
 
       // Twitter / X
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: "Futur - Building Tomorrow's Technology Today" },
+      { name: 'twitter:title', content: 'SpecLens - OpenAPI Spec Viewer' },
       {
         name: 'twitter:description',
         content:
-          '혁신적인 SI 솔루션으로 비즈니스의 미래를 설계합니다. 웹/앱 개발 및 IT 컨설팅 전문.',
+          'OpenAPI/Swagger 스펙 JSON 파일을 업로드하여 API 문서를 쉽게 시각화하고 탐색할 수 있는 뷰어입니다.',
       },
-      { name: 'twitter:site', content: '@Futur' },
-      { name: 'twitter:creator', content: '@Futur' },
-      { name: 'twitter:image', content: `${process.env.VITE_PRODUCTION_API_URL}/futur_main.png` },
-      { name: 'twitter:image:alt', content: 'Futur Main Banner' },
+      { name: 'twitter:site', content: '@SpecLens' },
+      { name: 'twitter:creator', content: '@SpecLens' },
+      {
+        name: 'twitter:image',
+        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
+      },
+      { name: 'twitter:image:alt', content: 'SpecLens Main Banner' },
     ],
     scripts: [
       {
