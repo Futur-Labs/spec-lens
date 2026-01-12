@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME="futur"
+APP_NAME="spec-lens"
 
 case "$1" in
   start)

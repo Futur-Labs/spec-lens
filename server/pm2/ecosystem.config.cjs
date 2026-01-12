@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'futur',
+      name: 'spec-lens',
       script: './server/index.mjs',
       instances: '1',
       exec_mode: 'cluster',

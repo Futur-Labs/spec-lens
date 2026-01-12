@@ -27,7 +27,6 @@ dist-ssr
 /ssl/
 /CLAUDE.md
 /.serena/
-/futur-home-page.iml
 /.mcp.json
 /.tanstack/
 .env
