@@ -84,7 +84,7 @@ body {
 }
 
 input::placeholder, textarea::placeholder {
-  font-size: 1.8rem; /* Adjusted based on user feedback */
+  font-size: 1.4rem; /* Adjusted based on user feedback */
   color: #888; /* Slightly lighter than #666 for better contrast on dark bg */
   font-weight: 500;
   opacity: 1;

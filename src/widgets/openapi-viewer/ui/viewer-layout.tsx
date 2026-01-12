@@ -2,14 +2,21 @@ import { Menu, X, Upload, RefreshCw } from 'lucide-react';
 
 import { EndpointDetail } from './endpoint-detail.tsx';
 import { Sidebar } from './sidebar.tsx';
-import { useOpenAPIStore, useSpec, useIsSidebarOpen } from '@/entities/openapi';
+import { useOpenAPIStore, useSpec, useIsSidebarOpen, useSelectedEndpoint } from '@/entities/openapi';
 
 export function ViewerLayout({ onReset }: { onReset: () => void }) {
   const spec = useSpec();
   const isSidebarOpen = useIsSidebarOpen();
-  const { toggleSidebar, getSelectedEndpointData } = useOpenAPIStore();
+  const selectedEndpointKey = useSelectedEndpoint();
+  const endpoints = useOpenAPIStore((s) => s.endpoints);
+  const { toggleSidebar } = useOpenAPIStore();
 
-  const selectedEndpoint = getSelectedEndpointData();
+  // Find the selected endpoint data
+  const selectedEndpoint = selectedEndpointKey
+    ? endpoints.find(
+        (e) => e.path === selectedEndpointKey.path && e.method === selectedEndpointKey.method,
+      ) ?? null
+    : null;
 
   if (!spec) return null;
 

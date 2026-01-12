@@ -13,7 +13,7 @@ export function MethodBadge({
   const sizeStyles = {
     sm: {
       fontSize: '1rem',
-      padding: '0.2rem 0.6rem',
+      padding: '0.25rem 0.6rem',
       minWidth: '4rem',
     },
     md: {
@@ -23,7 +23,7 @@ export function MethodBadge({
     },
     lg: {
       fontSize: '1.2rem',
-      padding: '0.6rem 1.2rem',
+      padding: '0.4rem 1.2rem',
       minWidth: '6.4rem',
     },
   };
