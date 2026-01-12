@@ -248,6 +248,7 @@ export function Sidebar() {
                                 content={endpoint.path}
                                 placement='right'
                                 delay={800}
+                                fullWidth
                               >
                                 <motion.button
                                   onClick={() =>
@@ -280,8 +281,8 @@ export function Sidebar() {
                                   }}
                                   whileHover={{
                                     backgroundColor: isSelected
-                                      ? 'rgba(16, 185, 129, 0.2)'
-                                      : 'rgba(255,255,255,0.03)',
+                                      ? 'rgba(16, 185, 129, 0.35)'
+                                      : 'rgba(255,255,255,0.1)',
                                   }}
                                 >
                                   <MethodBadge method={endpoint.method} size='sm' />

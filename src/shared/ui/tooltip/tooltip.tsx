@@ -20,9 +20,16 @@ interface TooltipProps {
   content: string;
   placement?: Placement;
   delay?: number;
+  fullWidth?: boolean;
 }
 
-export function Tooltip({ children, content, placement = 'top', delay = 500 }: TooltipProps) {
+export function Tooltip({
+  children,
+  content,
+  placement = 'top',
+  delay = 500,
+  fullWidth = false,
+}: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
   const [floatingElement, setFloatingElement] = useState<HTMLElement | null>(null);
@@ -55,9 +62,16 @@ export function Tooltip({ children, content, placement = 'top', delay = 500 }: T
 
   return (
     <>
-      <span ref={setReferenceElement} {...getReferenceProps()} style={{ display: 'contents' }}>
+      <div
+        ref={setReferenceElement}
+        {...getReferenceProps()}
+        style={{
+          display: fullWidth ? 'block' : 'inline-block',
+          width: fullWidth ? '100%' : 'auto',
+        }}
+      >
         {children}
-      </span>
+      </div>
       <FloatingPortal>
         <AnimatePresence>
           {isOpen && (
