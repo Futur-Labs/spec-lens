@@ -142,7 +142,9 @@ export function FuturSelect({
                     cursor: 'pointer',
                     color: isSelected ? '#fff' : '#d1d5db',
                     fontSize: '1.3rem',
-                    backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                    backgroundColor: isSelected
+                      ? 'rgba(255, 255, 255, 0.05)'
+                      : 'rgba(255, 255, 255, 0)',
                     transition: 'background-color 0.1s',
                   }}
                 >

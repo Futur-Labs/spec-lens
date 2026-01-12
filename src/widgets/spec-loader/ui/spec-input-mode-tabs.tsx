@@ -23,7 +23,7 @@ export function SpecInputModeTabs({
         style={{
           flex: 1,
           padding: '1rem 1.6rem',
-          backgroundColor: inputMode === 'file' ? '#075D46' : 'transparent',
+          backgroundColor: inputMode === 'file' ? '#075D46' : 'rgba(255, 255, 255, 0)',
           border: 'none',
           borderRadius: '0.6rem',
           color: inputMode === 'file' ? '#fff' : '#9ca3af',
@@ -40,7 +40,7 @@ export function SpecInputModeTabs({
         style={{
           flex: 1,
           padding: '1rem 1.6rem',
-          backgroundColor: inputMode === 'url' ? '#075D46' : 'transparent',
+          backgroundColor: inputMode === 'url' ? '#075D46' : 'rgba(255, 255, 255, 0)',
           border: 'none',
           borderRadius: '0.6rem',
           color: inputMode === 'url' ? '#fff' : '#9ca3af',

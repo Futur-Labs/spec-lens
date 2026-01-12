@@ -261,8 +261,10 @@ export function Sidebar() {
                                   animate={{
                                     backgroundColor: isSelected
                                       ? 'rgba(16, 185, 129, 0.15)'
-                                      : 'transparent',
-                                    borderLeftColor: isSelected ? '#10b981' : 'transparent',
+                                      : 'rgba(255, 255, 255, 0)',
+                                    borderLeftColor: isSelected
+                                      ? '#10b981'
+                                      : 'rgba(255, 255, 255, 0)',
                                     paddingLeft: isSelected ? '3.6rem' : '3.2rem',
                                   }}
                                   transition={{ duration: 0.2 }}
@@ -330,7 +332,7 @@ export function Sidebar() {
               e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.5)';
             }}
             onMouseLeave={(e) => {
-              if (!isResizing) e.currentTarget.style.backgroundColor = 'transparent';
+              if (!isResizing) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0)';
             }}
           />
         </motion.aside>

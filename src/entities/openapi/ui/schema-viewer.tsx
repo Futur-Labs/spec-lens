@@ -90,7 +90,8 @@ export function SchemaViewer({
       transition: 'background-color 0.2s',
       borderRadius: '0.4rem',
       // Changed from #f9fafb (very white) to rgba(255,255,255,0.05) for dark mode compatibility
-      backgroundColor: isHovered && hasChildren ? 'rgba(255,255,255,0.05)' : 'transparent',
+      backgroundColor:
+        isHovered && hasChildren ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0)',
     },
     chevron: {
       marginTop: '0.2rem',
