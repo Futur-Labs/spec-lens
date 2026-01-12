@@ -1,8 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { parseEndpoints, groupEndpointsByTag, getAllTags, filterEndpoints } from '../lib/openapi-parser.ts';
 import { type OpenAPIState, type OpenAPIStore } from './openapi-store-types.ts';
+import {
+  parseEndpoints,
+  groupEndpointsByTag,
+  getAllTags,
+  filterEndpoints,
+} from '../lib/openapi-parser.ts';
 
 const initialState: OpenAPIState = {
   spec: null,

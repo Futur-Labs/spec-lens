@@ -1,1 +1,1 @@
-export { db } from './db';
+export { fetchExternalSpec } from './fetch-external-spec.ts';

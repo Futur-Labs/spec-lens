@@ -81,8 +81,8 @@ export function FileUploadZone({ onSuccess }: { onSuccess?: () => void }) {
         }}
       >
         <input
-          type="file"
-          accept=".json,application/json"
+          type='file'
+          accept='.json,application/json'
           onChange={handleFileInput}
           style={{ display: 'none' }}
         />
@@ -134,7 +134,7 @@ export function FileUploadZone({ onSuccess }: { onSuccess?: () => void }) {
             border: '1px solid rgba(239, 68, 68, 0.2)',
           }}
         >
-          <AlertCircle size={16} color="#ef4444" />
+          <AlertCircle size={16} color='#ef4444' />
           <span style={{ color: '#ef4444', fontSize: '1.3rem' }}>{error}</span>
         </div>
       )}

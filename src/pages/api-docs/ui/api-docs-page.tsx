@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { FileJson, ExternalLink } from 'lucide-react';
+import { FileJson } from 'lucide-react';
 
 import { useSpec, useOpenAPIStore } from '@/entities/openapi';
 import { FileUploadZone, UrlInputForm } from '@/features/openapi-loader';
@@ -152,28 +152,7 @@ export function APIDocsPage() {
             }}
           >
             <li>OpenAPI 3.0.x JSON 파일</li>
-            <li>Swagger 2.0은 아직 지원되지 않습니다</li>
           </ul>
-        </div>
-
-        {/* Example Link */}
-        <div style={{ marginTop: '1.6rem', textAlign: 'center' }}>
-          <a
-            href='https://petstore3.swagger.io/api/v3/openapi.json'
-            target='_blank'
-            rel='noopener noreferrer'
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              color: '#6b7280',
-              fontSize: '1.3rem',
-              textDecoration: 'none',
-            }}
-          >
-            <ExternalLink size={14} />
-            예시: Petstore API
-          </a>
         </div>
       </div>
     </div>

@@ -1,9 +1,10 @@
+import axios, { AxiosError } from 'axios';
 import { useState, type FormEvent } from 'react';
 
-import axios, { AxiosError } from 'axios';
 import { Link, Loader2, AlertCircle } from 'lucide-react';
 
 import { type OpenAPISpec, validateOpenAPISpec, useOpenAPIStore } from '@/entities/openapi';
+import { fetchExternalSpec } from '@/shared/server/fetch-external-spec';
 
 export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
   const [url, setUrl] = useState('');
@@ -20,8 +21,9 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
       return;
     }
 
-    // Validate URL format - allow relative paths starting with /
+    // Check if relative path or external URL
     const isRelativePath = url.trim().startsWith('/');
+
     if (!isRelativePath) {
       try {
         new URL(url);
@@ -35,17 +37,18 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
     setLocalError(null);
     setLoading(true);
 
-    // Use relative path as-is, or full URL
-    const fetchUrl = isRelativePath ? url.trim() : url;
-
     try {
-      const response = await axios.get<unknown>(fetchUrl, {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+      let json: unknown;
 
-      const json = response.data;
+      if (isRelativePath) {
+        const response = await axios.get<unknown>(url.trim(), {
+          headers: { Accept: 'application/json' },
+        });
+        json = response.data;
+      } else {
+        // External URL: use server function to bypass CORS
+        json = await fetchExternalSpec({ data: { url: url.trim() } });
+      }
 
       const validation = validateOpenAPISpec(json);
       if (!validation.valid) {
@@ -60,7 +63,7 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
 
       if (err instanceof AxiosError) {
         if (err.code === 'ERR_NETWORK') {
-          message = 'Failed to fetch. The URL might be blocked by CORS policy.';
+          message = 'Failed to fetch. Network error occurred.';
         } else if (err.response) {
           message = `HTTP ${err.response.status}: ${err.response.statusText}`;
         } else {
@@ -99,15 +102,15 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
             border: '1px solid rgba(255,255,255,0.1)',
           }}
         >
-          <Link size={18} color="#6b7280" />
+          <Link size={18} color='#6b7280' />
           <input
-            type="text"
+            type='text'
             value={url}
             onChange={(e) => {
               setUrl(e.target.value);
               setLocalError(null);
             }}
-            placeholder="https://api.example.com/openapi.json"
+            placeholder='https://api.example.com/openapi.json'
             style={{
               flex: 1,
               padding: '1.4rem 0',
@@ -121,7 +124,7 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
         </div>
 
         <button
-          type="submit"
+          type='submit'
           disabled={isLoading}
           style={{
             display: 'flex',
@@ -145,7 +148,7 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
             <>
               <Loader2
                 size={16}
-                className="animate-spin"
+                className='animate-spin'
                 style={{ animation: 'spin 1s linear infinite' }}
               />
               <span>Loading</span>
@@ -169,7 +172,7 @@ export function UrlInputForm({ onSuccess }: { onSuccess?: () => void }) {
             border: '1px solid rgba(239, 68, 68, 0.2)',
           }}
         >
-          <AlertCircle size={16} color="#ef4444" />
+          <AlertCircle size={16} color='#ef4444' />
           <span style={{ color: '#ef4444', fontSize: '1.3rem' }}>{localError}</span>
         </div>
       )}
