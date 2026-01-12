@@ -13,6 +13,7 @@ import {
   SchemaViewer,
 } from '@/entities/openapi';
 import { TryItPanel } from '@/features/api-tester';
+import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function EndpointDetail({
   endpoint,
@@ -92,7 +93,7 @@ export function EndpointDetail({
               lineHeight: 1.6,
             }}
           >
-            {operation.description}
+            <FormattedText text={operation.description} />
           </p>
         )}
 
@@ -285,7 +286,7 @@ function ParameterGroup({ title, params }: { title: string; params: ParameterObj
             {param.description && (
               <p style={{ color: '#d1d5db', fontSize: '1.2rem', margin: 0 }}>
                 {/* Light gray desc */}
-                {param.description}
+                <FormattedText text={param.description} />
               </p>
             )}
           </div>
@@ -349,7 +350,9 @@ function ResponseItem({
         >
           {statusCode}
         </span>
-        <span style={{ color: '#ffffff', fontSize: '1.3rem' }}>{response.description}</span>
+        <span style={{ color: '#ffffff', fontSize: '1.3rem' }}>
+          <FormattedText text={response.description} />
+        </span>
         {/* White response desc */}
       </button>
 

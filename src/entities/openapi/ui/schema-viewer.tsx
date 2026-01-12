@@ -9,6 +9,7 @@ import {
   type ReferenceObject,
   type SchemaObject,
 } from '../model/openapi-types';
+import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function SchemaViewer({
   schema,
@@ -89,7 +90,7 @@ export function SchemaViewer({
       transition: 'background-color 0.2s',
       borderRadius: '0.4rem',
       // Changed from #f9fafb (very white) to rgba(255,255,255,0.05) for dark mode compatibility
-      backgroundColor: isHovered && hasChildren ? 'rgba(255,255,255,0.05)' : 'transparent', 
+      backgroundColor: isHovered && hasChildren ? 'rgba(255,255,255,0.05)' : 'transparent',
     },
     chevron: {
       marginTop: '0.2rem',
@@ -247,7 +248,9 @@ export function SchemaViewer({
           </div>
 
           {resolvedSchema.description && (
-            <div style={styles.description}>{resolvedSchema.description}</div>
+            <div style={styles.description}>
+              <FormattedText text={resolvedSchema.description} />
+            </div>
           )}
 
           {resolvedSchema.enum && (
