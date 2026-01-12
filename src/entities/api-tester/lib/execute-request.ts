@@ -1,6 +1,5 @@
-import { proxyApiRequest, type ProxyResponse } from '@/shared/server/proxy-api-request';
-
 import type { ExecuteRequestParams, ExecuteRequestResult } from '../model/api-tester-types';
+import { proxyApiRequest, type ProxyResponse } from '@/shared/server/proxy-api-request';
 
 /**
  * Build the full URL with path parameters replaced

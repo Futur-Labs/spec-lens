@@ -1,5 +1,6 @@
-export function smoothScrollTo(elementId: string, offset = 0) {
-  const element = document.getElementById(elementId);
+export function smoothScrollTo(elementOrId: string | HTMLElement, offset = 0) {
+  const element =
+    typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
   if (!element) return;
 
   // Find the scrollable container

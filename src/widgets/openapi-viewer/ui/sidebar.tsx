@@ -1,6 +1,5 @@
-import { useLocation, useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
-import { startTransition, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import { ChevronRight, Search, X } from 'lucide-react';
 
@@ -14,15 +13,13 @@ import {
   useSelectedEndpoint,
 } from '@/entities/openapi';
 import { Tooltip } from '@/shared/ui/tooltip';
+import { smoothScrollTo } from '@/shared/utils/scroll';
 
 function generateEndpointHash(method: string, path: string): string {
   return `${method.toLowerCase()}${path.replace(/[{}]/g, '')}`;
 }
 
 export function Sidebar() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const spec = useOpenAPIStore((s) => s.spec);
   const endpoints = useOpenAPIStore((s) => s.endpoints);
   const searchQuery = useSearchQuery();
@@ -41,12 +38,13 @@ export function Sidebar() {
 
   // Restore endpoint from URL hash on mount
   useEffect(() => {
-    if (!endpoints.length || !location.hash) return;
+    const hash = window.location.hash.slice(1);
+    if (!endpoints.length || !hash) return;
 
     // Find matching endpoint by hash
     const matchingEndpoint = endpoints.find((ep) => {
       const epHash = generateEndpointHash(ep.method, ep.path);
-      return epHash === location.hash;
+      return epHash === hash;
     });
 
     if (matchingEndpoint) {
@@ -58,33 +56,28 @@ export function Sidebar() {
         openAPIStoreActions.toggleTagExpanded(endpointTag);
       }
     }
-  }, [endpoints, location.hash]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [endpoints]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update URL hash when endpoint is selected (low priority)
-  useEffect(() => {
-    if (selectedEndpoint) {
-      const hash = generateEndpointHash(selectedEndpoint.method, selectedEndpoint.path);
-      if (location.hash !== hash) {
-        startTransition(() => {
-          navigate({ hash, replace: true });
-        });
-      }
-    }
-  }, [selectedEndpoint, location.hash, navigate]);
-
-  // Scroll to selected endpoint
+  // Scroll to selected endpoint (cancellable by user scroll via smoothScrollTo)
   useEffect(() => {
     if (!selectedEndpoint) return;
 
     const key = `${selectedEndpoint.method}-${selectedEndpoint.path}`;
     const element = endpointRefs.current.get(key);
 
-    if (element) {
-      // Small delay to ensure DOM is updated after tag expansion
-      setTimeout(() => {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
+    if (!element) return;
+
+    // Small delay to ensure DOM is updated after tag expansion
+    const timeoutId = setTimeout(() => {
+      // Calculate offset to center the element in the container
+      const container = element.closest('[style*="overflow"]') as HTMLElement | null;
+      const containerHeight = container?.clientHeight ?? 300;
+      const offset = containerHeight / 2 - element.offsetHeight / 2;
+
+      smoothScrollTo(element, offset);
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [selectedEndpoint]);
 
   const startResizing = () => {
@@ -317,12 +310,17 @@ export function Sidebar() {
                                       endpointRefs.current.delete(key);
                                     }
                                   }}
-                                  onClick={() =>
+                                  onClick={() => {
                                     openAPIStoreActions.selectEndpoint(
                                       endpoint.path,
                                       endpoint.method,
-                                    )
-                                  }
+                                    );
+                                    const hash = generateEndpointHash(
+                                      endpoint.method,
+                                      endpoint.path,
+                                    );
+                                    window.history.replaceState(null, '', `#${hash}`);
+                                  }}
                                   initial={false}
                                   animate={{
                                     backgroundColor: isSelected

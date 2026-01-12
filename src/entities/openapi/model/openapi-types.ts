@@ -3,7 +3,16 @@
  * Based on OpenAPI Specification v3.0.3
  */
 
-export const HTTP_METHODS = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace'] as const;
+export const HTTP_METHODS = [
+  'get',
+  'post',
+  'put',
+  'delete',
+  'patch',
+  'options',
+  'head',
+  'trace',
+] as const;
 
 export type HttpMethod = (typeof HTTP_METHODS)[number];
 
@@ -161,7 +170,7 @@ export interface LinkObject {
   server?: ServerObject;
 }
 
-export interface HeaderObject extends Omit<ParameterObject, 'name' | 'in'> {}
+export type HeaderObject = Omit<ParameterObject, 'name' | 'in'>;
 
 export interface TagObject {
   name: string;
