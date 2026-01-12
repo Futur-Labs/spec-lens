@@ -62,7 +62,7 @@ export function EndpointDetail({
           <MethodBadge method={method} size='lg' />
           <h1
             style={{
-              color: '#ffffff', // Changed to pure white
+              color: '#f3f4f6', // Softened white (Gray-100) for less eye strain
               fontSize: '2rem',
               fontWeight: 600,
               fontFamily: 'monospace',
@@ -76,7 +76,7 @@ export function EndpointDetail({
         {operation.summary && (
           <p
             style={{
-              color: '#ffffff', // Changed to pure white
+              color: '#e5e7eb', // Gray-200
               fontSize: '1.6rem',
               marginBottom: '0.8rem',
             }}
@@ -159,9 +159,9 @@ export function EndpointDetail({
           <div
             style={{
               padding: '1.6rem',
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              borderRadius: '0.6rem',
-              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: 'rgba(255,255,255,0.04)', // Slightly lighter background
+              borderRadius: '0.8rem', // Slightly more rounded
+              border: '1px solid rgba(255,255,255,0.08)',
             }}
           >
             <SchemaViewer schema={requestBodyContent.schema} spec={spec} />
@@ -204,12 +204,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div style={{ marginBottom: '2.4rem' }}>
       <h2
         style={{
-          color: '#ffffff', // Changed to pure white as requested
+          color: '#f3f4f6', // Gray-100
           fontSize: '1.5rem',
           fontWeight: 600,
           marginBottom: '1.2rem',
           paddingBottom: '0.8rem',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         {title}
@@ -237,9 +237,9 @@ function ParameterGroup({ title, params }: { title: string; params: ParameterObj
       </h3>
       <div
         style={{
-          backgroundColor: 'rgba(255,255,255,0.02)',
-          borderRadius: '0.6rem',
-          border: '1px solid rgba(255,255,255,0.1)',
+          backgroundColor: 'rgba(255,255,255,0.04)', // Slightly lighter
+          borderRadius: '0.8rem',
+          border: '1px solid rgba(255,255,255,0.08)',
           overflow: 'hidden',
         }}
       >
@@ -261,7 +261,7 @@ function ParameterGroup({ title, params }: { title: string; params: ParameterObj
             >
               <span
                 style={{
-                  color: '#ffffff', // Pure white name
+                  color: '#f3f4f6', // Gray-100
                   fontSize: '1.3rem',
                   fontFamily: 'monospace',
                 }}
@@ -315,9 +315,9 @@ function ResponseItem({
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255,255,255,0.02)',
-        borderRadius: '0.6rem',
-        border: '1px solid rgba(255,255,255,0.1)',
+        backgroundColor: 'rgba(255,255,255,0.04)', // Slightly lighter
+        borderRadius: '0.8rem',
+        border: '1px solid rgba(255,255,255,0.08)',
         overflow: 'hidden',
       }}
     >
@@ -350,7 +350,7 @@ function ResponseItem({
         >
           {statusCode}
         </span>
-        <span style={{ color: '#ffffff', fontSize: '1.3rem' }}>
+        <span style={{ color: '#f3f4f6', fontSize: '1.3rem' }}>
           <FormattedText text={response.description} />
         </span>
         {/* White response desc */}

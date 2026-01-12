@@ -58,7 +58,7 @@ export function Sidebar() {
     }
   }, [endpoints]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Scroll to selected endpoint (cancellable by user scroll via smoothScrollTo)
+  // Scroll to selected endpoint only if out of view (cancellable by user scroll)
   useEffect(() => {
     if (!selectedEndpoint) return;
 
@@ -69,12 +69,31 @@ export function Sidebar() {
 
     // Small delay to ensure DOM is updated after tag expansion
     const timeoutId = setTimeout(() => {
-      // Calculate offset to center the element in the container
-      const container = element.closest('[style*="overflow"]') as HTMLElement | null;
-      const containerHeight = container?.clientHeight ?? 300;
-      const offset = containerHeight / 2 - element.offsetHeight / 2;
+      // Find the scroll container
+      let container: HTMLElement | null = element.parentElement;
+      while (container) {
+        const style = window.getComputedStyle(container);
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+          break;
+        }
+        container = container.parentElement;
+      }
 
-      smoothScrollTo(element, offset);
+      if (!container) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+
+      // Check if element is outside visible area (with some margin)
+      const margin = 100;
+      const isAboveView = elementRect.top < containerRect.top + margin;
+      const isBelowView = elementRect.bottom > containerRect.bottom - margin;
+
+      if (isAboveView || isBelowView) {
+        const containerHeight = container.clientHeight;
+        const offset = containerHeight / 2 - element.offsetHeight / 2;
+        smoothScrollTo(element, offset);
+      }
     }, 100);
 
     return () => clearTimeout(timeoutId);
@@ -136,7 +155,7 @@ export function Sidebar() {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#161616',
-            borderRight: '1px solid rgba(255,255,255,0.1)',
+            borderRight: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             position: 'relative',
@@ -146,7 +165,7 @@ export function Sidebar() {
           <div
             style={{
               padding: '1.6rem',
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
             }}
           >
             <div style={{ marginBottom: '1.2rem' }}>

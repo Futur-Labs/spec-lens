@@ -136,9 +136,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
     <div
       style={{
         marginTop: '2.4rem',
-        backgroundColor: '#151515',
+        backgroundColor: 'rgba(255,255,255,0.04)', // Matched to EndpointDetail cards
         borderRadius: '0.8rem',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid rgba(255,255,255,0.08)',
         overflow: 'hidden',
       }}
     >
@@ -156,8 +156,8 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Play size={16} fill='#ffffff' color='#ffffff' style={{ opacity: 0.8 }} />
-          <span style={{ color: '#ffffff', fontSize: '1.4rem', fontWeight: 600 }}>Try it out</span>
+          <Play size={16} fill='#f3f4f6' color='#f3f4f6' style={{ opacity: 0.8 }} />
+          <span style={{ color: '#f3f4f6', fontSize: '1.4rem', fontWeight: 600 }}>Try it out</span>
         </div>
         {isExpanded ? (
           <ChevronUp size={18} color='#9ca3af' />
@@ -445,7 +445,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   justifyContent: 'space-between',
                   padding: '1rem 1.2rem',
                   backgroundColor: 'rgba(255,255,255,0.02)',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)',
+                  borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -485,7 +485,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
               <div
                 style={{
                   padding: '1.2rem',
-                  backgroundColor: '#0a0a0a',
+                  backgroundColor: 'rgba(0,0,0,0.3)', // Darker well transparency instead of solid black
                   overflow: 'auto',
                   height: '300px',
                 }}
