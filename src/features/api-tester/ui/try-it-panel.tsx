@@ -1,3 +1,4 @@
+import { FlexRow } from '@jigoooo/shared-ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
@@ -10,11 +11,13 @@ import {
   Key,
   Loader2,
   Play,
+  Plus,
   Repeat,
   RotateCcw,
   Trash2,
 } from 'lucide-react';
 
+import { HeaderAutocompleteInput } from './header-autocomplete-input';
 import { VariableAutocompleteInput } from './variable-autocomplete-input';
 import {
   apiTesterStoreActions,
@@ -51,6 +54,10 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const [showHeaders, setShowHeaders] = useState(true);
   const [copiedResponse, setCopiedResponse] = useState(false);
   const [jsonError, setJsonError] = useState<string | null>(null);
+
+  // New header input state
+  const [newHeaderName, setNewHeaderName] = useState('');
+  const [newHeaderValue, setNewHeaderValue] = useState('');
 
   // Repeat request settings
   const [showRepeatSettings, setShowRepeatSettings] = useState(false);
@@ -266,31 +273,61 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
         overflow: 'hidden',
       }}
     >
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
+      <div
         style={{
-          width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '1.4rem 1.6rem',
-          backgroundColor: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+          }}
+        >
           <Play size={16} fill='#f3f4f6' color='#f3f4f6' style={{ opacity: 0.8 }} />
           <span style={{ color: '#f3f4f6', fontSize: '1.4rem', fontWeight: 600 }}>Try it out</span>
-        </div>
-        <motion.div
-          animate={{ rotate: isExpanded ? 0 : -90 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          style={{ display: 'flex', alignItems: 'center' }}
+          <motion.div
+            animate={{ rotate: isExpanded ? 0 : -90 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <ChevronDown size={18} color='#9ca3af' />
+          </motion.div>
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClearCurrent();
+          }}
+          disabled={isExecuting}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.5rem 0.8rem',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '0.4rem',
+            color: '#ef4444',
+            fontSize: '1.1rem',
+            cursor: isExecuting ? 'not-allowed' : 'pointer',
+            opacity: isExecuting ? 0.5 : 1,
+          }}
+          title='Clear all test data for this endpoint'
         >
-          <ChevronDown size={18} color='#9ca3af' />
-        </motion.div>
-      </button>
+          <Trash2 size={10} />
+          Clear All
+        </button>
+      </div>
 
       <AnimatePresence initial={false}>
         {isExpanded && (
@@ -418,18 +455,43 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                   {pathParameters.length > 0 && (
                     <div>
-                      <div
+                      <FlexRow
                         style={{
-                          color: '#e5e5e5',
-                          fontSize: '1.2rem',
-                          fontWeight: 600,
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                           marginBottom: '0.8rem',
-                          textTransform: 'uppercase',
-                          opacity: 0.7,
                         }}
                       >
-                        Path Params
-                      </div>
+                        <span
+                          style={{
+                            color: '#e5e5e5',
+                            fontSize: '1.2rem',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            opacity: 0.7,
+                          }}
+                        >
+                          Path Params
+                        </span>
+                        <button
+                          onClick={() => apiTesterStoreActions.resetPathParams()}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: '#f59e0b',
+                            fontSize: '1.1rem',
+                            visibility: Object.keys(pathParams).length > 0 ? 'visible' : 'hidden',
+                          }}
+                          title='Reset path params'
+                        >
+                          <RotateCcw size={10} />
+                          Reset
+                        </button>
+                      </FlexRow>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                         {pathParameters.map((p) => (
                           <ParameterInput
@@ -444,18 +506,43 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   )}
                   {queryParameters.length > 0 && (
                     <div>
-                      <div
+                      <FlexRow
                         style={{
-                          color: '#e5e5e5',
-                          fontSize: '1.2rem',
-                          fontWeight: 600,
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                           marginBottom: '0.8rem',
-                          textTransform: 'uppercase',
-                          opacity: 0.7,
                         }}
                       >
-                        Query Params
-                      </div>
+                        <span
+                          style={{
+                            color: '#e5e5e5',
+                            fontSize: '1.2rem',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            opacity: 0.7,
+                          }}
+                        >
+                          Query Params
+                        </span>
+                        <button
+                          onClick={() => apiTesterStoreActions.resetQueryParams()}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: '#f59e0b',
+                            fontSize: '1.1rem',
+                            visibility: Object.keys(queryParams).length > 0 ? 'visible' : 'hidden',
+                          }}
+                          title='Reset query params'
+                        >
+                          <RotateCcw size={10} />
+                          Reset
+                        </button>
+                      </FlexRow>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                         {queryParameters.map((p) => (
                           <ParameterInput
@@ -473,36 +560,55 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 
               {/* Headers */}
               <div>
-                <div
-                  onClick={() => setShowHeaders(!showHeaders)}
+                <FlexRow
                   style={{
-                    display: 'flex',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    gap: '0.8rem',
-                    cursor: 'pointer',
                     marginBottom: '0.6rem',
                   }}
                 >
-                  <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
-                    Headers
-                  </span>
-                  <span
-                    style={{
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '1rem',
-                      fontSize: '1rem',
-                      color: '#e5e5e5',
-                    }}
+                  <FlexRow
+                    style={{ cursor: 'pointer', alignItems: 'center', gap: '0.8rem' }}
+                    onClick={() => setShowHeaders(!showHeaders)}
                   >
-                    {Object.keys(headers).length}
-                  </span>
-                  {showHeaders ? (
-                    <ChevronUp size={12} color='#9ca3af' />
-                  ) : (
-                    <ChevronDown size={12} color='#9ca3af' />
-                  )}
-                </div>
+                    <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+                      Headers
+                    </span>
+                    <span
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '1rem',
+                        fontSize: '1rem',
+                        color: '#e5e5e5',
+                      }}
+                    >
+                      {Object.keys(headers).length}
+                    </span>
+                    {showHeaders ? (
+                      <ChevronUp size={12} color='#9ca3af' />
+                    ) : (
+                      <ChevronDown size={12} color='#9ca3af' />
+                    )}
+                  </FlexRow>
+                  <button
+                    onClick={() => apiTesterStoreActions.resetHeaders()}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#f59e0b',
+                      fontSize: '1.1rem',
+                    }}
+                    title='Reset headers to default'
+                  >
+                    <RotateCcw size={10} />
+                    Reset
+                  </button>
+                </FlexRow>
                 <AnimatePresence initial={false}>
                   {showHeaders && (
                     <motion.div
@@ -513,16 +619,111 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       style={{ overflow: 'hidden' }}
                     >
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                        {/* Global Auth header indicator */}
+                        {authConfig.type !== 'none' && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '0.8rem',
+                              alignItems: 'center',
+                              padding: '0.6rem 1rem',
+                              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                              border: '1px solid rgba(34, 197, 94, 0.2)',
+                              borderRadius: '0.6rem',
+                            }}
+                          >
+                            <Key size={12} color='#22c55e' />
+                            <span style={{ color: '#22c55e', fontSize: '1.1rem', fontWeight: 500 }}>
+                              Authorization
+                            </span>
+                            <span style={{ color: '#6b7280', fontSize: '1.1rem', flex: 1 }}>
+                              (from Global Auth: {authConfig.type.toUpperCase()})
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Existing headers */}
                         {Object.entries(headers).map(([k, v]) => (
-                          <div key={k} style={{ display: 'flex', gap: '0.8rem' }}>
-                            <input readOnly value={k} style={inputStyle} />
-                            <input
-                              value={v}
-                              onChange={(e) => apiTesterStoreActions.setHeader(k, e.target.value)}
-                              style={inputStyle}
+                          <div
+                            key={k}
+                            style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}
+                          >
+                            <HeaderAutocompleteInput
+                              type='name'
+                              value={k}
+                              onChange={(newKey) => {
+                                if (newKey !== k) {
+                                  apiTesterStoreActions.removeHeader(k);
+                                  apiTesterStoreActions.setHeader(newKey, v);
+                                }
+                              }}
+                              style={{ ...inputStyle, flex: 1 }}
                             />
+                            <HeaderAutocompleteInput
+                              type='value'
+                              headerName={k}
+                              value={v}
+                              onChange={(newValue) => apiTesterStoreActions.setHeader(k, newValue)}
+                              style={{ ...inputStyle, flex: 2 }}
+                            />
+                            <button
+                              onClick={() => apiTesterStoreActions.removeHeader(k)}
+                              style={iconButtonStyle}
+                              title='Remove header'
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
                         ))}
+
+                        {/* Add new header form */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.8rem',
+                            alignItems: 'center',
+                            marginTop: '0.4rem',
+                          }}
+                        >
+                          <HeaderAutocompleteInput
+                            type='name'
+                            value={newHeaderName}
+                            onChange={setNewHeaderName}
+                            placeholder='Header name'
+                            style={{ ...inputStyle, flex: 1 }}
+                          />
+                          <HeaderAutocompleteInput
+                            type='value'
+                            headerName={newHeaderName}
+                            value={newHeaderValue}
+                            onChange={setNewHeaderValue}
+                            placeholder='Header value'
+                            style={{ ...inputStyle, flex: 2 }}
+                          />
+                          <button
+                            onClick={() => {
+                              if (newHeaderName.trim()) {
+                                apiTesterStoreActions.setHeader(
+                                  newHeaderName.trim(),
+                                  newHeaderValue,
+                                );
+                                setNewHeaderName('');
+                                setNewHeaderValue('');
+                              }
+                            }}
+                            disabled={!newHeaderName.trim()}
+                            style={{
+                              ...iconButtonStyle,
+                              backgroundColor: newHeaderName.trim()
+                                ? 'rgba(34, 197, 94, 0.2)'
+                                : 'rgba(255,255,255,0.05)',
+                              color: newHeaderName.trim() ? '#22c55e' : '#6b7280',
+                            }}
+                            title='Add header'
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -556,11 +757,11 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                         border: 'none',
                         cursor: 'pointer',
                         color: '#f59e0b',
-                        fontSize: '1.2rem',
+                        fontSize: '1.1rem',
                       }}
                     >
-                      <RotateCcw size={12} />
-                      Reset to Default
+                      <RotateCcw size={10} />
+                      Reset
                     </button>
                   </div>
                   <VariableAutocompleteInput
@@ -715,41 +916,11 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: 'flex-end',
                   alignItems: 'center',
                   paddingTop: '0.8rem',
                 }}
               >
-                {/* Clear buttons */}
-                <div style={{ display: 'flex', gap: '0.6rem' }}>
-                  <motion.button
-                    onClick={handleClearCurrent}
-                    disabled={isExecuting}
-                    whileHover={
-                      isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.06)' }
-                    }
-                    whileTap={isExecuting ? {} : { scale: 0.98 }}
-                    transition={{ duration: 0.15 }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      padding: '0.6rem 1rem',
-                      backgroundColor: 'rgba(0,0,0,0)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '0.4rem',
-                      color: '#9ca3af',
-                      fontSize: '1.2rem',
-                      cursor: isExecuting ? 'not-allowed' : 'pointer',
-                      opacity: isExecuting ? 0.5 : 1,
-                    }}
-                    title='Clear current endpoint test data'
-                  >
-                    <RotateCcw size={12} />
-                    Clear
-                  </motion.button>
-                </div>
-
                 {/* Execute buttons */}
                 <div style={{ display: 'flex', gap: '0.8rem' }}>
                   {isRepeating && (

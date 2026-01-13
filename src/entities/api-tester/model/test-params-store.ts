@@ -104,6 +104,9 @@ export interface TestParamsActions {
   setExecuteError: (error: string | null) => void;
   clearResponse: () => void;
   resetParams: () => void;
+  resetPathParams: () => void;
+  resetQueryParams: () => void;
+  resetHeaders: () => void;
   // Endpoint test data persistence
   saveCurrentParams: (specSourceId: string, endpointKey: string) => void;
   loadSavedParams: (specSourceId: string, endpointKey: string) => boolean;
@@ -172,6 +175,12 @@ export const useTestParamsStore = create<TestParamsStore>((set) => ({
         response: null,
         executeError: null,
       }),
+
+    resetPathParams: () => set({ pathParams: {} }),
+
+    resetQueryParams: () => set({ queryParams: {} }),
+
+    resetHeaders: () => set({ headers: DEFAULT_HEADERS }),
 
     // Endpoint test data persistence
     saveCurrentParams: (specSourceId: string, endpointKey: string) => {

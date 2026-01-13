@@ -211,10 +211,8 @@ export function EndpointDetail({
         </Section>
       )}
 
-      {/* Try It Out Panel */}
-      <Section title='Try It Out'>
-        <TryItPanel endpoint={endpoint} spec={spec} />
-      </Section>
+      {/* Try It Out Panel - Has its own header and collapse functionality */}
+      <TryItPanel endpoint={endpoint} spec={spec} />
     </div>
   );
 }
