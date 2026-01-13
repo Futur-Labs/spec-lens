@@ -1,4 +1,8 @@
-import type { ExecuteRequestParams, ExecuteRequestResult } from '../model/api-tester-types';
+import type {
+  AuthConfig,
+  ExecuteRequestParams,
+  ExecuteRequestResult,
+} from '../model/api-tester-types';
 import { proxyApiRequest, type ProxyResponse } from '@/shared/server/proxy-api-request';
 
 /**
@@ -36,10 +40,59 @@ function parseBody(body: string | undefined): unknown {
 }
 
 /**
+ * Apply authentication to headers and query params based on auth config
+ */
+function applyAuth(
+  authConfig: AuthConfig,
+  headers: Record<string, string>,
+  queryParams: Record<string, string>,
+): { headers: Record<string, string>; queryParams: Record<string, string> } {
+  const newHeaders = { ...headers };
+  const newQueryParams = { ...queryParams };
+
+  switch (authConfig.type) {
+    case 'bearer':
+      if (authConfig.bearerToken) {
+        newHeaders['Authorization'] = `Bearer ${authConfig.bearerToken}`;
+      }
+      break;
+
+    case 'apiKey':
+      if (authConfig.apiKeyName && authConfig.apiKeyValue) {
+        if (authConfig.apiKeyLocation === 'query') {
+          newQueryParams[authConfig.apiKeyName] = authConfig.apiKeyValue;
+        } else {
+          // Default to header
+          newHeaders[authConfig.apiKeyName] = authConfig.apiKeyValue;
+        }
+      }
+      break;
+
+    case 'basic':
+      if (authConfig.basicUsername) {
+        const credentials = btoa(`${authConfig.basicUsername}:${authConfig.basicPassword || ''}`);
+        newHeaders['Authorization'] = `Basic ${credentials}`;
+      }
+      break;
+
+    case 'none':
+    default:
+      // No authentication
+      break;
+  }
+
+  return { headers: newHeaders, queryParams: newQueryParams };
+}
+
+interface ExecuteRequestOptions extends ExecuteRequestParams {
+  authConfig?: AuthConfig;
+}
+
+/**
  * Execute an API request via server proxy to avoid CORS issues
  */
-export async function executeRequest(params: ExecuteRequestParams): Promise<ExecuteRequestResult> {
-  const { baseUrl, path, method, pathParams, queryParams, headers, body } = params;
+export async function executeRequest(params: ExecuteRequestOptions): Promise<ExecuteRequestResult> {
+  const { baseUrl, path, method, pathParams, queryParams, headers, body, authConfig } = params;
 
   const startTime = performance.now();
 
@@ -48,14 +101,21 @@ export async function executeRequest(params: ExecuteRequestParams): Promise<Exec
     const parsedBody = parseBody(body);
 
     // Filter out empty query params
-    const filteredQueryParams = Object.fromEntries(
+    let filteredQueryParams = Object.fromEntries(
       Object.entries(queryParams).filter(([_, value]) => value !== ''),
     );
 
     // Filter out empty headers
-    const filteredHeaders = Object.fromEntries(
+    let filteredHeaders = Object.fromEntries(
       Object.entries(headers).filter(([_, value]) => value !== ''),
     );
+
+    // Apply authentication if configured
+    if (authConfig && authConfig.type !== 'none') {
+      const authResult = applyAuth(authConfig, filteredHeaders, filteredQueryParams);
+      filteredHeaders = authResult.headers;
+      filteredQueryParams = authResult.queryParams;
+    }
 
     const response = (await proxyApiRequest({
       data: {

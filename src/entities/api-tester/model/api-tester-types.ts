@@ -1,5 +1,28 @@
 import { type HttpMethod } from '@/entities/openapi';
 
+export type AuthType = 'none' | 'bearer' | 'apiKey' | 'basic';
+
+export interface AuthConfig {
+  type: AuthType;
+  // Bearer token
+  bearerToken?: string;
+  // API Key
+  apiKeyName?: string;
+  apiKeyValue?: string;
+  apiKeyLocation?: 'header' | 'query';
+  // Basic Auth
+  basicUsername?: string;
+  basicPassword?: string;
+  // Persistence
+  persistSession?: boolean;
+}
+
+export const DEFAULT_AUTH_CONFIG: AuthConfig = {
+  type: 'none',
+  apiKeyLocation: 'header',
+  persistSession: false,
+};
+
 export interface ExecuteRequestParams {
   baseUrl: string;
   path: string;
@@ -43,6 +66,9 @@ export interface ApiTesterState {
   // Server
   selectedServer: string;
 
+  // Authentication
+  authConfig: AuthConfig;
+
   // Request params
   pathParams: Record<string, string>;
   queryParams: Record<string, string>;
@@ -60,6 +86,10 @@ export interface ApiTesterState {
 
 export interface ApiTesterActions {
   setSelectedServer: (server: string) => void;
+  // Authentication
+  setAuthConfig: (config: Partial<AuthConfig>) => void;
+  clearAuth: () => void;
+  // Request params
   setPathParam: (key: string, value: string) => void;
   setQueryParam: (key: string, value: string) => void;
   setHeader: (key: string, value: string) => void;

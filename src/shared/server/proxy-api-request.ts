@@ -1,5 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
-import axios, { AxiosError } from 'axios';
+import axios, { type AxiosInstance, AxiosError } from 'axios';
+import { wrapper } from 'axios-cookiejar-support';
+import { CookieJar } from 'tough-cookie';
+
+// Module-level cookie jar to persist cookies across requests
+const cookieJar = new CookieJar();
+const axiosWithCookies: AxiosInstance = wrapper(axios.create({ jar: cookieJar }));
 
 interface ProxyRequestParams {
   url: string;
@@ -25,7 +31,7 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
     const startTime = performance.now();
 
     try {
-      const response = await axios({
+      const response = await axiosWithCookies({
         method,
         url,
         params: queryParams,

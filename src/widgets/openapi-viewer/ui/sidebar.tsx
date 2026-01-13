@@ -19,7 +19,6 @@ function generateEndpointHash(method: string, path: string): string {
   return `${method.toLowerCase()}${path.replace(/[{}]/g, '')}`;
 }
 
-// Module-level flag to skip animation only on initial page load
 let hasInitiallyMounted = false;
 
 export function Sidebar() {
