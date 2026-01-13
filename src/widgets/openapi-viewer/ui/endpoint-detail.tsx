@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 
@@ -25,7 +25,13 @@ export function EndpointDetail({
   endpoint: ParsedEndpoint;
   spec: OpenAPISpec;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const { operation, path, method } = endpoint;
+
+  // Scroll to top when endpoint changes
+  useEffect(() => {
+    containerRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }, [path, method]);
 
   // Get merged parameters
   const allParams = getMergedParameters(endpoint);
@@ -47,9 +53,10 @@ export function EndpointDetail({
 
   return (
     <div
+      ref={containerRef}
       style={{
         padding: '2.4rem',
-        maxWidth: '900px',
+        maxWidth: '90rem',
       }}
     >
       {/* Header */}
@@ -57,7 +64,7 @@ export function EndpointDetail({
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: '1.2rem',
             marginBottom: '1.2rem',
           }}
@@ -69,10 +76,21 @@ export function EndpointDetail({
               fontSize: '2rem',
               fontWeight: 600,
               fontFamily: 'monospace',
-              wordBreak: 'break-all',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
             }}
           >
-            {path}
+            {path.split('/').map((segment, index) => (
+              <span key={index}>
+                {index > 0 && (
+                  <>
+                    <wbr />
+                    <span style={{ color: '#6b7280' }}>/</span>
+                  </>
+                )}
+                {segment}
+              </span>
+            ))}
           </h1>
         </div>
 

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
 import {
@@ -278,606 +278,631 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
           <Play size={16} fill='#f3f4f6' color='#f3f4f6' style={{ opacity: 0.8 }} />
           <span style={{ color: '#f3f4f6', fontSize: '1.4rem', fontWeight: 600 }}>Try it out</span>
         </div>
-        {isExpanded ? (
-          <ChevronUp size={18} color='#9ca3af' />
-        ) : (
+        <motion.div
+          animate={{ rotate: isExpanded ? 0 : -90 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
           <ChevronDown size={18} color='#9ca3af' />
-        )}
+        </motion.div>
       </button>
 
-      {isExpanded && (
-        <div
-          style={{
-            padding: '0 1.6rem 1.6rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.6rem',
-          }}
-        >
-          {/* Server */}
-          <div>
-            <label
-              style={{
-                display: 'block',
-                color: '#9ca3af',
-                fontSize: '1.2rem',
-                fontWeight: 500,
-                marginBottom: '0.6rem',
-              }}
-            >
-              Target Server
-            </label>
-            <FuturSelect
-              value={selectedServer}
-              onChange={(val) => apiTesterStoreActions.setSelectedServer(val)}
-              options={servers.map((s) => ({
-                label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
-                value: s.url,
-              }))}
-              placeholder='Select a server'
-            />
-          </div>
-
-          {/* Auth & Cookies Status (Read-only) */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1.6rem',
-              padding: '1rem 1.2rem',
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              borderRadius: '0.6rem',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            style={{ overflow: 'hidden' }}
           >
-            {/* Auth Status */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <Key size={14} color={authConfig.type !== 'none' ? '#22c55e' : '#9ca3af'} />
-              <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Auth:</span>
-              <span
-                style={{
-                  backgroundColor:
-                    authConfig.type !== 'none' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255,255,255,0.1)',
-                  padding: '0.2rem 0.8rem',
-                  borderRadius: '1rem',
-                  fontSize: '1.1rem',
-                  color: authConfig.type !== 'none' ? '#22c55e' : '#9ca3af',
-                  fontWeight: 500,
-                }}
-              >
-                {authConfig.type === 'none' ? 'None' : authConfig.type.toUpperCase()}
-              </span>
-            </div>
-
-            {/* Separator */}
             <div
               style={{
-                width: '1px',
-                height: '1.6rem',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-              }}
-            />
-
-            {/* Cookies Status */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <Cookie
-                size={14}
-                color={customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af'}
-              />
-              <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Cookies:</span>
-              <span
-                style={{
-                  backgroundColor:
-                    customCookies.length + sessionCookies.length > 0
-                      ? 'rgba(245, 158, 11, 0.2)'
-                      : 'rgba(255,255,255,0.1)',
-                  padding: '0.2rem 0.8rem',
-                  borderRadius: '1rem',
-                  fontSize: '1.1rem',
-                  color: customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af',
-                  fontWeight: 500,
-                }}
-              >
-                {customCookies.length + sessionCookies.length}
-              </span>
-            </div>
-
-            {/* Info text */}
-            <span
-              style={{
-                marginLeft: 'auto',
-                color: '#6b7280',
-                fontSize: '1.1rem',
-                fontStyle: 'italic',
-              }}
-            >
-              Configure in Global Auth Panel
-            </span>
-          </div>
-
-          {/* Parameters Group */}
-          {(pathParameters.length > 0 || queryParameters.length > 0) && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-              {pathParameters.length > 0 && (
-                <div>
-                  <div
-                    style={{
-                      color: '#e5e5e5',
-                      fontSize: '1.2rem',
-                      fontWeight: 600,
-                      marginBottom: '0.8rem',
-                      textTransform: 'uppercase',
-                      opacity: 0.7,
-                    }}
-                  >
-                    Path Params
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    {pathParameters.map((p) => (
-                      <ParameterInput
-                        key={p.name}
-                        param={p}
-                        value={pathParams[p.name] || ''}
-                        onChange={(v) => apiTesterStoreActions.setPathParam(p.name, v)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {queryParameters.length > 0 && (
-                <div>
-                  <div
-                    style={{
-                      color: '#e5e5e5',
-                      fontSize: '1.2rem',
-                      fontWeight: 600,
-                      marginBottom: '0.8rem',
-                      textTransform: 'uppercase',
-                      opacity: 0.7,
-                    }}
-                  >
-                    Query Params
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    {queryParameters.map((p) => (
-                      <ParameterInput
-                        key={p.name}
-                        param={p}
-                        value={queryParams[p.name] || ''}
-                        onChange={(v) => apiTesterStoreActions.setQueryParam(p.name, v)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Headers */}
-          <div>
-            <div
-              onClick={() => setShowHeaders(!showHeaders)}
-              style={{
+                padding: '0 1.6rem 1.6rem',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '0.8rem',
-                cursor: 'pointer',
-                marginBottom: '0.6rem',
+                flexDirection: 'column',
+                gap: '1.6rem',
               }}
             >
-              <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>Headers</span>
-              <span
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '1rem',
-                  fontSize: '1rem',
-                  color: '#e5e5e5',
-                }}
-              >
-                {Object.keys(headers).length}
-              </span>
-              {showHeaders ? (
-                <ChevronUp size={12} color='#9ca3af' />
-              ) : (
-                <ChevronDown size={12} color='#9ca3af' />
-              )}
-            </div>
-            {showHeaders && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                {Object.entries(headers).map(([k, v]) => (
-                  <div key={k} style={{ display: 'flex', gap: '0.8rem' }}>
-                    <input readOnly value={k} style={inputStyle} />
-                    <input
-                      value={v}
-                      onChange={(e) => apiTesterStoreActions.setHeader(k, e.target.value)}
-                      style={inputStyle}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Request Body */}
-          {hasRequestBody && (
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '0.8rem',
-                }}
-              >
-                <label style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
-                  Request Body (JSON)
-                </label>
-                <button
-                  onClick={() => {
-                    apiTesterStoreActions.setRequestBody(bodyExample);
-                  }}
-                  title='Reset to default example'
+              {/* Server */}
+              <div>
+                <label
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#f59e0b',
-                    fontSize: '1.2rem',
-                  }}
-                >
-                  <RotateCcw size={12} />
-                  Reset to Default
-                </button>
-              </div>
-              <textarea
-                value={requestBody}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  apiTesterStoreActions.setRequestBody(value);
-                  if (value.trim()) {
-                    try {
-                      JSON.parse(value);
-                      setJsonError(null);
-                    } catch (err) {
-                      setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
-                    }
-                  } else {
-                    setJsonError(null);
-                  }
-                }}
-                rows={8}
-                style={{
-                  width: '100%',
-                  padding: '1.2rem',
-                  backgroundColor: 'rgba(0,0,0,0.2)',
-                  border: `1px solid ${jsonError ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.1)'}`,
-                  borderRadius: '0.6rem',
-                  color: '#e5e5e5',
-                  fontSize: '1.3rem',
-                  fontFamily: 'monospace',
-                  resize: 'vertical',
-                  outline: 'none',
-                }}
-              />
-              {jsonError && (
-                <div
-                  style={{
-                    marginTop: '0.6rem',
-                    padding: '0.8rem',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                    borderRadius: '0.4rem',
-                    color: '#ef4444',
-                    fontSize: '1.2rem',
-                  }}
-                >
-                  Invalid JSON: {jsonError}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Repeat Settings */}
-          <div>
-            <button
-              onClick={() => setShowRepeatSettings(!showRepeatSettings)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.6rem',
-                padding: '0.6rem 1rem',
-                backgroundColor: 'transparent',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '0.4rem',
-                color: requestCount > 1 ? '#f59e0b' : '#9ca3af',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-              }}
-            >
-              <Repeat size={12} />
-              <span>Repeat: {requestCount}x</span>
-              {requestCount > 1 && requestInterval > 0 && (
-                <span style={{ color: '#6b7280' }}>({requestInterval}ms interval)</span>
-              )}
-              {showRepeatSettings ? (
-                <ChevronUp size={12} color='#9ca3af' />
-              ) : (
-                <ChevronDown size={12} color='#9ca3af' />
-              )}
-            </button>
-
-            {showRepeatSettings && (
-              <div
-                style={{
-                  marginTop: '0.8rem',
-                  padding: '1.2rem',
-                  backgroundColor: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '0.6rem',
-                  display: 'flex',
-                  gap: '1.6rem',
-                  alignItems: 'flex-end',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      color: '#9ca3af',
-                      fontSize: '1.1rem',
-                      marginBottom: '0.4rem',
-                    }}
-                  >
-                    Request Count
-                  </label>
-                  <NumberInput value={requestCount} onChange={setRequestCount} min={1} max={100} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      color: '#9ca3af',
-                      fontSize: '1.1rem',
-                      marginBottom: '0.4rem',
-                    }}
-                  >
-                    Interval (ms)
-                  </label>
-                  <NumberInput
-                    value={requestInterval}
-                    onChange={setRequestInterval}
-                    min={0}
-                    max={60000}
-                    step={100}
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setRequestCount(1);
-                    setRequestInterval(0);
-                  }}
-                  style={{
-                    padding: '0.8rem 1.2rem',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '0.4rem',
+                    display: 'block',
                     color: '#9ca3af',
                     fontSize: '1.2rem',
-                    cursor: 'pointer',
+                    fontWeight: 500,
+                    marginBottom: '0.6rem',
                   }}
                 >
-                  Reset
-                </button>
+                  Target Server
+                </label>
+                <FuturSelect
+                  value={selectedServer}
+                  onChange={(val) => apiTesterStoreActions.setSelectedServer(val)}
+                  options={servers.map((s) => ({
+                    label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
+                    value: s.url,
+                  }))}
+                  placeholder='Select a server'
+                />
               </div>
-            )}
-          </div>
 
-          {/* Actions */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingTop: '0.8rem',
-            }}
-          >
-            {/* Clear buttons */}
-            <div style={{ display: 'flex', gap: '0.6rem' }}>
-              <motion.button
-                onClick={handleClearCurrent}
-                disabled={isExecuting}
-                whileHover={
-                  isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.06)' }
-                }
-                whileTap={isExecuting ? {} : { scale: 0.98 }}
-                transition={{ duration: 0.15 }}
+              {/* Auth & Cookies Status (Read-only) */}
+              <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.6rem 1rem',
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '0.4rem',
-                  color: '#9ca3af',
-                  fontSize: '1.2rem',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer',
-                  opacity: isExecuting ? 0.5 : 1,
+                  gap: '1.6rem',
+                  padding: '1rem 1.2rem',
+                  backgroundColor: 'rgba(255,255,255,0.02)',
+                  borderRadius: '0.6rem',
+                  border: '1px solid rgba(255,255,255,0.08)',
                 }}
-                title='Clear current endpoint test data'
               >
-                <RotateCcw size={12} />
-                Clear
-              </motion.button>
-            </div>
+                {/* Auth Status */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Key size={14} color={authConfig.type !== 'none' ? '#22c55e' : '#9ca3af'} />
+                  <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Auth:</span>
+                  <span
+                    style={{
+                      backgroundColor:
+                        authConfig.type !== 'none'
+                          ? 'rgba(34, 197, 94, 0.2)'
+                          : 'rgba(255,255,255,0.1)',
+                      padding: '0.2rem 0.8rem',
+                      borderRadius: '1rem',
+                      fontSize: '1.1rem',
+                      color: authConfig.type !== 'none' ? '#22c55e' : '#9ca3af',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {authConfig.type === 'none' ? 'None' : authConfig.type.toUpperCase()}
+                  </span>
+                </div>
 
-            {/* Execute buttons */}
-            <div style={{ display: 'flex', gap: '0.8rem' }}>
-              {isRepeating && (
-                <button
-                  onClick={handleCancelRepeat}
+                {/* Separator */}
+                <div
+                  style={{
+                    width: '1px',
+                    height: '1.6rem',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                  }}
+                />
+
+                {/* Cookies Status */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Cookie
+                    size={14}
+                    color={customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af'}
+                  />
+                  <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Cookies:</span>
+                  <span
+                    style={{
+                      backgroundColor:
+                        customCookies.length + sessionCookies.length > 0
+                          ? 'rgba(245, 158, 11, 0.2)'
+                          : 'rgba(255,255,255,0.1)',
+                      padding: '0.2rem 0.8rem',
+                      borderRadius: '1rem',
+                      fontSize: '1.1rem',
+                      color:
+                        customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {customCookies.length + sessionCookies.length}
+                  </span>
+                </div>
+
+                {/* Info text */}
+                <span
+                  style={{
+                    marginLeft: 'auto',
+                    color: '#6b7280',
+                    fontSize: '1.1rem',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  Configure in Global Auth Panel
+                </span>
+              </div>
+
+              {/* Parameters Group */}
+              {(pathParameters.length > 0 || queryParameters.length > 0) && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                  {pathParameters.length > 0 && (
+                    <div>
+                      <div
+                        style={{
+                          color: '#e5e5e5',
+                          fontSize: '1.2rem',
+                          fontWeight: 600,
+                          marginBottom: '0.8rem',
+                          textTransform: 'uppercase',
+                          opacity: 0.7,
+                        }}
+                      >
+                        Path Params
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                        {pathParameters.map((p) => (
+                          <ParameterInput
+                            key={p.name}
+                            param={p}
+                            value={pathParams[p.name] || ''}
+                            onChange={(v) => apiTesterStoreActions.setPathParam(p.name, v)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {queryParameters.length > 0 && (
+                    <div>
+                      <div
+                        style={{
+                          color: '#e5e5e5',
+                          fontSize: '1.2rem',
+                          fontWeight: 600,
+                          marginBottom: '0.8rem',
+                          textTransform: 'uppercase',
+                          opacity: 0.7,
+                        }}
+                      >
+                        Query Params
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                        {queryParameters.map((p) => (
+                          <ParameterInput
+                            key={p.name}
+                            param={p}
+                            value={queryParams[p.name] || ''}
+                            onChange={(v) => apiTesterStoreActions.setQueryParam(p.name, v)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Headers */}
+              <div>
+                <div
+                  onClick={() => setShowHeaders(!showHeaders)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.8rem',
-                    padding: '1rem 2rem',
-                    backgroundColor: '#dc2626',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '0.6rem',
-                    fontSize: '1.4rem',
-                    fontWeight: 600,
+                    cursor: 'pointer',
+                    marginBottom: '0.6rem',
+                  }}
+                >
+                  <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+                    Headers
+                  </span>
+                  <span
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '1rem',
+                      fontSize: '1rem',
+                      color: '#e5e5e5',
+                    }}
+                  >
+                    {Object.keys(headers).length}
+                  </span>
+                  {showHeaders ? (
+                    <ChevronUp size={12} color='#9ca3af' />
+                  ) : (
+                    <ChevronDown size={12} color='#9ca3af' />
+                  )}
+                </div>
+                {showHeaders && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {Object.entries(headers).map(([k, v]) => (
+                      <div key={k} style={{ display: 'flex', gap: '0.8rem' }}>
+                        <input readOnly value={k} style={inputStyle} />
+                        <input
+                          value={v}
+                          onChange={(e) => apiTesterStoreActions.setHeader(k, e.target.value)}
+                          style={inputStyle}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Request Body */}
+              {hasRequestBody && (
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.8rem',
+                    }}
+                  >
+                    <label style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+                      Request Body (JSON)
+                    </label>
+                    <button
+                      onClick={() => {
+                        apiTesterStoreActions.setRequestBody(bodyExample);
+                      }}
+                      title='Reset to default example'
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#f59e0b',
+                        fontSize: '1.2rem',
+                      }}
+                    >
+                      <RotateCcw size={12} />
+                      Reset to Default
+                    </button>
+                  </div>
+                  <textarea
+                    value={requestBody}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      apiTesterStoreActions.setRequestBody(value);
+                      if (value.trim()) {
+                        try {
+                          JSON.parse(value);
+                          setJsonError(null);
+                        } catch (err) {
+                          setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
+                        }
+                      } else {
+                        setJsonError(null);
+                      }
+                    }}
+                    rows={8}
+                    style={{
+                      width: '100%',
+                      padding: '1.2rem',
+                      backgroundColor: 'rgba(0,0,0,0.2)',
+                      border: `1px solid ${jsonError ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      borderRadius: '0.6rem',
+                      color: '#e5e5e5',
+                      fontSize: '1.3rem',
+                      fontFamily: 'monospace',
+                      resize: 'vertical',
+                      outline: 'none',
+                    }}
+                  />
+                  {jsonError && (
+                    <div
+                      style={{
+                        marginTop: '0.6rem',
+                        padding: '0.8rem',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        borderRadius: '0.4rem',
+                        color: '#ef4444',
+                        fontSize: '1.2rem',
+                      }}
+                    >
+                      Invalid JSON: {jsonError}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Repeat Settings */}
+              <div>
+                <button
+                  onClick={() => setShowRepeatSettings(!showRepeatSettings)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    padding: '0.6rem 1rem',
+                    backgroundColor: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '0.4rem',
+                    color: requestCount > 1 ? '#f59e0b' : '#9ca3af',
+                    fontSize: '1.2rem',
                     cursor: 'pointer',
                   }}
                 >
-                  Cancel
+                  <Repeat size={12} />
+                  <span>Repeat: {requestCount}x</span>
+                  {requestCount > 1 && requestInterval > 0 && (
+                    <span style={{ color: '#6b7280' }}>({requestInterval}ms interval)</span>
+                  )}
+                  {showRepeatSettings ? (
+                    <ChevronUp size={12} color='#9ca3af' />
+                  ) : (
+                    <ChevronDown size={12} color='#9ca3af' />
+                  )}
                 </button>
-              )}
-              <button
-                onClick={handleExecute}
-                disabled={isExecuting || !!jsonError}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.8rem',
-                  padding: '1rem 2.4rem',
-                  backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '0.6rem',
-                  fontSize: '1.4rem',
-                  fontWeight: 600,
-                  cursor: isExecuting || jsonError ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {isExecuting ? (
-                  <Loader2 size={16} className='animate-spin' />
-                ) : (
-                  <Play size={16} fill='white' />
+
+                {showRepeatSettings && (
+                  <div
+                    style={{
+                      marginTop: '0.8rem',
+                      padding: '1.2rem',
+                      backgroundColor: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '0.6rem',
+                      display: 'flex',
+                      gap: '1.6rem',
+                      alignItems: 'flex-end',
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <label
+                        style={{
+                          display: 'block',
+                          color: '#9ca3af',
+                          fontSize: '1.1rem',
+                          marginBottom: '0.4rem',
+                        }}
+                      >
+                        Request Count
+                      </label>
+                      <NumberInput
+                        value={requestCount}
+                        onChange={setRequestCount}
+                        min={1}
+                        max={100}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label
+                        style={{
+                          display: 'block',
+                          color: '#9ca3af',
+                          fontSize: '1.1rem',
+                          marginBottom: '0.4rem',
+                        }}
+                      >
+                        Interval (ms)
+                      </label>
+                      <NumberInput
+                        value={requestInterval}
+                        onChange={setRequestInterval}
+                        min={0}
+                        max={60000}
+                        step={100}
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        setRequestCount(1);
+                        setRequestInterval(0);
+                      }}
+                      style={{
+                        padding: '0.8rem 1.2rem',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '0.4rem',
+                        color: '#9ca3af',
+                        fontSize: '1.2rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
                 )}
-                {isRepeating
-                  ? `Sending ${currentRequestIndex}/${requestCount}...`
-                  : isExecuting
-                    ? 'Sending...'
-                    : requestCount > 1
-                      ? `Execute ${requestCount}x`
-                      : 'Execute Request'}
-              </button>
-            </div>
-          </div>
+              </div>
 
-          {executeError && (
-            <div
-              style={{
-                padding: '1.2rem',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                borderRadius: '0.6rem',
-                color: '#ef4444',
-                fontSize: '1.3rem',
-              }}
-            >
-              Error: {executeError}
-            </div>
-          )}
-
-          {/* Response area - show only after 300ms loading or when response exists */}
-          {(showSkeleton || response) && (
-            <div
-              style={{
-                marginTop: '0.8rem',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '0.6rem',
-                overflow: 'hidden',
-              }}
-            >
+              {/* Actions */}
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  padding: '1rem 1.2rem',
-                  backgroundColor: 'rgba(255,255,255,0.02)',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  alignItems: 'center',
+                  paddingTop: '0.8rem',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  {showSkeleton && !response ? (
-                    <>
-                      <Loader2 size={14} color='#9ca3af' className='animate-spin' />
-                      <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>Loading...</span>
-                    </>
-                  ) : response ? (
-                    <>
-                      <span
-                        style={{
-                          fontWeight: 700,
-                          fontSize: '1.3rem',
-                          color: getExecuteStatusColor(response.status),
-                        }}
-                      >
-                        {response.status}
-                      </span>
-                      <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>
-                        {response.duration}ms
-                      </span>
-                    </>
-                  ) : null}
-                </div>
-                {response && (
-                  <div style={{ display: 'flex', gap: '0.8rem' }}>
-                    <button onClick={handleCopyResponse} style={iconButtonStyle}>
-                      {copiedResponse ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
-                    <button onClick={apiTesterStoreActions.clearResponse} style={iconButtonStyle}>
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div
-                style={{
-                  padding: '1.2rem',
-                  backgroundColor: 'rgba(0,0,0,0.3)', // Darker well transparency instead of solid black
-                  overflow: 'auto',
-                  height: '300px',
-                }}
-              >
-                {showSkeleton && !response ? (
-                  <div
+                {/* Clear buttons */}
+                <div style={{ display: 'flex', gap: '0.6rem' }}>
+                  <motion.button
+                    onClick={handleClearCurrent}
+                    disabled={isExecuting}
+                    whileHover={
+                      isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.06)' }
+                    }
+                    whileTap={isExecuting ? {} : { scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                      color: '#6b7280',
-                      fontSize: '1.3rem',
-                    }}
-                  >
-                    Waiting for response...
-                  </div>
-                ) : response ? (
-                  <pre
-                    style={{
-                      margin: 0,
+                      gap: '0.4rem',
+                      padding: '0.6rem 1rem',
+                      backgroundColor: 'rgba(0,0,0,0)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '0.4rem',
+                      color: '#9ca3af',
                       fontSize: '1.2rem',
-                      fontFamily: 'monospace',
-                      color: '#e5e5e5',
+                      cursor: isExecuting ? 'not-allowed' : 'pointer',
+                      opacity: isExecuting ? 0.5 : 1,
+                    }}
+                    title='Clear current endpoint test data'
+                  >
+                    <RotateCcw size={12} />
+                    Clear
+                  </motion.button>
+                </div>
+
+                {/* Execute buttons */}
+                <div style={{ display: 'flex', gap: '0.8rem' }}>
+                  {isRepeating && (
+                    <button
+                      onClick={handleCancelRepeat}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.8rem',
+                        padding: '1rem 2rem',
+                        backgroundColor: '#dc2626',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '0.6rem',
+                        fontSize: '1.4rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    onClick={handleExecute}
+                    disabled={isExecuting || !!jsonError}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.8rem',
+                      padding: '1rem 2.4rem',
+                      backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '0.6rem',
+                      fontSize: '1.4rem',
+                      fontWeight: 600,
+                      cursor: isExecuting || jsonError ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {typeof response.data === 'string'
-                      ? response.data
-                      : JSON.stringify(response.data, null, 2)}
-                  </pre>
-                ) : null}
+                    {isExecuting ? (
+                      <Loader2 size={16} className='animate-spin' />
+                    ) : (
+                      <Play size={16} fill='white' />
+                    )}
+                    {isRepeating
+                      ? `Sending ${currentRequestIndex}/${requestCount}...`
+                      : isExecuting
+                        ? 'Sending...'
+                        : requestCount > 1
+                          ? `Execute ${requestCount}x`
+                          : 'Execute Request'}
+                  </button>
+                </div>
               </div>
+
+              {executeError && (
+                <div
+                  style={{
+                    padding: '1.2rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                    borderRadius: '0.6rem',
+                    color: '#ef4444',
+                    fontSize: '1.3rem',
+                  }}
+                >
+                  Error: {executeError}
+                </div>
+              )}
+
+              {/* Response area - show only after 300ms loading or when response exists */}
+              {(showSkeleton || response) && (
+                <div
+                  style={{
+                    marginTop: '0.8rem',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '0.6rem',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      padding: '1rem 1.2rem',
+                      backgroundColor: 'rgba(255,255,255,0.02)',
+                      borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      {showSkeleton && !response ? (
+                        <>
+                          <Loader2 size={14} color='#9ca3af' className='animate-spin' />
+                          <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>Loading...</span>
+                        </>
+                      ) : response ? (
+                        <>
+                          <span
+                            style={{
+                              fontWeight: 700,
+                              fontSize: '1.3rem',
+                              color: getExecuteStatusColor(response.status),
+                            }}
+                          >
+                            {response.status}
+                          </span>
+                          <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>
+                            {response.duration}ms
+                          </span>
+                        </>
+                      ) : null}
+                    </div>
+                    {response && (
+                      <div style={{ display: 'flex', gap: '0.8rem' }}>
+                        <button onClick={handleCopyResponse} style={iconButtonStyle}>
+                          {copiedResponse ? <Check size={14} /> : <Copy size={14} />}
+                        </button>
+                        <button
+                          onClick={apiTesterStoreActions.clearResponse}
+                          style={iconButtonStyle}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      padding: '1.2rem',
+                      backgroundColor: 'rgba(0,0,0,0.3)', // Darker well transparency instead of solid black
+                      overflow: 'auto',
+                      height: '300px',
+                    }}
+                  >
+                    {showSkeleton && !response ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%',
+                          color: '#6b7280',
+                          fontSize: '1.3rem',
+                        }}
+                      >
+                        Waiting for response...
+                      </div>
+                    ) : response ? (
+                      <pre
+                        style={{
+                          margin: 0,
+                          fontSize: '1.2rem',
+                          fontFamily: 'monospace',
+                          color: '#e5e5e5',
+                        }}
+                      >
+                        {typeof response.data === 'string'
+                          ? response.data
+                          : JSON.stringify(response.data, null, 2)}
+                      </pre>
+                    ) : null}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

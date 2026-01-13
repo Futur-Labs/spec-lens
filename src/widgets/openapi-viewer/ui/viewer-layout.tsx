@@ -123,7 +123,7 @@ export function ViewerLayout() {
           top: 0,
           left: 0,
           right: 0,
-          height: '56px',
+          height: '5.6rem',
           display: 'none',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -412,7 +412,7 @@ function EmptyState() {
       >
         Select an endpoint
       </h2>
-      <p style={{ color: '#6b7280', fontSize: '1.4rem', maxWidth: '300px' }}>
+      <p style={{ color: '#6b7280', fontSize: '1.4rem', maxWidth: '30rem' }}>
         Choose an endpoint from the sidebar to view its documentation and test the API.
       </p>
     </div>
