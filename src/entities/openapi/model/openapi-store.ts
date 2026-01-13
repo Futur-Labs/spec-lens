@@ -18,6 +18,9 @@ const initialState: OpenAPIState = {
   selectedEndpoint: null,
   isLoading: false,
   error: null,
+  isRefreshing: false,
+  lastRefreshTime: null,
+  refreshError: null,
   searchQuery: '',
   selectedTags: [],
   selectedMethods: [],
@@ -42,6 +45,9 @@ export const useOpenAPIStore = create<OpenAPIStore>()(
             tags,
             error: null,
             isLoading: false,
+            isRefreshing: false,
+            lastRefreshTime: Date.now(),
+            refreshError: null,
             selectedEndpoint: null,
             expandedTags: tags,
           });
@@ -56,6 +62,15 @@ export const useOpenAPIStore = create<OpenAPIStore>()(
         setLoading: (isLoading) => set({ isLoading }),
 
         setError: (error) => set({ error, isLoading: false }),
+
+        setRefreshing: (isRefreshing) => set({ isRefreshing }),
+
+        setRefreshError: (refreshError) => set({ refreshError, isRefreshing: false }),
+
+        updateSpecSource: (sourceUpdate) =>
+          set((state) => ({
+            specSource: state.specSource ? { ...state.specSource, ...sourceUpdate } : null,
+          })),
 
         selectEndpoint: (path, method) => {
           set({ selectedEndpoint: { path, method } });
@@ -180,6 +195,9 @@ export const useSelectedTags = () => useOpenAPIStore((state) => state.selectedTa
 export const useSelectedMethods = () => useOpenAPIStore((state) => state.selectedMethods);
 export const useIsSidebarOpen = () => useOpenAPIStore((state) => state.isSidebarOpen);
 export const useExpandedTags = () => useOpenAPIStore((state) => state.expandedTags);
+export const useIsRefreshing = () => useOpenAPIStore((state) => state.isRefreshing);
+export const useLastRefreshTime = () => useOpenAPIStore((state) => state.lastRefreshTime);
+export const useRefreshError = () => useOpenAPIStore((state) => state.refreshError);
 
 // Hydration hook for SSR - uses persist's built-in hydration tracking
 const emptySubscribe = () => () => {};

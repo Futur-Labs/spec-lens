@@ -38,14 +38,23 @@ export function UrlInputForm() {
     try {
       let json: unknown;
 
+      let etag: string | null = null;
+      let lastModified: string | null = null;
+
       if (isRelativePath) {
         const response = await axios.get<unknown>(url.trim(), {
           headers: { Accept: 'application/json' },
         });
         json = response.data;
+        // Extract ETag/Last-Modified from relative path requests too
+        etag = response.headers['etag'] || null;
+        lastModified = response.headers['last-modified'] || null;
       } else {
         // External URL: use server function to bypass CORS
-        json = await fetchExternalSpec({ data: { url: url.trim() } });
+        const result = await fetchExternalSpec({ data: { url: url.trim() } });
+        json = result.data;
+        etag = result.etag;
+        lastModified = result.lastModified;
       }
 
       const validation = validateOpenAPISpec(json);
@@ -53,7 +62,12 @@ export function UrlInputForm() {
         throw new Error(validation.error);
       }
 
-      openAPIStoreActions.setSpec(json as OpenAPISpec, { type: 'url', name: url });
+      openAPIStoreActions.setSpec(json as OpenAPISpec, {
+        type: 'url',
+        name: url,
+        etag,
+        lastModified,
+      });
       setUrl('');
     } catch (err) {
       let message = 'Failed to fetch spec';

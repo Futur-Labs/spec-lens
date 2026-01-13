@@ -35,6 +35,7 @@ export type {
   OpenAPIState,
   OpenAPIActions,
   OpenAPIStore,
+  RefreshResult,
 } from './model/openapi-store-types.ts';
 
 // Parser utilities
@@ -68,5 +69,8 @@ export {
   useSelectedMethods,
   useIsSidebarOpen,
   useExpandedTags,
+  useIsRefreshing,
+  useLastRefreshTime,
+  useRefreshError,
   useOpenAPIStoreHydration,
 } from './model/openapi-store.ts';
