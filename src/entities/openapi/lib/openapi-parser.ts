@@ -5,6 +5,9 @@ import {
   type HttpMethod,
   type SchemaObject,
   type ReferenceObject,
+  type MediaTypeObject,
+  type ExampleObject,
+  type ParameterObject,
   HTTP_METHODS,
   isReferenceObject,
 } from '../model/openapi-types.ts';
@@ -316,4 +319,97 @@ export function generateExample(
 export function getSchemaExample(schema: SchemaObject): unknown {
   // Simple non-recursive fallback for legacy calls without spec
   return generateExample(schema, { openapi: '3.0.0', info: {} as any, paths: {} });
+}
+
+/**
+ * Extract example value from MediaTypeObject
+ * Priority: example (singular) > first value from examples (plural)
+ * If examples value is a JSON string, parse it
+ */
+export function getExampleFromMediaType(mediaType: MediaTypeObject | undefined): unknown {
+  if (!mediaType) return null;
+
+  // 1. Use example (singular) first
+  if (mediaType.example !== undefined) {
+    return mediaType.example;
+  }
+
+  // 2. Use first value from examples (plural)
+  if (mediaType.examples) {
+    const exampleKeys = Object.keys(mediaType.examples);
+    if (exampleKeys.length > 0) {
+      const firstExample = mediaType.examples[exampleKeys[0]];
+
+      // Skip if ReferenceObject (could be extended to resolve refs if needed)
+      if (firstExample && '$ref' in firstExample) {
+        return null;
+      }
+
+      const exampleObj = firstExample as ExampleObject;
+      if (exampleObj.value !== undefined) {
+        // Try to parse if value is a JSON string
+        if (typeof exampleObj.value === 'string') {
+          try {
+            return JSON.parse(exampleObj.value);
+          } catch {
+            // Return original string if parse fails
+            return exampleObj.value;
+          }
+        }
+        return exampleObj.value;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract example value from ParameterObject
+ * Priority: example (singular) > first value from examples (plural) > content example
+ * If examples value is a JSON string, parse it
+ */
+export function getExampleFromParameter(param: ParameterObject | undefined): unknown {
+  if (!param) return null;
+
+  // 1. Use example (singular) first
+  if (param.example !== undefined) {
+    return param.example;
+  }
+
+  // 2. Use first value from examples (plural)
+  if (param.examples) {
+    const exampleKeys = Object.keys(param.examples);
+    if (exampleKeys.length > 0) {
+      const firstExample = param.examples[exampleKeys[0]];
+
+      // Skip if ReferenceObject
+      if (firstExample && '$ref' in firstExample) {
+        return null;
+      }
+
+      const exampleObj = firstExample as ExampleObject;
+      if (exampleObj.value !== undefined) {
+        // Try to parse if value is a JSON string
+        if (typeof exampleObj.value === 'string') {
+          try {
+            return JSON.parse(exampleObj.value);
+          } catch {
+            return exampleObj.value;
+          }
+        }
+        return exampleObj.value;
+      }
+    }
+  }
+
+  // 3. Check content (for parameters with complex types)
+  if (param.content) {
+    const mediaType = param.content['application/json'] || Object.values(param.content)[0];
+    if (mediaType) {
+      return getExampleFromMediaType(mediaType);
+    }
+  }
+
+  return null;
 }

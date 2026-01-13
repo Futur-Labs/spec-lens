@@ -14,6 +14,7 @@ import {
   MethodBadge,
   SchemaViewer,
   generateExample,
+  getExampleFromMediaType,
 } from '@/entities/openapi';
 import { TryItPanel } from '@/features/api-tester';
 import { FormattedText } from '@/shared/ui/formatted-text';
@@ -179,8 +180,43 @@ export function EndpointDetail({
       {/* Request Body Section */}
       {requestBodyContent?.schema && (
         <Section title='Request Body'>
+          <div
+            style={{
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '1.1rem',
+                color: '#9ca3af',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                fontWeight: 600,
+              }}
+            >
+              Content-Type:
+            </span>
+            <span
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.08)',
+                padding: '0.2rem 0.6rem',
+                borderRadius: '0.4rem',
+                color: '#e5e5e5',
+                fontFamily: 'monospace',
+                fontSize: '1.2rem',
+              }}
+            >
+              application/json
+            </span>
+          </div>
           <JsonActionWrapper
-            data={generateExample(requestBodyContent.schema, spec)}
+            data={
+              getExampleFromMediaType(requestBodyContent) ||
+              generateExample(requestBodyContent.schema, spec)
+            }
             defaultView='schema'
           >
             <SchemaViewer schema={requestBodyContent.schema} spec={spec} />
@@ -311,10 +347,12 @@ function ParameterGroup({
         style={{
           color: '#e5e5e5', // Lighter gray
           fontSize: '1.2rem',
-          fontWeight: 500,
+          fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          marginBottom: '0.8rem',
+          marginBottom: '1rem',
+          paddingLeft: '0.8rem',
+          borderLeft: '2px solid #3b82f6',
         }}
       >
         {title}
@@ -322,64 +360,108 @@ function ParameterGroup({
       <JsonActionWrapper data={paramExample}>
         <div
           style={{
-            // Removed outer style as JsonActionWrapper handles the container style for the schema view?
-            // Wait, JsonActionWrapper puts children in a padded container.
-            // But ParameterGroup used to have a list style.
-            // I should make children just the list of parameters.
-            // However, the original design had the container around the list.
-            // JsonActionWrapper provides a container for children.
-            // So I just need to return the list items here.
             display: 'flex',
             flexDirection: 'column',
+            backgroundColor: 'rgba(255,255,255,0.02)',
+            borderRadius: '0.8rem',
+            border: '1px solid rgba(255,255,255,0.05)',
+            overflow: 'hidden',
           }}
         >
+          {/* Table Header */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(150px, 2fr) 1fr 3fr',
+              gap: '1.6rem',
+              padding: '1rem 1.6rem',
+              backgroundColor: 'rgba(255,255,255,0.04)',
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+              color: '#9ca3af',
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            <div>Name</div>
+            <div style={{ textAlign: 'center' }}>Type</div>
+            <div>Description</div>
+          </div>
+
+          {/* Table Body */}
           {params.map((param, index) => (
             <div
               key={param.name}
               style={{
-                padding: '1.2rem 0', // Vertical padding only, horizontal handled by wrapper
+                display: 'grid',
+                gridTemplateColumns: 'minmax(150px, 2fr) 1fr 3fr',
+                gap: '1.6rem',
+                padding: '1.2rem 1.6rem',
                 borderBottom:
                   index < params.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                fontSize: '1.3rem',
+                alignItems: 'start', // Align items to top for multiline descriptions
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.8rem',
-                  marginBottom: '0.4rem',
-                }}
-              >
-                <span
-                  style={{
-                    color: '#f3f4f6', // Gray-100
-                    fontSize: '1.3rem',
-                    fontFamily: 'monospace',
-                  }}
-                >
-                  {param.name}
-                </span>
-                {param.required && (
-                  <span style={{ color: '#ef4444', fontSize: '1.2rem' }}>required</span>
-                )}
+              {/* Name Column */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span
+                    style={{
+                      color: '#f3f4f6',
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {param.name}
+                  </span>
+                  {param.required && (
+                    <span
+                      style={{
+                        fontSize: '1rem',
+                        color: '#ef4444',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        padding: '0.1rem 0.6rem',
+                        borderRadius: '0.4rem',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Required
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Type Column */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {param.schema && !isReferenceObject(param.schema) && param.schema.type && (
                   <span
                     style={{
-                      color: '#9ca3af',
-                      fontSize: '1.2rem',
+                      display: 'inline-block',
+                      backgroundColor: 'rgba(255,255,255,0.08)',
+                      padding: '0.2rem 0.8rem',
+                      borderRadius: '1rem',
+                      color: getTypeColor(param.schema.type),
                       fontFamily: 'monospace',
+                      fontSize: '1.1rem',
+                      fontWeight: 500,
                     }}
                   >
                     {param.schema.type}
                   </span>
                 )}
               </div>
-              {param.description && (
-                <p style={{ color: '#d1d5db', fontSize: '1.2rem', margin: 0 }}>
-                  {/* Light gray desc */}
+
+              {/* Description Column */}
+              <div style={{ color: '#d1d5db', lineHeight: 1.5, fontSize: '1.2rem' }}>
+                {param.description ? (
                   <FormattedText text={param.description} />
-                </p>
-              )}
+                ) : (
+                  <span style={{ color: '#6b7280', fontStyle: 'italic' }}>No description</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -407,7 +489,7 @@ function ResponseItem({
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255,255,255,0.04)', // Slightly lighter
+        backgroundColor: 'rgba(255,255,255,0.02)', // Even more subtle background
         borderRadius: '0.8rem',
         border: '1px solid rgba(255,255,255,0.08)',
         overflow: 'hidden',
@@ -419,7 +501,7 @@ function ResponseItem({
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          gap: '1.2rem',
+          gap: '1.6rem',
           padding: '1.2rem 1.6rem',
           backgroundColor: 'transparent',
           border: 'none',
@@ -430,21 +512,29 @@ function ResponseItem({
         <motion.div
           animate={{ rotate: isExpanded ? 0 : -90 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          style={{ display: 'flex', alignItems: 'center' }}
+          style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
         >
           <ChevronDown size={14} color={isExpanded ? '#9ca3af' : '#6b7280'} />
         </motion.div>
+
         <span
           style={{
+            backgroundColor: `${statusColor}20`, // 20% opacity of status color
             color: statusColor,
-            fontSize: '1.4rem',
-            fontWeight: 600,
+            fontSize: '1.3rem',
+            fontWeight: 700,
             fontFamily: 'monospace',
+            padding: '0.3rem 0.8rem',
+            borderRadius: '0.6rem',
+            border: `1px solid ${statusColor}40`,
+            minWidth: '6rem',
+            textAlign: 'center',
           }}
         >
           {statusCode}
         </span>
-        <span style={{ color: '#f3f4f6', fontSize: '1.3rem' }}>
+
+        <span style={{ color: '#e5e5e5', fontSize: '1.3rem', flex: 1, fontWeight: 500 }}>
           <FormattedText text={response.description} />
         </span>
         {/* White response desc */}
@@ -466,7 +556,13 @@ function ResponseItem({
               }}
             >
               <div style={{ paddingTop: '1.2rem' }}>
-                <JsonActionWrapper data={generateExample(schema, spec)} defaultView='schema'>
+                <JsonActionWrapper
+                  data={
+                    getExampleFromMediaType(response.content?.['application/json']) ||
+                    generateExample(schema, spec)
+                  }
+                  defaultView='schema'
+                >
                   <SchemaViewer schema={schema} spec={spec} />
                 </JsonActionWrapper>
               </div>
@@ -485,4 +581,22 @@ function getStatusCodeColor(statusCode: string): string {
   if (code >= 400 && code < 500) return '#f59e0b';
   if (code >= 500) return '#ef4444';
   return '#6b7280';
+}
+
+function getTypeColor(type?: string): string {
+  switch (type) {
+    case 'string':
+      return '#34d399'; // emerald-400
+    case 'number':
+    case 'integer':
+      return '#22d3ee'; // cyan-400 (Bright Cyan)
+    case 'boolean':
+      return '#fbbf24'; // amber-400
+    case 'array':
+      return '#facc15'; // yellow-400 (Bright Yellow)
+    case 'object':
+      return '#f472b6'; // pink-400
+    default:
+      return '#9ca3af'; // gray-400
+  }
 }

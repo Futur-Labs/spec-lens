@@ -40,6 +40,8 @@ import {
   type ParameterObject,
   type ParsedEndpoint,
   generateExample,
+  getExampleFromMediaType,
+  getExampleFromParameter,
   getMergedParameters,
   isReferenceObject,
   useSpecSource,
@@ -96,9 +98,20 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
       return '';
 
     const content = endpoint.operation.requestBody.content?.['application/json'];
-    if (content?.schema) {
-      const example = generateExample(content.schema, spec);
-      return example ? JSON.stringify(example, null, 2) : '';
+    if (content) {
+      // Check examples field first (handles both example and examples)
+      const mediaTypeExample = getExampleFromMediaType(content);
+      if (mediaTypeExample !== null) {
+        return typeof mediaTypeExample === 'string'
+          ? mediaTypeExample
+          : JSON.stringify(mediaTypeExample, null, 2);
+      }
+
+      // Fallback: generate from schema
+      if (content.schema) {
+        const generated = generateExample(content.schema, spec);
+        return generated ? JSON.stringify(generated, null, 2) : '';
+      }
     }
     return '';
   })();
@@ -127,15 +140,30 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
     // Load saved params for current endpoint
     const hasData = apiTesterStoreActions.loadSavedParams(specSourceId, currentEndpointKey);
 
-    // If no saved data, reset and generate example
+    // If no saved data, reset and initialize with examples from OpenAPI spec
     if (!hasData) {
       apiTesterStoreActions.resetParams();
       if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
+
+      // Initialize path and query params with examples from OpenAPI spec
+      const merged = getMergedParameters(endpoint);
+      const params = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
+      for (const param of params) {
+        const example = getExampleFromParameter(param);
+        if (example !== null) {
+          const exampleStr = typeof example === 'string' ? example : String(example);
+          if (param.in === 'path') {
+            apiTesterStoreActions.setPathParam(param.name, exampleStr);
+          } else if (param.in === 'query') {
+            apiTesterStoreActions.setQueryParam(param.name, exampleStr);
+          }
+        }
+      }
     }
 
     prevEndpointRef.current = currentEndpointKey;
     isInitialMount.current = false;
-  }, [endpoint.path, endpoint.method, specSourceId, bodyExample]);
+  }, [endpoint.path, endpoint.method, specSourceId, bodyExample, endpoint]);
 
   // Auto-save params on change (debounced)
   useEffect(() => {

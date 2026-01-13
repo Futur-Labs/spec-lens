@@ -4,9 +4,12 @@ import type { EndpointTestData, PersistedTestParams, ResponseState } from './api
 
 // ========== Storage Helpers ==========
 
+// Storage version - increment when data format changes to invalidate old data
+const STORAGE_VERSION = 2; // v2: Added OpenAPI example support
+
 // Generate storage key for spec-specific test params
 function getTestParamsStorageKey(specSourceId: string): string {
-  return `api-tester-params-${specSourceId}`;
+  return `api-tester-params-v${STORAGE_VERSION}-${specSourceId}`;
 }
 
 // Load all persisted test params for a spec

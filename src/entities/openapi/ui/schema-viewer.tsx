@@ -78,7 +78,7 @@ export function SchemaViewer({
     container: {
       marginLeft: depth > 0 ? '1.6rem' : 0,
       paddingLeft: depth > 0 ? '1.2rem' : 0,
-      borderLeft: depth > 0 ? '1px solid #e5e7eb' : 'none', // gray-200
+      borderLeft: depth > 0 ? '1px solid rgba(255,255,255,0.1)' : 'none', // Subtle white for dark mode
       fontSize: '1.4rem',
       position: 'relative' as const,
     },
@@ -114,11 +114,26 @@ export function SchemaViewer({
       fontFamily: 'monospace',
       fontSize: '1.4rem',
       fontWeight: 500,
-      color: '#e5e5e5', // gray-200 (light for dark mode)
+      color: '#e5e5e5', // gray-200
     },
-    required: {
-      color: '#ef4444', // red-500
-      marginLeft: '0.2rem',
+    requiredBadge: {
+      fontSize: '1rem',
+      color: '#ef4444',
+      border: '1px solid rgba(239, 68, 68, 0.3)',
+      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+      padding: '0.1rem 0.5rem',
+      borderRadius: '0.4rem',
+      fontWeight: 500,
+      marginLeft: '0.6rem',
+    },
+    typeBadge: {
+      display: 'inline-block',
+      padding: '0.1rem 0.6rem',
+      borderRadius: '0.4rem',
+      fontSize: '1.1rem',
+      fontWeight: 500,
+      fontFamily: 'monospace',
+      backgroundColor: 'rgba(255,255,255,0.08)',
     },
     typeInfo: {
       display: 'flex',
@@ -129,7 +144,6 @@ export function SchemaViewer({
     },
     typeText: {
       color: typeColor,
-      fontWeight: 500,
     },
     refName: {
       color: '#6366f1', // indigo-500
@@ -139,8 +153,8 @@ export function SchemaViewer({
       fontSize: '1rem',
       textTransform: 'uppercase' as const,
       fontWeight: 'bold' as const,
-      color: '#6b7280', // gray-500
-      backgroundColor: '#f3f4f6', // gray-100
+      color: '#9ca3af', // gray-400
+      backgroundColor: 'rgba(255, 255, 255, 0.08)', // Darker background
       borderRadius: '0.2rem',
     },
     validation: {
@@ -166,9 +180,9 @@ export function SchemaViewer({
       borderRadius: '0.2rem',
       fontSize: '1rem',
       fontFamily: 'monospace',
-      backgroundColor: '#fffbeb', // yellow-50
-      color: '#b45309', // yellow-700
-      border: '1px solid #fef3c7', // yellow-100
+      backgroundColor: 'rgba(251, 191, 36, 0.1)', // amber-400 with opacity
+      color: '#fbbf24', // amber-400
+      border: '1px solid rgba(251, 191, 36, 0.2)',
     },
   };
 
@@ -199,12 +213,14 @@ export function SchemaViewer({
             {name && (
               <span style={styles.name}>
                 {name}
-                {required && <span style={styles.required}>*</span>}
+                {required && <span style={styles.requiredBadge}>Required</span>}
               </span>
             )}
 
             <div style={styles.typeInfo}>
-              <span style={styles.typeText}>{typeDisplay}</span>
+              <span style={styles.typeBadge}>
+                <span style={styles.typeText}>{typeDisplay}</span>
+              </span>
               {refName && <span style={styles.refName}>({refName})</span>}
             </div>
 
@@ -343,17 +359,17 @@ export function SchemaViewer({
 function getTypeColor(type?: string): string {
   switch (type) {
     case 'string':
-      return '#059669'; // emerald-600
+      return '#34d399'; // emerald-400
     case 'number':
     case 'integer':
-      return '#2563eb'; // blue-600
+      return '#22d3ee'; // cyan-400 (Bright Cyan)
     case 'boolean':
-      return '#d97706'; // amber-600
+      return '#fbbf24'; // amber-400
     case 'array':
-      return '#7c3aed'; // violet-600
+      return '#facc15'; // yellow-400 (Bright Yellow)
     case 'object':
-      return '#db2777'; // pink-600
+      return '#f472b6'; // pink-400
     default:
-      return '#6b7280'; // gray-500
+      return '#9ca3af'; // gray-400
   }
 }

@@ -51,6 +51,8 @@ export {
   getMethodColor,
   getSchemaExample,
   generateExample,
+  getExampleFromMediaType,
+  getExampleFromParameter,
 } from './lib/openapi-parser.ts';
 
 // Store
