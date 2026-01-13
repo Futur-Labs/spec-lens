@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Check, ChevronDown, ChevronUp, Cookie, Key, Plus, Shield, Trash2, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Cookie,
+  Key,
+  Plus,
+  Shield,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 import {
   apiTesterStoreActions,
   type AuthType,
+  getCookieExpirationInfo,
   useAuthConfig,
   useCustomCookies,
   useSessionCookies,
@@ -432,6 +445,21 @@ function CookiesTab() {
   const sessionCookies = useSessionCookies();
   const [newCookieName, setNewCookieName] = useState('');
   const [newCookieValue, setNewCookieValue] = useState('');
+  const [, forceUpdate] = useState(0);
+
+  // Auto-check for expired cookies every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const removedCount = apiTesterStoreActions.removeExpiredCookies();
+      if (removedCount > 0) {
+        console.log(`[API Tester] Removed ${removedCount} expired session cookie(s)`);
+      }
+      // Force re-render to update expiration times
+      forceUpdate((n) => n + 1);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAddCookie = () => {
     if (newCookieName.trim() && newCookieValue.trim()) {
@@ -524,6 +552,7 @@ function CookiesTab() {
             </span>
             <button
               onClick={() => apiTesterStoreActions.clearSessionCookies()}
+              title='Clear local display only - does not affect server session'
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -538,8 +567,20 @@ function CookiesTab() {
               }}
             >
               <Trash2 size={10} />
-              Clear
+              Clear Display
             </button>
+          </div>
+          <div
+            style={{
+              padding: '0.6rem 0.8rem',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              border: '1px solid rgba(245, 158, 11, 0.2)',
+              borderRadius: '0.4rem',
+              fontSize: '1rem',
+              color: '#fbbf24',
+            }}
+          >
+            ⚠️ These cookies are managed by the server. Clearing only hides them from display.
           </div>
           <div
             style={{
@@ -552,86 +593,119 @@ function CookiesTab() {
               borderRadius: '0.6rem',
             }}
           >
-            {sessionCookies.map((cookie, index) => (
-              <div
-                key={index}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.8rem',
-                  padding: '0.6rem 0.8rem',
-                  backgroundColor: 'rgba(0,0,0,0.2)',
-                  borderRadius: '0.4rem',
-                }}
-              >
-                <span
+            {sessionCookies.map((cookie, index) => {
+              const expirationInfo = getCookieExpirationInfo(cookie);
+              return (
+                <div
+                  key={index}
                   style={{
-                    color: '#22c55e',
-                    fontSize: '1.2rem',
-                    fontFamily: 'monospace',
-                    fontWeight: 500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.8rem',
+                    padding: '0.6rem 0.8rem',
+                    backgroundColor: expirationInfo.isExpiringSoon
+                      ? 'rgba(245, 158, 11, 0.1)'
+                      : 'rgba(0,0,0,0.2)',
+                    borderRadius: '0.4rem',
+                    border: expirationInfo.isExpiringSoon
+                      ? '1px solid rgba(245, 158, 11, 0.3)'
+                      : 'none',
                   }}
                 >
-                  {cookie.name}
-                </span>
-                <span style={{ color: '#6b7280', fontSize: '1.2rem' }}>=</span>
-                <span
-                  style={{
-                    flex: 1,
-                    color: '#e5e5e5',
-                    fontSize: '1.2rem',
-                    fontFamily: 'monospace',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                  title={cookie.value}
-                >
-                  {cookie.value.length > 50 ? `${cookie.value.slice(0, 50)}...` : cookie.value}
-                </span>
-                <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
-                  {cookie.httpOnly && (
-                    <span
-                      style={{
-                        padding: '0.2rem 0.4rem',
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                        borderRadius: '0.3rem',
-                        fontSize: '0.9rem',
-                        color: '#f87171',
-                      }}
-                    >
-                      HttpOnly
-                    </span>
-                  )}
-                  {cookie.secure && (
-                    <span
-                      style={{
-                        padding: '0.2rem 0.4rem',
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderRadius: '0.3rem',
-                        fontSize: '0.9rem',
-                        color: '#60a5fa',
-                      }}
-                    >
-                      Secure
-                    </span>
-                  )}
-                  {cookie.path && (
-                    <span
-                      style={{
-                        padding: '0.2rem 0.4rem',
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                        borderRadius: '0.3rem',
-                        fontSize: '0.9rem',
-                        color: '#9ca3af',
-                      }}
-                    >
-                      {cookie.path}
-                    </span>
-                  )}
+                  <span
+                    style={{
+                      color: '#22c55e',
+                      fontSize: '1.2rem',
+                      fontFamily: 'monospace',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {cookie.name}
+                  </span>
+                  <span style={{ color: '#6b7280', fontSize: '1.2rem' }}>=</span>
+                  <span
+                    style={{
+                      flex: 1,
+                      color: '#e5e5e5',
+                      fontSize: '1.2rem',
+                      fontFamily: 'monospace',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={cookie.value}
+                  >
+                    {cookie.value.length > 50 ? `${cookie.value.slice(0, 50)}...` : cookie.value}
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                    {/* Expiration badge */}
+                    {expirationInfo.expiresIn && (
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          padding: '0.2rem 0.4rem',
+                          backgroundColor: expirationInfo.isExpiringSoon
+                            ? 'rgba(245, 158, 11, 0.2)'
+                            : 'rgba(34, 197, 94, 0.2)',
+                          borderRadius: '0.3rem',
+                          fontSize: '0.9rem',
+                          color: expirationInfo.isExpiringSoon ? '#fbbf24' : '#22c55e',
+                        }}
+                        title={cookie.expires}
+                      >
+                        {expirationInfo.isExpiringSoon ? (
+                          <AlertTriangle size={10} />
+                        ) : (
+                          <Clock size={10} />
+                        )}
+                        {expirationInfo.expiresIn}
+                      </span>
+                    )}
+                    {cookie.httpOnly && (
+                      <span
+                        style={{
+                          padding: '0.2rem 0.4rem',
+                          backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                          borderRadius: '0.3rem',
+                          fontSize: '0.9rem',
+                          color: '#f87171',
+                        }}
+                      >
+                        HttpOnly
+                      </span>
+                    )}
+                    {cookie.secure && (
+                      <span
+                        style={{
+                          padding: '0.2rem 0.4rem',
+                          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                          borderRadius: '0.3rem',
+                          fontSize: '0.9rem',
+                          color: '#60a5fa',
+                        }}
+                      >
+                        Secure
+                      </span>
+                    )}
+                    {cookie.path && (
+                      <span
+                        style={{
+                          padding: '0.2rem 0.4rem',
+                          backgroundColor: 'rgba(255,255,255,0.1)',
+                          borderRadius: '0.3rem',
+                          fontSize: '0.9rem',
+                          color: '#9ca3af',
+                        }}
+                      >
+                        {cookie.path}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

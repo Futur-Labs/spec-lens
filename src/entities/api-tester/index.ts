@@ -30,4 +30,8 @@ export {
   useResponse,
   useIsExecuting,
   useExecuteError,
+  // Cookie expiration utilities
+  isCookieExpired,
+  isCookieExpiringSoon,
+  getCookieExpirationInfo,
 } from './model/api-tester-store.ts';

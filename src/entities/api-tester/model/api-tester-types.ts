@@ -122,6 +122,7 @@ export interface ApiTesterActions {
   setSessionCookies: (cookies: SessionCookie[]) => void;
   addSessionCookies: (cookies: SessionCookie[]) => void;
   clearSessionCookies: () => void;
+  removeExpiredCookies: () => number; // Returns count of removed cookies
   // Request params
   setPathParam: (key: string, value: string) => void;
   setQueryParam: (key: string, value: string) => void;

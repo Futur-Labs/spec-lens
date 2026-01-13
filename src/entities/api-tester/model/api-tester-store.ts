@@ -10,6 +10,64 @@ import {
   type HistoryEntry,
 } from './api-tester-types.ts';
 
+// Check if a cookie is expired based on its expires field
+export function isCookieExpired(cookie: SessionCookie): boolean {
+  if (!cookie.expires) return false;
+  const expiresDate = new Date(cookie.expires);
+  return expiresDate.getTime() < Date.now();
+}
+
+// Check if a cookie will expire soon (within specified minutes, default 5 minutes)
+export function isCookieExpiringSoon(cookie: SessionCookie, withinMinutes = 5): boolean {
+  if (!cookie.expires) return false;
+  const expiresDate = new Date(cookie.expires);
+  const warningThreshold = Date.now() + withinMinutes * 60 * 1000;
+  return expiresDate.getTime() < warningThreshold && expiresDate.getTime() > Date.now();
+}
+
+// Get time until cookie expires in a human-readable format
+export function getCookieExpirationInfo(cookie: SessionCookie): {
+  isExpired: boolean;
+  isExpiringSoon: boolean;
+  expiresIn: string | null;
+} {
+  if (!cookie.expires) {
+    return { isExpired: false, isExpiringSoon: false, expiresIn: null };
+  }
+
+  const expiresDate = new Date(cookie.expires);
+  const now = Date.now();
+  const diff = expiresDate.getTime() - now;
+
+  if (diff <= 0) {
+    return { isExpired: true, isExpiringSoon: false, expiresIn: 'Expired' };
+  }
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  let expiresIn: string;
+  if (days > 0) {
+    expiresIn = `${days}d`;
+  } else if (hours > 0) {
+    expiresIn = `${hours}h`;
+  } else {
+    expiresIn = `${minutes}m`;
+  }
+
+  return {
+    isExpired: false,
+    isExpiringSoon: minutes < 5,
+    expiresIn,
+  };
+}
+
+// Filter out expired cookies from an array
+function filterExpiredCookies(cookies: SessionCookie[]): SessionCookie[] {
+  return cookies.filter((cookie) => !isCookieExpired(cookie));
+}
+
 // Load persisted auth config from localStorage
 function loadPersistedAuthConfig(): AuthConfig {
   if (typeof window === 'undefined') return DEFAULT_AUTH_CONFIG;
@@ -60,11 +118,39 @@ function saveCookies(cookies: CustomCookie[]): void {
   localStorage.setItem('api-tester-cookies', JSON.stringify(cookies));
 }
 
+// Load persisted session cookies from localStorage (auto-filters expired cookies)
+function loadPersistedSessionCookies(): SessionCookie[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = localStorage.getItem('api-tester-session-cookies');
+    if (stored) {
+      const cookies = JSON.parse(stored) as SessionCookie[];
+      // Filter out expired cookies on load
+      const validCookies = filterExpiredCookies(cookies);
+      // If some cookies were expired, update localStorage
+      if (validCookies.length !== cookies.length) {
+        saveSessionCookies(validCookies);
+      }
+      return validCookies;
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return [];
+}
+
+// Save session cookies to localStorage
+function saveSessionCookies(cookies: SessionCookie[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('api-tester-session-cookies', JSON.stringify(cookies));
+}
+
 const initialState: ApiTesterState = {
   selectedServer: '',
   authConfig: loadPersistedAuthConfig(),
   customCookies: loadPersistedCookies(),
-  sessionCookies: [],
+  sessionCookies: loadPersistedSessionCookies(),
   pathParams: {},
   queryParams: {},
   headers: {
@@ -124,7 +210,10 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
         return { customCookies: [] };
       }),
 
-    setSessionCookies: (cookies: SessionCookie[]) => set({ sessionCookies: cookies }),
+    setSessionCookies: (cookies: SessionCookie[]) => {
+      saveSessionCookies(cookies);
+      return set({ sessionCookies: cookies });
+    },
 
     addSessionCookies: (cookies: SessionCookie[]) =>
       set((state) => {
@@ -136,10 +225,26 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
         for (const cookie of cookies) {
           cookieMap.set(cookie.name, cookie);
         }
-        return { sessionCookies: Array.from(cookieMap.values()) };
+        const merged = Array.from(cookieMap.values());
+        saveSessionCookies(merged);
+        return { sessionCookies: merged };
       }),
 
-    clearSessionCookies: () => set({ sessionCookies: [] }),
+    clearSessionCookies: () => {
+      saveSessionCookies([]);
+      return set({ sessionCookies: [] });
+    },
+
+    removeExpiredCookies: (): number => {
+      const currentCookies = useApiTesterStore.getState().sessionCookies;
+      const validCookies = filterExpiredCookies(currentCookies);
+      const removedCount = currentCookies.length - validCookies.length;
+      if (removedCount > 0) {
+        saveSessionCookies(validCookies);
+        set({ sessionCookies: validCookies });
+      }
+      return removedCount;
+    },
 
     setPathParam: (key, value) =>
       set((state) => ({
