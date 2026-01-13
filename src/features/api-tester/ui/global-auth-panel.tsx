@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { motion } from 'framer-motion';
 import {
   AlertTriangle,
   Check,
@@ -22,6 +23,8 @@ import {
   useCustomCookies,
   useSessionCookies,
 } from '@/entities/api-tester';
+import { testParamsStoreActions } from '@/entities/api-tester/model/test-params-store';
+import { useSpecSource } from '@/entities/openapi';
 import { FuturSelect } from '@/shared/ui/select';
 
 const inputStyle = {
@@ -43,6 +46,9 @@ export function GlobalAuthPanel() {
   const authConfig = useAuthConfig();
   const customCookies = useCustomCookies();
   const sessionCookies = useSessionCookies();
+  const specSource = useSpecSource();
+
+  const specSourceId = specSource?.name || 'default';
 
   const hasAuth = authConfig.type !== 'none';
   const hasCookies = customCookies.some((c) => c.enabled);
@@ -157,6 +163,50 @@ export function GlobalAuthPanel() {
 
           {/* Tab Content */}
           {activeTab === 'auth' ? <AuthTab /> : <CookiesTab />}
+
+          {/* Clear All Test Data */}
+          <div
+            style={{
+              marginTop: '1.6rem',
+              paddingTop: '1.6rem',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <motion.button
+              onClick={() => testParamsStoreActions.clearAllParams(specSourceId)}
+              whileHover={{ scale: 1.02, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.6rem',
+                width: '100%',
+                padding: '1rem 1.6rem',
+                backgroundColor: 'rgba(0,0,0,0)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '0.6rem',
+                color: '#ef4444',
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              <Trash2 size={14} />
+              Clear All Test Data
+            </motion.button>
+            <p
+              style={{
+                marginTop: '0.6rem',
+                fontSize: '1.1rem',
+                color: '#6b7280',
+                textAlign: 'center',
+              }}
+            >
+              Clears all saved parameters, headers, and responses for all endpoints
+            </p>
+          </div>
         </div>
       )}
     </div>
@@ -806,7 +856,7 @@ function CookiesTab() {
             </div>
           ))}
 
-          {/* Clear All */}
+          {/* Clear Custom Cookies */}
           <button
             onClick={() => apiTesterStoreActions.clearCustomCookies()}
             style={{
@@ -825,7 +875,7 @@ function CookiesTab() {
             }}
           >
             <Trash2 size={12} />
-            Clear All Cookies
+            Clear Custom Cookies
           </button>
         </div>
       ) : (

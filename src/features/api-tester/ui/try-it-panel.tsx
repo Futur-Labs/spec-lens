@@ -251,12 +251,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
     if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
   }
 
-  // Clear all endpoints test data
-  function handleClearAll() {
-    apiTesterStoreActions.clearAllParams(specSourceId);
-    if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
-  }
-
   return (
     <div
       style={{
@@ -718,32 +712,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
               >
                 <RotateCcw size={12} />
                 Clear
-              </motion.button>
-              <motion.button
-                onClick={handleClearAll}
-                disabled={isExecuting}
-                whileHover={
-                  isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(239, 68, 68, 0.1)' }
-                }
-                whileTap={isExecuting ? {} : { scale: 0.98 }}
-                transition={{ duration: 0.15 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.6rem 1rem',
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: '0.4rem',
-                  color: '#ef4444',
-                  fontSize: '1.2rem',
-                  cursor: isExecuting ? 'not-allowed' : 'pointer',
-                  opacity: isExecuting ? 0.5 : 1,
-                }}
-                title='Clear all endpoints test data'
-              >
-                <Trash2 size={12} />
-                Clear All
               </motion.button>
             </div>
 
