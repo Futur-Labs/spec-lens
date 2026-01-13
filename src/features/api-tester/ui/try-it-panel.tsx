@@ -172,7 +172,11 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 
     if (result.success) {
       apiTesterStoreActions.setResponse(result.response);
-      if (result.setCookies && result.setCookies.length > 0) {
+
+      // Clear session cookies on authentication failure (401 Unauthorized)
+      if (result.response.status === 401) {
+        apiTesterStoreActions.clearSessionCookies();
+      } else if (result.setCookies && result.setCookies.length > 0) {
         apiTesterStoreActions.addSessionCookies(result.setCookies);
       }
       apiTesterStoreActions.addToHistory({

@@ -587,48 +587,9 @@ function CookiesTab() {
       {/* Session Cookies from Backend */}
       {sessionCookies.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
-              🔐 Session Cookies (from server)
-            </span>
-            <button
-              onClick={() => apiTesterStoreActions.clearSessionCookies()}
-              title='Clear local display only - does not affect server session'
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.4rem 0.8rem',
-                backgroundColor: 'transparent',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '0.4rem',
-                color: '#ef4444',
-                fontSize: '1.1rem',
-                cursor: 'pointer',
-              }}
-            >
-              <Trash2 size={10} />
-              Clear Display
-            </button>
-          </div>
-          <div
-            style={{
-              padding: '0.6rem 0.8rem',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
-              border: '1px solid rgba(245, 158, 11, 0.2)',
-              borderRadius: '0.4rem',
-              fontSize: '1rem',
-              color: '#fbbf24',
-            }}
-          >
-            ⚠️ These cookies are managed by the server. Clearing only hides them from display.
-          </div>
+          <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+            🔐 Session Cookies (from server)
+          </span>
           <div
             style={{
               display: 'flex',
