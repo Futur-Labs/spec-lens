@@ -269,6 +269,7 @@ export function ViewerLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
             {canRefresh && (
               <motion.button
+                layout
                 onClick={handleRefreshSpec}
                 disabled={isSpinning}
                 whileHover={
@@ -281,7 +282,10 @@ export function ViewerLayout() {
                       }
                 }
                 whileTap={isSpinning ? {} : { scale: 0.98 }}
-                transition={{ duration: 0.15 }}
+                transition={{
+                  layout: { duration: 0.2, ease: 'easeOut' },
+                  default: { duration: 0.15 },
+                }}
                 title={isSpinning ? 'Refreshing...' : 'Refresh spec from URL'}
                 style={{
                   display: 'flex',
@@ -295,15 +299,19 @@ export function ViewerLayout() {
                   fontSize: '1.3rem',
                   cursor: isSpinning ? 'not-allowed' : 'pointer',
                   fontWeight: 500,
+                  overflow: 'hidden',
                 }}
               >
                 <motion.div
-                  animate={isSpinning ? { rotate: 360 } : { rotate: 0 }}
-                  transition={
-                    isSpinning
-                      ? { duration: 1, repeat: Infinity, ease: 'linear' }
-                      : { duration: 0.2 }
-                  }
+                  layout='position'
+                  animate={{ rotate: isSpinning ? 360 : 0 }}
+                  transition={{
+                    rotate: {
+                      duration: isSpinning ? 1 : 0,
+                      repeat: isSpinning ? Infinity : 0,
+                      ease: 'linear',
+                    },
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -312,7 +320,9 @@ export function ViewerLayout() {
                 >
                   <RefreshCw size={14} />
                 </motion.div>
-                <span>{isSpinning ? 'Refreshing' : 'Refresh'}</span>
+                <span style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
+                  {isSpinning ? 'Refreshing' : 'Refresh'}
+                </span>
               </motion.button>
             )}
             <motion.button
