@@ -9,6 +9,7 @@ import {
   getAllTags,
   filterEndpoints,
 } from '../lib/openapi-parser.ts';
+import { testParamsStoreActions } from '@/entities/api-tester/model/test-params-store';
 
 const initialState: OpenAPIState = {
   spec: null,
@@ -35,8 +36,16 @@ export const useOpenAPIStore = create<OpenAPIStore>()(
 
       actions: {
         setSpec: (spec, source) => {
+          const prevSource = get().specSource;
           const endpoints = parseEndpoints(spec);
           const tags = getAllTags(spec);
+
+          // Clear test params when spec source changes (different file/URL)
+          const prevSourceId = prevSource?.name || 'default';
+          const newSourceId = source?.name || 'default';
+          if (prevSource && prevSourceId !== newSourceId) {
+            testParamsStoreActions.clearAllParams(prevSourceId);
+          }
 
           set({
             spec,

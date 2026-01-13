@@ -1,14 +1,28 @@
 import { create } from 'zustand';
 
 import {
-  type ApiTesterState,
-  type ApiTesterStore,
   type AuthConfig,
   type CustomCookie,
   type SessionCookie,
-  DEFAULT_AUTH_CONFIG,
   type HistoryEntry,
+  DEFAULT_AUTH_CONFIG,
 } from './api-tester-types.ts';
+import { testParamsStoreActions } from './test-params-store.ts';
+
+// Re-export test params store for backward compatibility
+export {
+  testParamsStoreActions,
+  useSelectedServer,
+  usePathParams,
+  useQueryParams,
+  useHeaders,
+  useRequestBody,
+  useResponse,
+  useIsExecuting,
+  useExecuteError,
+} from './test-params-store.ts';
+
+// ========== Cookie Utility Functions ==========
 
 // Check if a cookie is expired based on its expires field
 export function isCookieExpired(cookie: SessionCookie): boolean {
@@ -68,7 +82,8 @@ function filterExpiredCookies(cookies: SessionCookie[]): SessionCookie[] {
   return cookies.filter((cookie) => !isCookieExpired(cookie));
 }
 
-// Load persisted auth config from localStorage
+// ========== Auth & Cookie localStorage Functions ==========
+
 function loadPersistedAuthConfig(): AuthConfig {
   if (typeof window === 'undefined') return DEFAULT_AUTH_CONFIG;
 
@@ -86,7 +101,6 @@ function loadPersistedAuthConfig(): AuthConfig {
   return DEFAULT_AUTH_CONFIG;
 }
 
-// Save auth config to localStorage if persistence is enabled
 function saveAuthConfig(config: AuthConfig): void {
   if (typeof window === 'undefined') return;
 
@@ -97,7 +111,6 @@ function saveAuthConfig(config: AuthConfig): void {
   }
 }
 
-// Load persisted custom cookies from localStorage
 function loadPersistedCookies(): CustomCookie[] {
   if (typeof window === 'undefined') return [];
 
@@ -112,13 +125,11 @@ function loadPersistedCookies(): CustomCookie[] {
   return [];
 }
 
-// Save custom cookies to localStorage
 function saveCookies(cookies: CustomCookie[]): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('api-tester-cookies', JSON.stringify(cookies));
 }
 
-// Load persisted session cookies from localStorage (auto-filters expired cookies)
 function loadPersistedSessionCookies(): SessionCookie[] {
   if (typeof window === 'undefined') return [];
 
@@ -126,9 +137,7 @@ function loadPersistedSessionCookies(): SessionCookie[] {
     const stored = localStorage.getItem('api-tester-session-cookies');
     if (stored) {
       const cookies = JSON.parse(stored) as SessionCookie[];
-      // Filter out expired cookies on load
       const validCookies = filterExpiredCookies(cookies);
-      // If some cookies were expired, update localStorage
       if (validCookies.length !== cookies.length) {
         saveSessionCookies(validCookies);
       }
@@ -140,35 +149,52 @@ function loadPersistedSessionCookies(): SessionCookie[] {
   return [];
 }
 
-// Save session cookies to localStorage
 function saveSessionCookies(cookies: SessionCookie[]): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('api-tester-session-cookies', JSON.stringify(cookies));
 }
 
-const initialState: ApiTesterState = {
-  selectedServer: '',
+// ========== Auth & Cookie Store ==========
+
+export interface AuthCookieState {
+  authConfig: AuthConfig;
+  customCookies: CustomCookie[];
+  sessionCookies: SessionCookie[];
+  history: HistoryEntry[];
+}
+
+export interface AuthCookieActions {
+  // Authentication
+  setAuthConfig: (config: Partial<AuthConfig>) => void;
+  clearAuth: () => void;
+  // Custom Cookies
+  addCustomCookie: (cookie: CustomCookie) => void;
+  updateCustomCookie: (index: number, cookie: Partial<CustomCookie>) => void;
+  removeCustomCookie: (index: number) => void;
+  clearCustomCookies: () => void;
+  // Session Cookies
+  setSessionCookies: (cookies: SessionCookie[]) => void;
+  addSessionCookies: (cookies: SessionCookie[]) => void;
+  clearSessionCookies: () => void;
+  removeExpiredCookies: () => number;
+  // History
+  addToHistory: (entry: HistoryEntry) => void;
+  clearHistory: () => void;
+}
+
+export type AuthCookieStore = AuthCookieState & { actions: AuthCookieActions };
+
+const initialState: AuthCookieState = {
   authConfig: loadPersistedAuthConfig(),
   customCookies: loadPersistedCookies(),
   sessionCookies: loadPersistedSessionCookies(),
-  pathParams: {},
-  queryParams: {},
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  requestBody: '',
-  response: null,
-  isExecuting: false,
-  executeError: null,
   history: [],
 };
 
-export const useApiTesterStore = create<ApiTesterStore>((set) => ({
+export const useAuthCookieStore = create<AuthCookieStore>((set) => ({
   ...initialState,
 
   actions: {
-    setSelectedServer: (selectedServer) => set({ selectedServer }),
-
     setAuthConfig: (config) =>
       set((state) => {
         const newAuthConfig = { ...state.authConfig, ...config };
@@ -217,7 +243,6 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
 
     addSessionCookies: (cookies: SessionCookie[]) =>
       set((state) => {
-        // Merge cookies by name (newer values override)
         const cookieMap = new Map<string, SessionCookie>();
         for (const cookie of state.sessionCookies) {
           cookieMap.set(cookie.name, cookie);
@@ -236,7 +261,7 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
     },
 
     removeExpiredCookies: (): number => {
-      const currentCookies = useApiTesterStore.getState().sessionCookies;
+      const currentCookies = useAuthCookieStore.getState().sessionCookies;
       const validCookies = filterExpiredCookies(currentCookies);
       const removedCount = currentCookies.length - validCookies.length;
       if (removedCount > 0) {
@@ -245,47 +270,6 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
       }
       return removedCount;
     },
-
-    setPathParam: (key, value) =>
-      set((state) => ({
-        pathParams: { ...state.pathParams, [key]: value },
-      })),
-
-    setQueryParam: (key, value) =>
-      set((state) => ({
-        queryParams: { ...state.queryParams, [key]: value },
-      })),
-
-    setHeader: (key, value) =>
-      set((state) => ({
-        headers: { ...state.headers, [key]: value },
-      })),
-
-    removeHeader: (key) =>
-      set((state) => {
-        const { [key]: _, ...rest } = state.headers;
-        return { headers: rest };
-      }),
-
-    setRequestBody: (requestBody) => set({ requestBody }),
-
-    setResponse: (response) => set({ response, isExecuting: false, executeError: null }),
-
-    setExecuting: (isExecuting) => set({ isExecuting }),
-
-    setExecuteError: (executeError) => set({ executeError, isExecuting: false }),
-
-    clearResponse: () => set({ response: null, executeError: null }),
-
-    resetParams: () =>
-      set({
-        pathParams: {},
-        queryParams: {},
-        headers: { 'Content-Type': 'application/json' },
-        requestBody: '',
-        response: null,
-        executeError: null,
-      }),
 
     addToHistory: (entry: HistoryEntry) =>
       set((state) => ({
@@ -297,17 +281,17 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
 }));
 
 // Actions - can be used outside of React components
-export const apiTesterStoreActions = useApiTesterStore.getState().actions;
+export const authCookieStoreActions = useAuthCookieStore.getState().actions;
 
 // Selector hooks
-export const useSelectedServer = () => useApiTesterStore((s) => s.selectedServer);
-export const useAuthConfig = () => useApiTesterStore((s) => s.authConfig);
-export const useCustomCookies = () => useApiTesterStore((s) => s.customCookies);
-export const useSessionCookies = () => useApiTesterStore((s) => s.sessionCookies);
-export const usePathParams = () => useApiTesterStore((s) => s.pathParams);
-export const useQueryParams = () => useApiTesterStore((s) => s.queryParams);
-export const useHeaders = () => useApiTesterStore((s) => s.headers);
-export const useRequestBody = () => useApiTesterStore((s) => s.requestBody);
-export const useResponse = () => useApiTesterStore((s) => s.response);
-export const useIsExecuting = () => useApiTesterStore((s) => s.isExecuting);
-export const useExecuteError = () => useApiTesterStore((s) => s.executeError);
+export const useAuthConfig = () => useAuthCookieStore((s) => s.authConfig);
+export const useCustomCookies = () => useAuthCookieStore((s) => s.customCookies);
+export const useSessionCookies = () => useAuthCookieStore((s) => s.sessionCookies);
+export const useHistory = () => useAuthCookieStore((s) => s.history);
+
+// ========== Backward Compatibility ==========
+// Combined actions object for existing code that uses apiTesterStoreActions
+export const apiTesterStoreActions = {
+  ...testParamsStoreActions,
+  ...authCookieStoreActions,
+};

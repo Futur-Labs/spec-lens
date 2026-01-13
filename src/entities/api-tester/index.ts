@@ -17,12 +17,26 @@ export type {
 export { DEFAULT_AUTH_CONFIG } from './model/api-tester-types.ts';
 
 export {
-  useApiTesterStore,
+  // Combined actions for backward compatibility
   apiTesterStoreActions,
-  useSelectedServer,
+  // Auth & Cookie store
+  useAuthCookieStore,
+  authCookieStoreActions,
   useAuthConfig,
   useCustomCookies,
   useSessionCookies,
+  useHistory,
+  // Cookie expiration utilities
+  isCookieExpired,
+  isCookieExpiringSoon,
+  getCookieExpirationInfo,
+} from './model/api-tester-store.ts';
+
+export {
+  // Test params store
+  useTestParamsStore,
+  testParamsStoreActions,
+  useSelectedServer,
   usePathParams,
   useQueryParams,
   useHeaders,
@@ -30,8 +44,4 @@ export {
   useResponse,
   useIsExecuting,
   useExecuteError,
-  // Cookie expiration utilities
-  isCookieExpired,
-  isCookieExpiringSoon,
-  getCookieExpirationInfo,
-} from './model/api-tester-store.ts';
+} from './model/test-params-store.ts';

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   Check,
@@ -37,9 +38,12 @@ import {
   generateExample,
   getMergedParameters,
   isReferenceObject,
+  useSpecSource,
 } from '@/entities/openapi';
 import { useShowSkeleton } from '@/shared/hooks';
 import { FuturSelect } from '@/shared/ui/select';
+
+const DEFAULT_SERVERS = [{ url: 'http://localhost:3000', description: 'Local' }];
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: OpenAPISpec }) {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -65,21 +69,21 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const response = useResponse();
   const isExecuting = useIsExecuting();
   const executeError = useExecuteError();
+  const specSource = useSpecSource();
 
   // Only show loading UI after 300ms delay
   const { showSkeleton } = useShowSkeleton(isExecuting, 300);
 
-  const servers = spec.servers || [{ url: 'http://localhost:3000', description: 'Local' }];
+  const servers = spec.servers ?? DEFAULT_SERVERS;
 
-  // Initialize server
-  useEffect(() => {
-    if (!selectedServer && servers.length > 0) {
-      apiTesterStoreActions.setSelectedServer(servers[0].url);
-    }
-  }, [servers, selectedServer]);
+  // Track previous endpoint for saving params before switch
+  const prevEndpointRef = useRef<string | null>(null);
+  const isInitialMount = useRef(true);
 
-  // Generate example
-  const generateBodyExample = useCallback(() => {
+  // Derived values
+  const specSourceId = specSource?.name || 'default';
+
+  const bodyExample = (() => {
     if (!endpoint.operation.requestBody || isReferenceObject(endpoint.operation.requestBody))
       return '';
 
@@ -89,14 +93,62 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
       return example ? JSON.stringify(example, null, 2) : '';
     }
     return '';
-  }, [endpoint.operation.requestBody, spec]);
+  })();
 
-  // Reset params & body on endpoint change
+  // Initialize server
   useEffect(() => {
-    apiTesterStoreActions.resetParams();
-    const example = generateBodyExample();
-    if (example) apiTesterStoreActions.setRequestBody(example);
-  }, [endpoint.path, endpoint.method, generateBodyExample]);
+    const serverList = spec.servers ?? DEFAULT_SERVERS;
+    if (!selectedServer && serverList.length > 0) {
+      apiTesterStoreActions.setSelectedServer(serverList[0].url);
+    }
+  }, [spec.servers, selectedServer]);
+
+  // Save params before endpoint change, load saved params for new endpoint
+  useEffect(() => {
+    const currentEndpointKey = `${endpoint.method}:${endpoint.path}`;
+
+    // Save previous endpoint params (if not initial mount and endpoint changed)
+    if (
+      !isInitialMount.current &&
+      prevEndpointRef.current &&
+      prevEndpointRef.current !== currentEndpointKey
+    ) {
+      apiTesterStoreActions.saveCurrentParams(specSourceId, prevEndpointRef.current);
+    }
+
+    // Load saved params for current endpoint
+    const hasData = apiTesterStoreActions.loadSavedParams(specSourceId, currentEndpointKey);
+
+    // If no saved data, reset and generate example
+    if (!hasData) {
+      apiTesterStoreActions.resetParams();
+      if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
+    }
+
+    prevEndpointRef.current = currentEndpointKey;
+    isInitialMount.current = false;
+  }, [endpoint.path, endpoint.method, specSourceId, bodyExample]);
+
+  // Auto-save params on change (debounced)
+  useEffect(() => {
+    const endpointKey = `${endpoint.method}:${endpoint.path}`;
+
+    const timeoutId = setTimeout(() => {
+      apiTesterStoreActions.saveCurrentParams(specSourceId, endpointKey);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    pathParams,
+    queryParams,
+    headers,
+    requestBody,
+    response,
+    selectedServer,
+    endpoint.method,
+    endpoint.path,
+    specSourceId,
+  ]);
 
   const merged = getMergedParameters(endpoint);
   const parameters = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
@@ -190,6 +242,19 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
       setCopiedResponse(true);
       setTimeout(() => setCopiedResponse(false), 2000);
     }
+  }
+
+  // Clear current endpoint test data
+  function handleClearCurrent() {
+    const endpointKey = `${endpoint.method}:${endpoint.path}`;
+    apiTesterStoreActions.clearEndpointParams(specSourceId, endpointKey);
+    if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
+  }
+
+  // Clear all endpoints test data
+  function handleClearAll() {
+    apiTesterStoreActions.clearAllParams(specSourceId);
+    if (bodyExample) apiTesterStoreActions.setRequestBody(bodyExample);
   }
 
   return (
@@ -456,8 +521,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 </label>
                 <button
                   onClick={() => {
-                    const example = generateBodyExample();
-                    apiTesterStoreActions.setRequestBody(example);
+                    apiTesterStoreActions.setRequestBody(bodyExample);
                   }}
                   title='Reset to default example'
                   style={{
@@ -622,61 +686,120 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
           <div
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '0.8rem',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               paddingTop: '0.8rem',
             }}
           >
-            {isRepeating && (
+            {/* Clear buttons */}
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <motion.button
+                onClick={handleClearCurrent}
+                disabled={isExecuting}
+                whileHover={
+                  isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.06)' }
+                }
+                whileTap={isExecuting ? {} : { scale: 0.98 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.6rem 1rem',
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '0.4rem',
+                  color: '#9ca3af',
+                  fontSize: '1.2rem',
+                  cursor: isExecuting ? 'not-allowed' : 'pointer',
+                  opacity: isExecuting ? 0.5 : 1,
+                }}
+                title='Clear current endpoint test data'
+              >
+                <RotateCcw size={12} />
+                Clear
+              </motion.button>
+              <motion.button
+                onClick={handleClearAll}
+                disabled={isExecuting}
+                whileHover={
+                  isExecuting ? {} : { scale: 1.02, backgroundColor: 'rgba(239, 68, 68, 0.1)' }
+                }
+                whileTap={isExecuting ? {} : { scale: 0.98 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.6rem 1rem',
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '0.4rem',
+                  color: '#ef4444',
+                  fontSize: '1.2rem',
+                  cursor: isExecuting ? 'not-allowed' : 'pointer',
+                  opacity: isExecuting ? 0.5 : 1,
+                }}
+                title='Clear all endpoints test data'
+              >
+                <Trash2 size={12} />
+                Clear All
+              </motion.button>
+            </div>
+
+            {/* Execute buttons */}
+            <div style={{ display: 'flex', gap: '0.8rem' }}>
+              {isRepeating && (
+                <button
+                  onClick={handleCancelRepeat}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.8rem',
+                    padding: '1rem 2rem',
+                    backgroundColor: '#dc2626',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '0.6rem',
+                    fontSize: '1.4rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
               <button
-                onClick={handleCancelRepeat}
+                onClick={handleExecute}
+                disabled={isExecuting || !!jsonError}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.8rem',
-                  padding: '1rem 2rem',
-                  backgroundColor: '#dc2626',
+                  padding: '1rem 2.4rem',
+                  backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '0.6rem',
                   fontSize: '1.4rem',
                   fontWeight: 600,
-                  cursor: 'pointer',
+                  cursor: isExecuting || jsonError ? 'not-allowed' : 'pointer',
                 }}
               >
-                Cancel
+                {isExecuting ? (
+                  <Loader2 size={16} className='animate-spin' />
+                ) : (
+                  <Play size={16} fill='white' />
+                )}
+                {isRepeating
+                  ? `Sending ${currentRequestIndex}/${requestCount}...`
+                  : isExecuting
+                    ? 'Sending...'
+                    : requestCount > 1
+                      ? `Execute ${requestCount}x`
+                      : 'Execute Request'}
               </button>
-            )}
-            <button
-              onClick={handleExecute}
-              disabled={isExecuting || !!jsonError}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.8rem',
-                padding: '1rem 2.4rem',
-                backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '0.6rem',
-                fontSize: '1.4rem',
-                fontWeight: 600,
-                cursor: isExecuting || jsonError ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {isExecuting ? (
-                <Loader2 size={16} className='animate-spin' />
-              ) : (
-                <Play size={16} fill='white' />
-              )}
-              {isRepeating
-                ? `Sending ${currentRequestIndex}/${requestCount}...`
-                : isExecuting
-                  ? 'Sending...'
-                  : requestCount > 1
-                    ? `Execute ${requestCount}x`
-                    : 'Execute Request'}
-            </button>
+            </div>
           </div>
 
           {executeError && (

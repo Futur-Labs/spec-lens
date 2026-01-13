@@ -136,6 +136,25 @@ export interface ApiTesterActions {
   resetParams: () => void;
   addToHistory: (entry: HistoryEntry) => void;
   clearHistory: () => void;
+  // Endpoint test data persistence
+  saveCurrentParams: (specSourceId: string, endpointKey: string) => void;
+  loadSavedParams: (specSourceId: string, endpointKey: string) => boolean; // Returns true if data exists
+  clearEndpointParams: (specSourceId: string, endpointKey: string) => void;
+  clearAllParams: (specSourceId: string) => void;
 }
 
 export type ApiTesterStore = ApiTesterState & { actions: ApiTesterActions };
+
+// Persisted test data per endpoint
+export interface EndpointTestData {
+  pathParams: Record<string, string>;
+  queryParams: Record<string, string>;
+  headers: Record<string, string>;
+  requestBody: string;
+  selectedServer: string;
+  response: ResponseState | null;
+}
+
+export interface PersistedTestParams {
+  [endpointKey: string]: EndpointTestData; // key: `${method}:${path}`
+}
