@@ -19,6 +19,9 @@ function generateEndpointHash(method: string, path: string): string {
   return `${method.toLowerCase()}${path.replace(/[{}]/g, '')}`;
 }
 
+// Module-level flag to skip animation only on initial page load
+let hasInitiallyMounted = false;
+
 export function Sidebar() {
   const spec = useOpenAPIStore((s) => s.spec);
   const endpoints = useOpenAPIStore((s) => s.endpoints);
@@ -135,6 +138,11 @@ export function Sidebar() {
     };
   }, [isResizing]);
 
+  // Mark as mounted after first render (in effect to satisfy React Compiler)
+  useEffect(() => {
+    hasInitiallyMounted = true;
+  }, []);
+
   if (!spec) return null;
 
   return (
@@ -142,7 +150,7 @@ export function Sidebar() {
       {isSidebarOpen && (
         <motion.aside
           ref={sidebarRef}
-          initial={false}
+          initial={hasInitiallyMounted ? { width: 0, opacity: 0 } : false}
           animate={{ width: sidebarWidth.get() || 320, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
           transition={{
