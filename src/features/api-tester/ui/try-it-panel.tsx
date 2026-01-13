@@ -114,6 +114,10 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 
     if (result.success) {
       apiTesterStoreActions.setResponse(result.response);
+      // Store session cookies from the response
+      if (result.setCookies && result.setCookies.length > 0) {
+        apiTesterStoreActions.addSessionCookies(result.setCookies);
+      }
       apiTesterStoreActions.addToHistory({
         timestamp: Date.now(),
         method: endpoint.method,

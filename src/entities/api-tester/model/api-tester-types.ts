@@ -29,6 +29,17 @@ export interface CustomCookie {
   enabled: boolean;
 }
 
+export interface SessionCookie {
+  name: string;
+  value: string;
+  path?: string;
+  domain?: string;
+  expires?: string;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: string;
+}
+
 export interface ExecuteRequestParams {
   baseUrl: string;
   path: string;
@@ -42,6 +53,7 @@ export interface ExecuteRequestParams {
 interface ExecuteResult {
   success: true;
   response: ResponseState;
+  setCookies: SessionCookie[];
 }
 
 interface ExecuteError {
@@ -78,6 +90,9 @@ export interface ApiTesterState {
   // Custom Cookies
   customCookies: CustomCookie[];
 
+  // Session Cookies (from backend Set-Cookie headers)
+  sessionCookies: SessionCookie[];
+
   // Request params
   pathParams: Record<string, string>;
   queryParams: Record<string, string>;
@@ -103,6 +118,10 @@ export interface ApiTesterActions {
   updateCustomCookie: (index: number, cookie: Partial<CustomCookie>) => void;
   removeCustomCookie: (index: number) => void;
   clearCustomCookies: () => void;
+  // Session Cookies
+  setSessionCookies: (cookies: SessionCookie[]) => void;
+  addSessionCookies: (cookies: SessionCookie[]) => void;
+  clearSessionCookies: () => void;
   // Request params
   setPathParam: (key: string, value: string) => void;
   setQueryParam: (key: string, value: string) => void;

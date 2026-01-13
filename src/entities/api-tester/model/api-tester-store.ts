@@ -5,6 +5,7 @@ import {
   type ApiTesterStore,
   type AuthConfig,
   type CustomCookie,
+  type SessionCookie,
   DEFAULT_AUTH_CONFIG,
   type HistoryEntry,
 } from './api-tester-types.ts';
@@ -63,6 +64,7 @@ const initialState: ApiTesterState = {
   selectedServer: '',
   authConfig: loadPersistedAuthConfig(),
   customCookies: loadPersistedCookies(),
+  sessionCookies: [],
   pathParams: {},
   queryParams: {},
   headers: {
@@ -122,6 +124,23 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
         return { customCookies: [] };
       }),
 
+    setSessionCookies: (cookies: SessionCookie[]) => set({ sessionCookies: cookies }),
+
+    addSessionCookies: (cookies: SessionCookie[]) =>
+      set((state) => {
+        // Merge cookies by name (newer values override)
+        const cookieMap = new Map<string, SessionCookie>();
+        for (const cookie of state.sessionCookies) {
+          cookieMap.set(cookie.name, cookie);
+        }
+        for (const cookie of cookies) {
+          cookieMap.set(cookie.name, cookie);
+        }
+        return { sessionCookies: Array.from(cookieMap.values()) };
+      }),
+
+    clearSessionCookies: () => set({ sessionCookies: [] }),
+
     setPathParam: (key, value) =>
       set((state) => ({
         pathParams: { ...state.pathParams, [key]: value },
@@ -179,6 +198,7 @@ export const apiTesterStoreActions = useApiTesterStore.getState().actions;
 export const useSelectedServer = () => useApiTesterStore((s) => s.selectedServer);
 export const useAuthConfig = () => useApiTesterStore((s) => s.authConfig);
 export const useCustomCookies = () => useApiTesterStore((s) => s.customCookies);
+export const useSessionCookies = () => useApiTesterStore((s) => s.sessionCookies);
 export const usePathParams = () => useApiTesterStore((s) => s.pathParams);
 export const useQueryParams = () => useApiTesterStore((s) => s.queryParams);
 export const useHeaders = () => useApiTesterStore((s) => s.headers);

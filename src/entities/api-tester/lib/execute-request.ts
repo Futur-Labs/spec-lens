@@ -161,6 +161,7 @@ export async function executeRequest(params: ExecuteRequestOptions): Promise<Exe
         data: response.data,
         duration: response.duration,
       },
+      setCookies: response.setCookies,
     };
   } catch (error) {
     const duration = performance.now() - startTime;

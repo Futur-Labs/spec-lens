@@ -7,6 +7,7 @@ import {
   type AuthType,
   useAuthConfig,
   useCustomCookies,
+  useSessionCookies,
 } from '@/entities/api-tester';
 import { FuturSelect } from '@/shared/ui/select';
 
@@ -28,10 +29,12 @@ export function GlobalAuthPanel() {
 
   const authConfig = useAuthConfig();
   const customCookies = useCustomCookies();
+  const sessionCookies = useSessionCookies();
 
   const hasAuth = authConfig.type !== 'none';
   const hasCookies = customCookies.some((c) => c.enabled);
-  const hasActiveSession = hasAuth || hasCookies;
+  const hasSessionCookies = sessionCookies.length > 0;
+  const hasActiveSession = hasAuth || hasCookies || hasSessionCookies;
 
   return (
     <div
@@ -83,7 +86,7 @@ export function GlobalAuthPanel() {
                 {authConfig.type.toUpperCase()}
               </span>
             )}
-            {hasCookies && (
+            {(hasCookies || hasSessionCookies) && (
               <span
                 style={{
                   display: 'flex',
@@ -97,7 +100,7 @@ export function GlobalAuthPanel() {
                 }}
               >
                 <Cookie size={10} />
-                {customCookies.filter((c) => c.enabled).length}
+                {customCookies.filter((c) => c.enabled).length + sessionCookies.length}
               </span>
             )}
           </div>
@@ -135,7 +138,7 @@ export function GlobalAuthPanel() {
               onClick={() => setActiveTab('cookies')}
               icon={<Cookie size={12} />}
               label='Cookies'
-              count={customCookies.filter((c) => c.enabled).length}
+              count={customCookies.filter((c) => c.enabled).length + sessionCookies.length}
             />
           </div>
 
@@ -169,7 +172,7 @@ function TabButton({
         alignItems: 'center',
         justifyContent: 'center',
         gap: '0.6rem',
-        padding: '0.6rem 1rem',
+        padding: '1rem 1rem',
         backgroundColor: active ? 'rgba(255,255,255,0.1)' : 'transparent',
         border: 'none',
         borderRadius: '0.4rem',
@@ -426,6 +429,7 @@ function AuthTab() {
 
 function CookiesTab() {
   const customCookies = useCustomCookies();
+  const sessionCookies = useSessionCookies();
   const [newCookieName, setNewCookieName] = useState('');
   const [newCookieValue, setNewCookieValue] = useState('');
 
@@ -505,9 +509,139 @@ function CookiesTab() {
         </button>
       </div>
 
-      {/* Cookie List */}
+      {/* Session Cookies from Backend */}
+      {sessionCookies.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+              🔐 Session Cookies (from server)
+            </span>
+            <button
+              onClick={() => apiTesterStoreActions.clearSessionCookies()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.4rem 0.8rem',
+                backgroundColor: 'transparent',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '0.4rem',
+                color: '#ef4444',
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+              }}
+            >
+              <Trash2 size={10} />
+              Clear
+            </button>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.4rem',
+              padding: '1rem',
+              backgroundColor: 'rgba(34, 197, 94, 0.05)',
+              border: '1px solid rgba(34, 197, 94, 0.2)',
+              borderRadius: '0.6rem',
+            }}
+          >
+            {sessionCookies.map((cookie, index) => (
+              <div
+                key={index}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.8rem',
+                  padding: '0.6rem 0.8rem',
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  borderRadius: '0.4rem',
+                }}
+              >
+                <span
+                  style={{
+                    color: '#22c55e',
+                    fontSize: '1.2rem',
+                    fontFamily: 'monospace',
+                    fontWeight: 500,
+                  }}
+                >
+                  {cookie.name}
+                </span>
+                <span style={{ color: '#6b7280', fontSize: '1.2rem' }}>=</span>
+                <span
+                  style={{
+                    flex: 1,
+                    color: '#e5e5e5',
+                    fontSize: '1.2rem',
+                    fontFamily: 'monospace',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={cookie.value}
+                >
+                  {cookie.value.length > 50 ? `${cookie.value.slice(0, 50)}...` : cookie.value}
+                </span>
+                <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                  {cookie.httpOnly && (
+                    <span
+                      style={{
+                        padding: '0.2rem 0.4rem',
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderRadius: '0.3rem',
+                        fontSize: '0.9rem',
+                        color: '#f87171',
+                      }}
+                    >
+                      HttpOnly
+                    </span>
+                  )}
+                  {cookie.secure && (
+                    <span
+                      style={{
+                        padding: '0.2rem 0.4rem',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderRadius: '0.3rem',
+                        fontSize: '0.9rem',
+                        color: '#60a5fa',
+                      }}
+                    >
+                      Secure
+                    </span>
+                  )}
+                  {cookie.path && (
+                    <span
+                      style={{
+                        padding: '0.2rem 0.4rem',
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        borderRadius: '0.3rem',
+                        fontSize: '0.9rem',
+                        color: '#9ca3af',
+                      }}
+                    >
+                      {cookie.path}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Custom Cookie List */}
       {customCookies.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+            🍪 Custom Cookies
+          </span>
           {customCookies.map((cookie, index) => (
             <div
               key={index}
@@ -621,16 +755,19 @@ function CookiesTab() {
           </button>
         </div>
       ) : (
-        <div
-          style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: '#6b7280',
-            fontSize: '1.2rem',
-          }}
-        >
-          No custom cookies. Add one above to include it in API requests.
-        </div>
+        sessionCookies.length === 0 && (
+          <div
+            style={{
+              padding: '2rem',
+              textAlign: 'center',
+              color: '#6b7280',
+              fontSize: '1.2rem',
+            }}
+          >
+            No cookies yet. Add custom cookies above or make API requests to capture session
+            cookies.
+          </div>
+        )
       )}
     </div>
   );

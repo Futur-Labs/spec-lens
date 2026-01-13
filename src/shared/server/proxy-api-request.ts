@@ -15,12 +15,62 @@ interface ProxyRequestParams {
   body?: unknown;
 }
 
+export interface ParsedCookie {
+  name: string;
+  value: string;
+  path?: string;
+  domain?: string;
+  expires?: string;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: string;
+}
+
 export interface ProxyResponse {
   status: number;
   statusText: string;
   headers: Record<string, string>;
   data: any;
   duration: number;
+  setCookies: ParsedCookie[];
+}
+
+/**
+ * Parse a Set-Cookie header string into a structured object
+ */
+function parseSetCookieHeader(setCookieHeader: string): ParsedCookie | null {
+  const parts = setCookieHeader.split(';').map((p) => p.trim());
+  if (parts.length === 0) return null;
+
+  // First part is name=value
+  const [firstPart, ...attributes] = parts;
+  const eqIndex = firstPart.indexOf('=');
+  if (eqIndex === -1) return null;
+
+  const name = firstPart.substring(0, eqIndex);
+  const value = firstPart.substring(eqIndex + 1);
+
+  const cookie: ParsedCookie = { name, value };
+
+  // Parse attributes
+  for (const attr of attributes) {
+    const attrLower = attr.toLowerCase();
+    if (attrLower === 'httponly') {
+      cookie.httpOnly = true;
+    } else if (attrLower === 'secure') {
+      cookie.secure = true;
+    } else if (attrLower.startsWith('path=')) {
+      cookie.path = attr.substring(5);
+    } else if (attrLower.startsWith('domain=')) {
+      cookie.domain = attr.substring(7);
+    } else if (attrLower.startsWith('expires=')) {
+      cookie.expires = attr.substring(8);
+    } else if (attrLower.startsWith('samesite=')) {
+      cookie.sameSite = attr.substring(9);
+    }
+  }
+
+  return cookie;
 }
 
 export const proxyApiRequest = createServerFn({ method: 'POST' })
@@ -48,12 +98,28 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
 
       // Convert headers to plain object
       const responseHeaders: Record<string, string> = {};
+      const setCookies: ParsedCookie[] = [];
+
       if (response.headers && typeof response.headers === 'object') {
         Object.entries(response.headers as Record<string, unknown>).forEach(([key, value]) => {
           if (typeof value === 'string') {
             responseHeaders[key] = value;
+            // Parse set-cookie header
+            if (key.toLowerCase() === 'set-cookie') {
+              const parsed = parseSetCookieHeader(value);
+              if (parsed) setCookies.push(parsed);
+            }
           } else if (Array.isArray(value)) {
             responseHeaders[key] = value.join(', ');
+            // Parse multiple set-cookie headers
+            if (key.toLowerCase() === 'set-cookie') {
+              for (const cookieStr of value) {
+                if (typeof cookieStr === 'string') {
+                  const parsed = parseSetCookieHeader(cookieStr);
+                  if (parsed) setCookies.push(parsed);
+                }
+              }
+            }
           }
         });
       }
@@ -64,6 +130,7 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
         headers: responseHeaders,
         data: response.data,
         duration: Math.round(duration),
+        setCookies,
       };
     } catch (err) {
       const duration = performance.now() - startTime;
@@ -82,6 +149,7 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
             headers: {},
             data: err.response.data,
             duration: Math.round(duration),
+            setCookies: [],
           };
         }
         throw new Error(`Request failed: ${err.message}`);
