@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { motion } from 'framer-motion';
 import {
   AlertTriangle,
   Check,
@@ -23,8 +22,6 @@ import {
   useCustomCookies,
   useSessionCookies,
 } from '@/entities/api-tester';
-import { testParamsStoreActions } from '@/entities/api-tester/model/test-params-store';
-import { useSpecSource } from '@/entities/openapi';
 import { FuturSelect } from '@/shared/ui/select';
 
 const inputStyle = {
@@ -46,9 +43,9 @@ export function GlobalAuthPanel() {
   const authConfig = useAuthConfig();
   const customCookies = useCustomCookies();
   const sessionCookies = useSessionCookies();
-  const specSource = useSpecSource();
+  // const specSource = useSpecSource();
 
-  const specSourceId = specSource?.name || 'default';
+  // const specSourceId = specSource?.name || 'default';
 
   const hasAuth = authConfig.type !== 'none';
   const hasCookies = customCookies.some((c) => c.enabled);
@@ -165,7 +162,7 @@ export function GlobalAuthPanel() {
           {activeTab === 'auth' ? <AuthTab /> : <CookiesTab />}
 
           {/* Clear All Test Data */}
-          <div
+          {/* <div
             style={{
               marginTop: '1.6rem',
               paddingTop: '1.6rem',
@@ -206,7 +203,7 @@ export function GlobalAuthPanel() {
             >
               Clears all saved parameters, headers, and responses for all endpoints
             </p>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
