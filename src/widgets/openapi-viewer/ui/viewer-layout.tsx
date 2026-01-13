@@ -11,6 +11,7 @@ import {
   useIsSidebarOpen,
   useSelectedEndpoint,
 } from '@/entities/openapi';
+import { GlobalAuthPanel } from '@/features/api-tester';
 
 export function ViewerLayout() {
   const navigate = useNavigate();
@@ -172,6 +173,9 @@ export function ViewerLayout() {
             </button>
           </div>
         </header>
+
+        {/* Global Auth Panel */}
+        <GlobalAuthPanel />
 
         {/* Content Area */}
         <div

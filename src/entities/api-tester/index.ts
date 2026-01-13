@@ -5,6 +5,7 @@ export { executeRequest } from './lib/execute-request.ts';
 export type {
   AuthType,
   AuthConfig,
+  CustomCookie,
   ResponseState,
   HistoryEntry,
   ApiTesterState,
@@ -19,6 +20,7 @@ export {
   apiTesterStoreActions,
   useSelectedServer,
   useAuthConfig,
+  useCustomCookies,
   usePathParams,
   useQueryParams,
   useHeaders,

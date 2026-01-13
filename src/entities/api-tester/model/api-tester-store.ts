@@ -4,6 +4,7 @@ import {
   type ApiTesterState,
   type ApiTesterStore,
   type AuthConfig,
+  type CustomCookie,
   DEFAULT_AUTH_CONFIG,
   type HistoryEntry,
 } from './api-tester-types.ts';
@@ -37,9 +38,31 @@ function saveAuthConfig(config: AuthConfig): void {
   }
 }
 
+// Load persisted custom cookies from localStorage
+function loadPersistedCookies(): CustomCookie[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = localStorage.getItem('api-tester-cookies');
+    if (stored) {
+      return JSON.parse(stored) as CustomCookie[];
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return [];
+}
+
+// Save custom cookies to localStorage
+function saveCookies(cookies: CustomCookie[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('api-tester-cookies', JSON.stringify(cookies));
+}
+
 const initialState: ApiTesterState = {
   selectedServer: '',
   authConfig: loadPersistedAuthConfig(),
+  customCookies: loadPersistedCookies(),
   pathParams: {},
   queryParams: {},
   headers: {
@@ -69,6 +92,34 @@ export const useApiTesterStore = create<ApiTesterStore>((set) => ({
       set(() => {
         saveAuthConfig(DEFAULT_AUTH_CONFIG);
         return { authConfig: DEFAULT_AUTH_CONFIG };
+      }),
+
+    addCustomCookie: (cookie) =>
+      set((state) => {
+        const newCookies = [...state.customCookies, cookie];
+        saveCookies(newCookies);
+        return { customCookies: newCookies };
+      }),
+
+    updateCustomCookie: (index, cookie) =>
+      set((state) => {
+        const newCookies = [...state.customCookies];
+        newCookies[index] = { ...newCookies[index], ...cookie };
+        saveCookies(newCookies);
+        return { customCookies: newCookies };
+      }),
+
+    removeCustomCookie: (index) =>
+      set((state) => {
+        const newCookies = state.customCookies.filter((_, i) => i !== index);
+        saveCookies(newCookies);
+        return { customCookies: newCookies };
+      }),
+
+    clearCustomCookies: () =>
+      set(() => {
+        saveCookies([]);
+        return { customCookies: [] };
       }),
 
     setPathParam: (key, value) =>
@@ -127,6 +178,7 @@ export const apiTesterStoreActions = useApiTesterStore.getState().actions;
 // Selector hooks
 export const useSelectedServer = () => useApiTesterStore((s) => s.selectedServer);
 export const useAuthConfig = () => useApiTesterStore((s) => s.authConfig);
+export const useCustomCookies = () => useApiTesterStore((s) => s.customCookies);
 export const usePathParams = () => useApiTesterStore((s) => s.pathParams);
 export const useQueryParams = () => useApiTesterStore((s) => s.queryParams);
 export const useHeaders = () => useApiTesterStore((s) => s.headers);

@@ -18,6 +18,7 @@ import {
   executeRequest,
   getExecuteStatusColor,
   useAuthConfig,
+  useCustomCookies,
   useExecuteError,
   useHeaders,
   useIsExecuting,
@@ -40,13 +41,14 @@ import { FuturSelect } from '@/shared/ui/select';
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: OpenAPISpec }) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [showHeaders, setShowHeaders] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [showHeaders, setShowHeaders] = useState(true);
+  const [showAuth, setShowAuth] = useState(true);
   const [copiedResponse, setCopiedResponse] = useState(false);
   const [jsonError, setJsonError] = useState<string | null>(null);
 
   const selectedServer = useSelectedServer();
   const authConfig = useAuthConfig();
+  const customCookies = useCustomCookies();
   const pathParams = usePathParams();
   const queryParams = useQueryParams();
   const headers = useHeaders();
@@ -106,6 +108,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
       headers,
       body: requestBody,
       authConfig,
+      customCookies,
     });
     apiTesterStoreActions.setExecuting(false);
 

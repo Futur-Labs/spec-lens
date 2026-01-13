@@ -25,8 +25,12 @@ export function AlertProvider() {
           duration: 1800,
         }}
         icons={{
-          success: <FaCircleCheck style={{ color: theme.colors.successColor, fontSize: '3.2rem' }} />,
-          warning: <IoIosWarning style={{ color: theme.colors.warningColor, fontSize: '3.2rem' }} />,
+          success: (
+            <FaCircleCheck style={{ color: theme.colors.successColor, fontSize: '3.2rem' }} />
+          ),
+          warning: (
+            <IoIosWarning style={{ color: theme.colors.warningColor, fontSize: '3.2rem' }} />
+          ),
           error: <MdError style={{ color: theme.colors.errorColor, fontSize: '3.2rem' }} />,
         }}
         expand={true}

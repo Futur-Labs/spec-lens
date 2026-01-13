@@ -1,5 +1,6 @@
 import type {
   AuthConfig,
+  CustomCookie,
   ExecuteRequestParams,
   ExecuteRequestResult,
 } from '../model/api-tester-types';
@@ -86,13 +87,24 @@ function applyAuth(
 
 interface ExecuteRequestOptions extends ExecuteRequestParams {
   authConfig?: AuthConfig;
+  customCookies?: CustomCookie[];
 }
 
 /**
  * Execute an API request via server proxy to avoid CORS issues
  */
 export async function executeRequest(params: ExecuteRequestOptions): Promise<ExecuteRequestResult> {
-  const { baseUrl, path, method, pathParams, queryParams, headers, body, authConfig } = params;
+  const {
+    baseUrl,
+    path,
+    method,
+    pathParams,
+    queryParams,
+    headers,
+    body,
+    authConfig,
+    customCookies,
+  } = params;
 
   const startTime = performance.now();
 
@@ -115,6 +127,19 @@ export async function executeRequest(params: ExecuteRequestOptions): Promise<Exe
       const authResult = applyAuth(authConfig, filteredHeaders, filteredQueryParams);
       filteredHeaders = authResult.headers;
       filteredQueryParams = authResult.queryParams;
+    }
+
+    // Apply custom cookies
+    if (customCookies && customCookies.length > 0) {
+      const enabledCookies = customCookies.filter((c) => c.enabled && c.name && c.value);
+      if (enabledCookies.length > 0) {
+        const cookieString = enabledCookies.map((c) => `${c.name}=${c.value}`).join('; ');
+        // Append to existing Cookie header or create new one
+        const existingCookie = filteredHeaders['Cookie'] || '';
+        filteredHeaders['Cookie'] = existingCookie
+          ? `${existingCookie}; ${cookieString}`
+          : cookieString;
+      }
     }
 
     const response = (await proxyApiRequest({

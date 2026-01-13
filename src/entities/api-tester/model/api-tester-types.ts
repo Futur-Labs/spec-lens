@@ -23,6 +23,12 @@ export const DEFAULT_AUTH_CONFIG: AuthConfig = {
   persistSession: false,
 };
 
+export interface CustomCookie {
+  name: string;
+  value: string;
+  enabled: boolean;
+}
+
 export interface ExecuteRequestParams {
   baseUrl: string;
   path: string;
@@ -69,6 +75,9 @@ export interface ApiTesterState {
   // Authentication
   authConfig: AuthConfig;
 
+  // Custom Cookies
+  customCookies: CustomCookie[];
+
   // Request params
   pathParams: Record<string, string>;
   queryParams: Record<string, string>;
@@ -89,6 +98,11 @@ export interface ApiTesterActions {
   // Authentication
   setAuthConfig: (config: Partial<AuthConfig>) => void;
   clearAuth: () => void;
+  // Custom Cookies
+  addCustomCookie: (cookie: CustomCookie) => void;
+  updateCustomCookie: (index: number, cookie: Partial<CustomCookie>) => void;
+  removeCustomCookie: (index: number) => void;
+  clearCustomCookies: () => void;
   // Request params
   setPathParam: (key: string, value: string) => void;
   setQueryParam: (key: string, value: string) => void;
