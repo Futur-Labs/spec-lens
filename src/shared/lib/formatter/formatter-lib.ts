@@ -139,9 +139,9 @@ export function deepCamelize<T>(input: any): T {
   return input;
 }
 
-export function deepSnakeize<T>(input: any): T {
+export function deepCamelToSnake<T>(input: any): T {
   if (Array.isArray(input)) {
-    return input.map((item) => deepSnakeize(item)) as any;
+    return input.map((item) => deepCamelToSnake(item)) as any;
   }
 
   if (input !== null && typeof input === 'object') {
@@ -153,7 +153,7 @@ export function deepSnakeize<T>(input: any): T {
         .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2') // 연속된 대문자 처리
         .toLowerCase();
 
-      result[snakeKey] = deepSnakeize(input[key]);
+      result[snakeKey] = deepCamelToSnake(input[key]);
     }
     return result as T;
   }

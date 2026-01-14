@@ -7,7 +7,7 @@ import axios, {
 } from 'axios';
 import qs from 'qs';
 
-import { deepSnakeize, logOnDev } from '@/shared/lib';
+import { deepCamelToSnake, logOnDev } from '@/shared/lib';
 
 const onRequest = async (config: AxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
   const { method, url, headers, params, data, baseURL } = config;
@@ -19,7 +19,7 @@ const onRequest = async (config: AxiosRequestConfig): Promise<InternalAxiosReque
   }
 
   if (params) {
-    config.params = deepSnakeize(params);
+    config.params = deepCamelToSnake(params);
   }
 
   if (data) {
@@ -34,7 +34,7 @@ const onRequest = async (config: AxiosRequestConfig): Promise<InternalAxiosReque
     } else if (typeof data === 'string' || typeof data === 'number') {
       config.data = data;
     } else if (data && typeof data === 'object') {
-      config.data = deepSnakeize(data);
+      config.data = deepCamelToSnake(data);
     } else {
       config.data = data;
     }

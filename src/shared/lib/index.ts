@@ -39,7 +39,7 @@ export {
   formatAgriculturalBusinessCheckNumber,
   toPascalCase,
   deepCamelize,
-  deepSnakeize,
+  deepCamelToSnake,
 } from './formatter/formatter-lib.ts';
 
 export {
@@ -52,5 +52,3 @@ export {
 
 export { createValidator } from './validation/create-validator.ts';
 export { createSchema } from './validation/create-schema.ts';
-
-export { generateTimeOptions } from './time/time-lib.ts';
