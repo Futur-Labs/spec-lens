@@ -2,65 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { type SessionCookie, type CookieStore } from './cookie-types.ts';
-
-// ========== Cookie Utility Functions ==========
-
-// Check if a cookie is expired based on its expires field
-export function isCookieExpired(cookie: SessionCookie): boolean {
-  if (!cookie.expires) return false;
-  const expiresDate = new Date(cookie.expires);
-  return expiresDate.getTime() < Date.now();
-}
-
-// Check if a cookie will expire soon (within specified minutes, default 5 minutes)
-export function isCookieExpiringSoon(cookie: SessionCookie, withinMinutes = 5): boolean {
-  if (!cookie.expires) return false;
-  const expiresDate = new Date(cookie.expires);
-  const warningThreshold = Date.now() + withinMinutes * 60 * 1000;
-  return expiresDate.getTime() < warningThreshold && expiresDate.getTime() > Date.now();
-}
-
-// Get time until cookie expires in a human-readable format
-export function getCookieExpirationInfo(cookie: SessionCookie): {
-  isExpired: boolean;
-  isExpiringSoon: boolean;
-  expiresIn: string | null;
-} {
-  if (!cookie.expires) {
-    return { isExpired: false, isExpiringSoon: false, expiresIn: null };
-  }
-
-  const expiresDate = new Date(cookie.expires);
-  const now = Date.now();
-  const diff = expiresDate.getTime() - now;
-
-  if (diff <= 0) {
-    return { isExpired: true, isExpiringSoon: false, expiresIn: 'Expired' };
-  }
-
-  const minutes = Math.floor(diff / (1000 * 60));
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  let expiresIn: string;
-  if (days > 0) {
-    expiresIn = `${days}d`;
-  } else if (hours > 0) {
-    expiresIn = `${hours}h`;
-  } else {
-    expiresIn = `${minutes}m`;
-  }
-
-  return {
-    isExpired: false,
-    isExpiringSoon: minutes < 5,
-    expiresIn,
-  };
-}
-
-function filterExpiredCookies(cookies: SessionCookie[]): SessionCookie[] {
-  return cookies.filter((cookie) => !isCookieExpired(cookie));
-}
+import { filterExpiredCookies } from '../lib/cookie-expired-check.ts';
 
 export const useCookieStore = create<CookieStore>()(
   persist(

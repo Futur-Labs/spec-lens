@@ -1,4 +1,4 @@
-import type { CustomCookie, SessionCookie } from './cookie-types';
+import type { CustomCookie, SessionCookie } from '@/entities/cookie/@x/api-tester.ts';
 import type { ResponseState } from '@/shared/server';
 import type { HttpMethod } from '@/shared/type';
 
