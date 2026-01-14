@@ -19,13 +19,10 @@ import {
 
 import { HeaderAutocompleteInput } from './header-autocomplete-input';
 import { VariableAutocompleteInput } from './variable-autocomplete-input';
-import {
-  historyStoreActions,
-  executeApiTestRequest,
-  getExecuteStatusColor,
-  useAuthConfig,
-} from '@/entities/api-tester';
+import { useAuthConfig } from '@/entities/api-auth';
+import { executeApiTestRequest, getExecuteStatusColor } from '@/entities/api-tester';
 import { cookieStoreActions, useCustomCookies, useSessionCookies } from '@/entities/cookie';
+import { historyStoreActions } from '@/entities/history';
 import {
   type OpenAPISpec,
   type ParameterObject,

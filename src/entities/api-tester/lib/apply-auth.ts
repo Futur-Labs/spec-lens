@@ -1,10 +1,10 @@
-import type { AuthConfig } from '../model/api-tester-types';
+import type { ApiAuthConfig } from '@/entities/api-auth/@x/api-tester.ts';
 
 /**
  * Apply authentication to headers and query params based on auth config
  */
 export function applyAuth(
-  authConfig: AuthConfig,
+  authConfig: ApiAuthConfig,
   headers: Record<string, string>,
   queryParams: Record<string, string>,
 ): { headers: Record<string, string>; queryParams: Record<string, string> } {

@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import { useVariables } from '@/entities/api-tester';
+import { useVariables } from '@/entities/variable';
 
 interface Props {
   value: string;

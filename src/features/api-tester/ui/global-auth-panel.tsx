@@ -16,23 +16,16 @@ import {
   X,
 } from 'lucide-react';
 
-import {
-  authStoreActions,
-  variableStoreActions,
-  historyStoreActions,
-  type AuthType,
-  type HistoryEntry,
-  useAuthConfig,
-  useHistory,
-  useVariables,
-} from '@/entities/api-tester';
+import { apiAuthStoreActions, useAuthConfig, type ApiAuthType } from '@/entities/api-auth';
 import {
   cookieStoreActions,
   getCookieExpirationInfo,
   useCustomCookies,
   useSessionCookies,
 } from '@/entities/cookie';
+import { historyStoreActions, useHistory, type HistoryEntry } from '@/entities/history';
 import { getMethodColor } from '@/entities/openapi';
+import { useVariables, variableStoreActions } from '@/entities/variable';
 import { FuturSelect } from '@/shared/ui/select';
 
 const inputStyle = {
@@ -330,7 +323,7 @@ function AuthTab() {
         </label>
         <FuturSelect
           value={authConfig.type}
-          onChange={(val) => authStoreActions.setAuthConfig({ type: val as AuthType })}
+          onChange={(val) => apiAuthStoreActions.setApiAuthConfig({ type: val as ApiAuthType })}
           options={[
             { label: 'None', value: 'none' },
             { label: 'Bearer Token', value: 'bearer' },
@@ -356,7 +349,7 @@ function AuthTab() {
           <input
             type='password'
             value={authConfig.bearerToken || ''}
-            onChange={(e) => authStoreActions.setAuthConfig({ bearerToken: e.target.value })}
+            onChange={(e) => apiAuthStoreActions.setApiAuthConfig({ bearerToken: e.target.value })}
             placeholder='Enter your bearer token'
             style={inputStyle}
           />
@@ -380,7 +373,9 @@ function AuthTab() {
               </label>
               <input
                 value={authConfig.apiKeyName || ''}
-                onChange={(e) => authStoreActions.setAuthConfig({ apiKeyName: e.target.value })}
+                onChange={(e) =>
+                  apiAuthStoreActions.setApiAuthConfig({ apiKeyName: e.target.value })
+                }
                 placeholder='X-API-Key'
                 style={inputStyle}
               />
@@ -399,7 +394,7 @@ function AuthTab() {
               <FuturSelect
                 value={authConfig.apiKeyLocation || 'header'}
                 onChange={(val) =>
-                  authStoreActions.setAuthConfig({
+                  apiAuthStoreActions.setApiAuthConfig({
                     apiKeyLocation: val as 'header' | 'query',
                   })
                 }
@@ -424,7 +419,9 @@ function AuthTab() {
             <input
               type='password'
               value={authConfig.apiKeyValue || ''}
-              onChange={(e) => authStoreActions.setAuthConfig({ apiKeyValue: e.target.value })}
+              onChange={(e) =>
+                apiAuthStoreActions.setApiAuthConfig({ apiKeyValue: e.target.value })
+              }
               placeholder='Enter your API key'
               style={inputStyle}
             />
@@ -448,7 +445,9 @@ function AuthTab() {
             </label>
             <input
               value={authConfig.basicUsername || ''}
-              onChange={(e) => authStoreActions.setAuthConfig({ basicUsername: e.target.value })}
+              onChange={(e) =>
+                apiAuthStoreActions.setApiAuthConfig({ basicUsername: e.target.value })
+              }
               placeholder='Username'
               style={inputStyle}
             />
@@ -467,7 +466,9 @@ function AuthTab() {
             <input
               type='password'
               value={authConfig.basicPassword || ''}
-              onChange={(e) => authStoreActions.setAuthConfig({ basicPassword: e.target.value })}
+              onChange={(e) =>
+                apiAuthStoreActions.setApiAuthConfig({ basicPassword: e.target.value })
+              }
               placeholder='Password'
               style={inputStyle}
             />
@@ -498,14 +499,16 @@ function AuthTab() {
             <input
               type='checkbox'
               checked={authConfig.persistSession || false}
-              onChange={(e) => authStoreActions.setAuthConfig({ persistSession: e.target.checked })}
+              onChange={(e) =>
+                apiAuthStoreActions.setApiAuthConfig({ persistSession: e.target.checked })
+              }
               style={{ width: '1.4rem', height: '1.4rem', cursor: 'pointer' }}
             />
             Remember credentials
           </label>
 
           <button
-            onClick={() => authStoreActions.clearAuth()}
+            onClick={() => apiAuthStoreActions.clearAuth()}
             style={{
               display: 'flex',
               alignItems: 'center',
