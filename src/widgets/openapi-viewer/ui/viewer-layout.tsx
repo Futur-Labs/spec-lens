@@ -6,15 +6,15 @@ import { Menu, X, Upload, RefreshCw, Link, FileJson } from 'lucide-react';
 
 import { EndpointDetail } from './endpoint-detail.tsx';
 import { Sidebar } from './sidebar.tsx';
+import { useSelectedEndpoint } from '@/entities/endpoint-selection';
 import {
-  openAPIStoreActions,
-  useOpenAPIStore,
+  specStoreActions,
+  useSpecStore,
   useSpec,
-  useIsSidebarOpen,
-  useSelectedEndpoint,
   type OpenAPISpec,
   validateOpenAPISpec,
-} from '@/entities/openapi';
+} from '@/entities/openapi-spec';
+import { sidebarStoreActions, useIsSidebarOpen } from '@/entities/openapi-sidebar';
 import { GlobalAuthPanel } from '@/features/api-tester';
 import { checkSpecUpdate } from '@/shared/server';
 
@@ -23,12 +23,12 @@ export function ViewerLayout() {
   const spec = useSpec();
   const isSidebarOpen = useIsSidebarOpen();
   const selectedEndpointKey = useSelectedEndpoint();
-  const endpoints = useOpenAPIStore((s) => s.endpoints);
-  const specSource = useOpenAPIStore((s) => s.specSource);
+  const endpoints = useSpecStore((s) => s.endpoints);
+  const specSource = useSpecStore((s) => s.specSource);
 
   // Clear spec and navigate back to spec loader
   const handleClearSpec = () => {
-    openAPIStoreActions.clearSpec();
+    specStoreActions.clearSpec();
     navigate({ to: '/', replace: true });
   };
 
@@ -42,8 +42,8 @@ export function ViewerLayout() {
 
     // Start loading state
     setIsSpinning(true);
-    openAPIStoreActions.setRefreshing(true);
-    openAPIStoreActions.setRefreshError(null);
+    specStoreActions.setRefreshing(true);
+    specStoreActions.setRefreshError(null);
 
     const MIN_SPIN_DURATION = 800; // Minimum spin time for UX
     const startTime = Date.now();
@@ -65,7 +65,7 @@ export function ViewerLayout() {
         }
 
         // Update the spec with new data
-        openAPIStoreActions.setSpec(result.data as OpenAPISpec, {
+        specStoreActions.setSpec(result.data as OpenAPISpec, {
           type: 'url',
           name: specSource.name,
           etag: result.newEtag,
@@ -73,14 +73,14 @@ export function ViewerLayout() {
         });
       } else {
         // No update available - just update the refresh time
-        openAPIStoreActions.updateSpecSource({
+        specStoreActions.updateSpecSource({
           etag: result.newEtag || specSource.etag,
           lastModified: result.newLastModified || specSource.lastModified,
         });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to refresh spec';
-      openAPIStoreActions.setRefreshError(message);
+      specStoreActions.setRefreshError(message);
     } finally {
       // Ensure minimum spin duration for smooth UX
       const elapsed = Date.now() - startTime;
@@ -91,7 +91,7 @@ export function ViewerLayout() {
       }
 
       setIsSpinning(false);
-      openAPIStoreActions.setRefreshing(false);
+      specStoreActions.setRefreshing(false);
     }
   };
 
@@ -135,7 +135,7 @@ export function ViewerLayout() {
         className='mobile-only'
       >
         <motion.button
-          onClick={openAPIStoreActions.toggleSidebar}
+          onClick={sidebarStoreActions.toggleSidebar}
           whileHover={{
             backgroundColor: 'rgba(255,255,255,0.1)',
             scale: 1.05,
@@ -208,7 +208,7 @@ export function ViewerLayout() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
             <motion.button
-              onClick={openAPIStoreActions.toggleSidebar}
+              onClick={sidebarStoreActions.toggleSidebar}
               whileHover={{
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 borderColor: 'rgba(255,255,255,0.2)',

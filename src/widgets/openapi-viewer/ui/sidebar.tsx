@@ -4,18 +4,22 @@ import { useDeferredValue, useEffect, useEffectEvent, useRef, useState } from 'r
 import { ChevronRight, Search, X } from 'lucide-react';
 
 import {
+  endpointSelectionStoreActions,
+  useSelectedEndpoint,
+} from '@/entities/endpoint-selection';
+import {
+  endpointFilterStoreActions,
+  useSearchQuery,
+  useSelectedTags,
+  useSelectedMethods,
+} from '@/entities/endpoint-filter';
+import {
   filterEndpoints,
   groupEndpointsByTag,
   MethodBadge,
-  openAPIStoreActions,
-  useExpandedTags,
-  useIsSidebarOpen,
-  useOpenAPIStore,
-  useSearchQuery,
-  useSelectedEndpoint,
-  useSelectedMethods,
-  useSelectedTags,
-} from '@/entities/openapi';
+  useSpecStore,
+} from '@/entities/openapi-spec';
+import { sidebarStoreActions, useIsSidebarOpen, useExpandedTags } from '@/entities/openapi-sidebar';
 import { smoothScrollTo } from '@/shared/lib';
 import { Tooltip } from '@/shared/ui/tooltip';
 
@@ -26,8 +30,8 @@ function generateEndpointHash(method: string, path: string): string {
 let hasInitiallyMounted = false;
 
 export function Sidebar() {
-  const spec = useOpenAPIStore((s) => s.spec);
-  const endpoints = useOpenAPIStore((s) => s.endpoints);
+  const spec = useSpecStore((s) => s.spec);
+  const endpoints = useSpecStore((s) => s.endpoints);
   const searchQuery = useSearchQuery();
   const selectedTags = useSelectedTags();
   const selectedMethods = useSelectedMethods();
@@ -67,12 +71,12 @@ export function Sidebar() {
     });
 
     if (matchingEndpoint) {
-      openAPIStoreActions.selectEndpoint(matchingEndpoint.path, matchingEndpoint.method);
+      endpointSelectionStoreActions.selectEndpoint(matchingEndpoint.path, matchingEndpoint.method);
 
       // Expand the tag containing this endpoint
       const endpointTag = matchingEndpoint.operation.tags?.[0] || 'default';
       if (!expandedTags.includes(endpointTag)) {
-        openAPIStoreActions.toggleTagExpanded(endpointTag);
+        sidebarStoreActions.toggleTagExpanded(endpointTag);
       }
     }
   }, [endpoints]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -224,7 +228,7 @@ export function Sidebar() {
               <input
                 type='text'
                 value={searchQuery}
-                onChange={(e) => openAPIStoreActions.setSearchQuery(e.target.value)}
+                onChange={(e) => endpointFilterStoreActions.setSearchQuery(e.target.value)}
                 placeholder='Search endpoints...'
                 style={{
                   flex: 1,
@@ -237,7 +241,7 @@ export function Sidebar() {
               />
               {searchQuery && (
                 <button
-                  onClick={openAPIStoreActions.clearFilters}
+                  onClick={endpointFilterStoreActions.clearFilters}
                   style={{
                     padding: '0.2rem',
                     backgroundColor: 'transparent',
@@ -279,7 +283,7 @@ export function Sidebar() {
                   <div key={tag} style={{ marginBottom: '0.4rem' }}>
                     {/* Tag Header */}
                     <button
-                      onClick={() => openAPIStoreActions.toggleTagExpanded(tag)}
+                      onClick={() => sidebarStoreActions.toggleTagExpanded(tag)}
                       style={{
                         width: '100%',
                         display: 'flex',
@@ -355,7 +359,7 @@ export function Sidebar() {
                                     }
                                   }}
                                   onClick={() => {
-                                    openAPIStoreActions.selectEndpoint(
+                                    endpointSelectionStoreActions.selectEndpoint(
                                       endpoint.path,
                                       endpoint.method,
                                     );

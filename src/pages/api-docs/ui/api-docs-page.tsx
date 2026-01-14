@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useSpec, useOpenAPIStoreHydration } from '@/entities/openapi';
+import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
 import { ViewerLayout } from '@/widgets/openapi-viewer';
 import {
   SpecLoaderHeader,
@@ -10,7 +10,7 @@ import {
 } from '@/widgets/spec-loader';
 
 export function APIDocsPage() {
-  const hydrated = useOpenAPIStoreHydration();
+  const hydrated = useSpecStoreHydration();
   const spec = useSpec();
   const [inputMode, setInputMode] = useState<SpecLoaderType>('file');
 

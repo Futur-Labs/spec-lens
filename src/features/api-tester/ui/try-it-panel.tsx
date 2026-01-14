@@ -33,7 +33,7 @@ import {
   getMergedParameters,
   isReferenceObject,
   useSpecSource,
-} from '@/entities/openapi';
+} from '@/entities/openapi-spec';
 import {
   testParamsStoreActions,
   useExecuteError,

@@ -1,12 +1,12 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import { useSpec, useOpenAPIStoreHydration } from '@/entities/openapi';
+import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
 import { ViewerLayout } from '@/widgets/openapi-viewer';
 
 export function ViewerPage() {
   const navigate = useNavigate();
-  const hydrated = useOpenAPIStoreHydration();
+  const hydrated = useSpecStoreHydration();
   const spec = useSpec();
 
   // Redirect to / when no spec is loaded

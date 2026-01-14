@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import { useSpec, useOpenAPIStoreHydration } from '@/entities/openapi';
+import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
 import {
   SpecLoaderHeader,
   SpecInputModeTabs,
@@ -11,7 +11,7 @@ import {
 
 export function SpecLoaderPage() {
   const navigate = useNavigate();
-  const hydrated = useOpenAPIStoreHydration();
+  const hydrated = useSpecStoreHydration();
   const spec = useSpec();
   const [inputMode, setInputMode] = useState<SpecLoaderType>('file');
 

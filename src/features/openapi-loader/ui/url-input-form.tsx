@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 
 import { Link, Loader2, AlertCircle } from 'lucide-react';
 
-import { type OpenAPISpec, validateOpenAPISpec, openAPIStoreActions } from '@/entities/openapi';
+import { type OpenAPISpec, validateOpenAPISpec, specStoreActions } from '@/entities/openapi-spec';
 import { fetchExternalSpec } from '@/shared/server';
 
 export function UrlInputForm() {
@@ -33,7 +33,7 @@ export function UrlInputForm() {
 
     setIsLoadingLocal(true);
     setLocalError(null);
-    openAPIStoreActions.setLoading(true);
+    specStoreActions.setLoading(true);
 
     try {
       let json: unknown;
@@ -62,7 +62,7 @@ export function UrlInputForm() {
         throw new Error(validation.error);
       }
 
-      openAPIStoreActions.setSpec(json as OpenAPISpec, {
+      specStoreActions.setSpec(json as OpenAPISpec, {
         type: 'url',
         name: url,
         etag,
@@ -85,10 +85,10 @@ export function UrlInputForm() {
       }
 
       setLocalError(message);
-      openAPIStoreActions.setError(message);
+      specStoreActions.setError(message);
     } finally {
       setIsLoadingLocal(false);
-      openAPIStoreActions.setLoading(false);
+      specStoreActions.setLoading(false);
     }
   }
 

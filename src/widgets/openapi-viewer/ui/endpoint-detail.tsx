@@ -15,7 +15,7 @@ import {
   SchemaViewer,
   generateExample,
   getExampleFromMediaType,
-} from '@/entities/openapi';
+} from '@/entities/openapi-spec';
 import { TryItPanel } from '@/features/api-tester';
 import { FormattedText } from '@/shared/ui/formatted-text';
 

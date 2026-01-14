@@ -3,13 +3,13 @@ import { useState } from 'react';
 
 import { ChevronDown, Info } from 'lucide-react';
 
-import { resolveSchema } from '../lib/openapi-parser.ts';
+import { resolveSchema } from '../lib/resolve-schema.ts';
 import {
   isReferenceObject,
   type OpenAPISpec,
   type ReferenceObject,
   type SchemaObject,
-} from '../model/openapi-types';
+} from '../model/openapi-types.ts';
 import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function SchemaViewer({

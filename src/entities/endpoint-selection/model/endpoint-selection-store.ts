@@ -1,0 +1,60 @@
+import { useSyncExternalStore } from 'react';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+import type { HttpMethod } from '@/shared/type';
+
+import type { EndpointSelectionState, EndpointSelectionStore } from './endpoint-selection-types.ts';
+
+const initialState: EndpointSelectionState = {
+  selectedEndpoint: null,
+};
+
+export const useEndpointSelectionStore = create<EndpointSelectionStore>()(
+  persist(
+    (set) => ({
+      ...initialState,
+
+      actions: {
+        selectEndpoint: (path: string, method: HttpMethod) => {
+          set({ selectedEndpoint: { path, method } });
+        },
+
+        clearSelection: () => {
+          set({ selectedEndpoint: null });
+        },
+      },
+    }),
+    {
+      name: 'endpoint-selection-storage',
+      partialize: (state) => ({
+        selectedEndpoint: state.selectedEndpoint,
+      }),
+      skipHydration: true,
+    },
+  ),
+);
+
+// Actions (safe for SSR - no state access)
+export const endpointSelectionStoreActions = useEndpointSelectionStore.getState().actions;
+
+// Selector hooks
+export const useSelectedEndpoint = () =>
+  useEndpointSelectionStore((state) => state.selectedEndpoint);
+
+// SSR-safe hydration hook
+const emptySubscribe = () => () => {};
+
+export function useEndpointSelectionStoreHydration() {
+  const hydrated = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  if (hydrated) {
+    useEndpointSelectionStore.persist.rehydrate();
+  }
+
+  return hydrated;
+}

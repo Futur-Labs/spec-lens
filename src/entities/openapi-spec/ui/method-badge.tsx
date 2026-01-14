@@ -1,5 +1,6 @@
-import { getMethodColor } from '../lib/openapi-parser.ts';
 import type { HttpMethod } from '@/shared/type';
+
+import { getMethodColor } from '../lib/method-color.ts';
 
 export function MethodBadge({
   method,
