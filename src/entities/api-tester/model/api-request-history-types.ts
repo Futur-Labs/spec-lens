@@ -1,5 +1,5 @@
-import type { ResponseState } from './api-tester-types';
-import type { HttpMethod } from '@/entities/openapi';
+import type { ResponseState } from '@/shared/server';
+import type { HttpMethod } from '@/shared/type';
 
 export interface HistoryEntry {
   id: string; // Unique ID (timestamp + random)

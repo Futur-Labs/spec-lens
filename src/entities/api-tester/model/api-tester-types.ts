@@ -1,5 +1,5 @@
-import type { HistoryEntry } from './api-request-history-types';
-import { type HttpMethod } from '@/entities/openapi';
+import type { ResponseState } from '@/shared/server';
+import type { HttpMethod } from '@/shared/type';
 
 export type AuthType = 'none' | 'bearer' | 'apiKey' | 'basic';
 
@@ -76,89 +76,6 @@ interface ExecuteError {
 }
 
 export type ExecuteRequestResult = ExecuteResult | ExecuteError;
-
-export interface ResponseState {
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  data: unknown;
-  duration: number;
-  size: number;
-}
-
-export interface ApiTesterState {
-  // Server
-  selectedServer: string;
-
-  // Authentication
-  authConfig: AuthConfig;
-
-  // Custom Cookies
-  customCookies: CustomCookie[];
-
-  // Session Cookies (from backend Set-Cookie headers)
-  sessionCookies: SessionCookie[];
-
-  // Variables (global, shared across all endpoints)
-  variables: Variable[];
-
-  // Request params
-  pathParams: Record<string, string>;
-  queryParams: Record<string, string>;
-  headers: Record<string, string>;
-  requestBody: string;
-
-  // Response
-  response: ResponseState | null;
-  isExecuting: boolean;
-  executeError: string | null;
-
-  // History
-  history: HistoryEntry[];
-}
-
-export interface ApiTesterActions {
-  setSelectedServer: (server: string) => void;
-  // Authentication
-  setAuthConfig: (config: Partial<AuthConfig>) => void;
-  clearAuth: () => void;
-  // Custom Cookies
-  addCustomCookie: (cookie: CustomCookie) => void;
-  updateCustomCookie: (index: number, cookie: Partial<CustomCookie>) => void;
-  removeCustomCookie: (index: number) => void;
-  clearCustomCookies: () => void;
-  // Session Cookies
-  setSessionCookies: (cookies: SessionCookie[]) => void;
-  addSessionCookies: (cookies: SessionCookie[]) => void;
-  clearSessionCookies: () => void;
-  removeExpiredCookies: () => number; // Returns count of removed cookies
-  // Variables
-  addVariable: (variable: Variable) => void;
-  updateVariable: (index: number, variable: Partial<Variable>) => void;
-  removeVariable: (index: number) => void;
-  clearVariables: () => void;
-  // Request params
-  setPathParam: (key: string, value: string) => void;
-  setQueryParam: (key: string, value: string) => void;
-  setHeader: (key: string, value: string) => void;
-  removeHeader: (key: string) => void;
-  setRequestBody: (body: string) => void;
-  setResponse: (response: ResponseState) => void;
-  setExecuting: (executing: boolean) => void;
-  setExecuteError: (error: string | null) => void;
-  clearResponse: () => void;
-  resetParams: () => void;
-  addToHistory: (entry: HistoryEntry) => void;
-  removeHistoryEntry: (id: string) => void;
-  clearHistory: () => void;
-  // Endpoint test data persistence
-  saveCurrentParams: (specSourceId: string, endpointKey: string) => void;
-  loadSavedParams: (specSourceId: string, endpointKey: string) => boolean; // Returns true if data exists
-  clearEndpointParams: (specSourceId: string, endpointKey: string) => void;
-  clearAllParams: (specSourceId: string) => void;
-}
-
-export type ApiTesterStore = ApiTesterState & { actions: ApiTesterActions };
 
 // Persisted test data per endpoint
 export interface EndpointTestData {

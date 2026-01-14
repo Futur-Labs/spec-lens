@@ -1,4 +1,5 @@
-import { type OpenAPISpec, type HttpMethod, type ParsedEndpoint } from './openapi-types.ts';
+import { type OpenAPISpec, type ParsedEndpoint } from './openapi-types.ts';
+import type { HttpMethod } from '@/shared/type';
 
 export interface SpecSource {
   type: 'file' | 'url';

@@ -3,18 +3,7 @@
  * Based on OpenAPI Specification v3.0.3
  */
 
-export const HTTP_METHODS = [
-  'get',
-  'post',
-  'put',
-  'delete',
-  'patch',
-  'options',
-  'head',
-  'trace',
-] as const;
-
-export type HttpMethod = (typeof HTTP_METHODS)[number];
+import type { HttpMethod } from '@/shared/type';
 
 export interface OpenAPISpec {
   openapi: string;

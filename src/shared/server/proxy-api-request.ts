@@ -9,23 +9,26 @@ import { parseSetCookieHeader, type ParsedCookie } from './parse-set-cookie-head
 const cookieJar = new CookieJar();
 const axiosWithCookies: AxiosInstance = wrapper(axios.create({ jar: cookieJar }));
 
-interface ProxyRequestParams {
+type ProxyRequestParams = {
   url: string;
   method: string;
   headers?: Record<string, string>;
   queryParams?: Record<string, string>;
   body?: unknown;
-}
+};
 
-export interface ProxyResponse {
+export type ResponseState = {
   status: number;
   statusText: string;
   headers: Record<string, string>;
   data: any;
   duration: number;
   size: number;
+};
+
+type ProxyResponse = ResponseState & {
   setCookies: ParsedCookie[];
-}
+};
 
 export const proxyApiRequest = createServerFn({ method: 'POST' })
   .inputValidator((data: ProxyRequestParams) => data)

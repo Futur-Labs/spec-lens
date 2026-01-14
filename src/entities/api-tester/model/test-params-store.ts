@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-import type { EndpointTestData, PersistedTestParams, ResponseState } from './api-tester-types.ts';
+import type { EndpointTestData, PersistedTestParams } from './api-tester-types.ts';
+import type { ResponseState } from '@/shared/server';
 
 // ========== Storage Helpers ==========
 

@@ -18,7 +18,6 @@ export type {
   ReferenceObject,
   TagObject,
   ComponentsObject,
-  HttpMethod,
   ParsedEndpoint,
   EndpointsByTag,
   MediaTypeObject,
@@ -26,7 +25,10 @@ export type {
   SecuritySchemeObject,
 } from './model/openapi-types.ts';
 
-export { HTTP_METHODS, isReferenceObject } from './model/openapi-types.ts';
+// Re-export HttpMethod enum from shared
+export { HttpMethod } from '@/shared/type';
+
+export { isReferenceObject } from './model/openapi-types.ts';
 
 // Store types
 export type {

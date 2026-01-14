@@ -2,15 +2,14 @@ import {
   type OpenAPISpec,
   type ParsedEndpoint,
   type EndpointsByTag,
-  type HttpMethod,
   type SchemaObject,
   type ReferenceObject,
   type MediaTypeObject,
   type ExampleObject,
   type ParameterObject,
-  HTTP_METHODS,
   isReferenceObject,
 } from '../model/openapi-types.ts';
+import { HTTP_METHODS, type HttpMethod } from '@/shared/type';
 
 /**
  * Parse OpenAPI spec and extract all endpoints
