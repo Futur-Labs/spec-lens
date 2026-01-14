@@ -1,96 +1,51 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import { type HistoryEntry } from './api-tester-types.ts';
+import type { HistoryStore } from './api-request-history-types.ts';
 
-// ========== History localStorage Functions ==========
-
-const HISTORY_STORAGE_KEY = 'api-tester-history-v1';
 const MAX_HISTORY_ENTRIES = 100;
 
-function loadPersistedHistory(): HistoryEntry[] {
-  if (typeof window === 'undefined') return [];
+export const useHistoryStore = create<HistoryStore>()(
+  persist(
+    (set) => ({
+      history: [],
 
-  try {
-    const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored) as HistoryEntry[];
-    }
-  } catch {
-    // Ignore parse errors
-  }
-  return [];
-}
+      actions: {
+        addToHistory: (entry) =>
+          set((state) => ({
+            history: [entry, ...state.history].slice(0, MAX_HISTORY_ENTRIES),
+          })),
 
-function saveHistory(history: HistoryEntry[]): void {
-  if (typeof window === 'undefined') return;
+        removeHistoryEntry: (id: string) =>
+          set((state) => ({
+            history: state.history.filter((h) => h.id !== id),
+          })),
 
-  try {
-    // Truncate large response data to prevent localStorage overflow
-    const toSave = history.map((entry) => {
-      if (!entry.response) return entry;
+        clearHistory: () => set({ history: [] }),
+      },
+    }),
+    {
+      name: 'api-tester-history',
+      version: 1,
+      partialize: (state) => ({
+        history: state.history.map((entry) => {
+          if (!entry.response) return entry;
 
-      // Check if data is too large when stringified
-      const dataStr = JSON.stringify(entry.response.data);
-      const isTooLarge = dataStr.length > 10000;
+          const dataStr = JSON.stringify(entry.response.data);
+          const isTooLarge = dataStr.length > 10000;
 
-      return {
-        ...entry,
-        response: isTooLarge ? { ...entry.response, data: '[Response too large]' } : entry.response,
-      };
-    });
-    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(toSave));
-  } catch (error) {
-    console.warn('Failed to save history:', error);
-  }
-}
-
-// ========== History Store ==========
-
-export interface HistoryState {
-  history: HistoryEntry[];
-}
-
-export interface HistoryActions {
-  addToHistory: (entry: HistoryEntry) => void;
-  removeHistoryEntry: (id: string) => void;
-  clearHistory: () => void;
-}
-
-export type HistoryStore = HistoryState & { actions: HistoryActions };
-
-const initialState: HistoryState = {
-  history: loadPersistedHistory(),
-};
-
-export const useHistoryStore = create<HistoryStore>((set) => ({
-  ...initialState,
-
-  actions: {
-    addToHistory: (entry: HistoryEntry) =>
-      set((state) => {
-        const newHistory = [entry, ...state.history].slice(0, MAX_HISTORY_ENTRIES);
-        saveHistory(newHistory);
-        return { history: newHistory };
+          return {
+            ...entry,
+            response: isTooLarge
+              ? { ...entry.response, data: '[Response too large]' }
+              : entry.response,
+          };
+        }),
       }),
-
-    removeHistoryEntry: (id: string) =>
-      set((state) => {
-        const newHistory = state.history.filter((h) => h.id !== id);
-        saveHistory(newHistory);
-        return { history: newHistory };
-      }),
-
-    clearHistory: () => {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(HISTORY_STORAGE_KEY);
-      }
-      return set({ history: [] });
     },
-  },
-}));
+  ),
+);
 
-// Actions - can be used outside of React components
 export const historyStoreActions = useHistoryStore.getState().actions;
 
-// Selector hooks
 export const useHistory = () => useHistoryStore((s) => s.history);

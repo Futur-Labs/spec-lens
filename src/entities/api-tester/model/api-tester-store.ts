@@ -24,7 +24,7 @@ export {
 } from './test-params-store.ts';
 
 // Re-export history store
-export { historyStoreActions, useHistory } from './history-store.ts';
+export { historyStoreActions } from './history-store.ts';
 
 // ========== Cookie Utility Functions ==========
 

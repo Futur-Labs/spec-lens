@@ -9,11 +9,11 @@ export type {
   SessionCookie,
   Variable,
   ResponseState,
-  HistoryEntry,
   ApiTesterState,
   ApiTesterActions,
   ApiTesterStore,
 } from './model/api-tester-types.ts';
+export type { HistoryEntry } from './model/api-request-history-types.ts';
 
 export { DEFAULT_AUTH_CONFIG } from './model/api-tester-types.ts';
 
@@ -27,12 +27,11 @@ export {
   useCustomCookies,
   useSessionCookies,
   useVariables,
-  useHistory,
-  // Cookie expiration utilities
   isCookieExpired,
   isCookieExpiringSoon,
   getCookieExpirationInfo,
 } from './model/api-tester-store.ts';
+export { useHistory } from './model/history-store.ts';
 
 export {
   // Test params store

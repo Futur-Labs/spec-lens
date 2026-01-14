@@ -1,3 +1,4 @@
+import type { HistoryEntry } from './api-request-history-types';
 import { type HttpMethod } from '@/entities/openapi';
 
 export type AuthType = 'none' | 'bearer' | 'apiKey' | 'basic';
@@ -83,26 +84,6 @@ export interface ResponseState {
   data: unknown;
   duration: number;
   size: number;
-}
-
-export interface HistoryEntry {
-  id: string; // Unique ID (timestamp + random)
-  timestamp: number;
-  method: HttpMethod;
-  url: string; // Full URL (baseUrl + path)
-  path: string; // Endpoint path
-  // Request parameters (for replay)
-  request: {
-    pathParams: Record<string, string>;
-    queryParams: Record<string, string>;
-    headers: Record<string, string>;
-    body: string;
-  };
-  // Response
-  response: ResponseState | null;
-  error: string | null;
-  // Metadata
-  duration?: number; // Request duration (ms)
 }
 
 export interface ApiTesterState {
