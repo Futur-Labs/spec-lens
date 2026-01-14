@@ -21,7 +21,6 @@ export {
   // Combined actions for backward compatibility
   apiTesterStoreActions,
   // Auth & Cookie store
-  useAuthCookieStore,
   authCookieStoreActions,
   useAuthConfig,
   useCustomCookies,

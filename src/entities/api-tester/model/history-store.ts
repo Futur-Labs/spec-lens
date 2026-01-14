@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { HistoryStore } from './api-request-history-types.ts';
+import type { HistoryState, HistoryActions, HistoryStore } from './api-request-history-types.ts';
+
+export type { HistoryState, HistoryActions, HistoryStore };
 
 const MAX_HISTORY_ENTRIES = 100;
 

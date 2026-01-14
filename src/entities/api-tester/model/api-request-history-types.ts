@@ -21,11 +21,11 @@ export interface HistoryEntry {
   duration?: number; // Request duration (ms)
 }
 
-interface HistoryState {
+export interface HistoryState {
   history: HistoryEntry[];
 }
 
-interface HistoryActions {
+export interface HistoryActions {
   addToHistory: (entry: HistoryEntry) => void;
   removeHistoryEntry: (id: string) => void;
   clearHistory: () => void;
