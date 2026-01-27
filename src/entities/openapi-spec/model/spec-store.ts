@@ -6,6 +6,7 @@ import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import type { OpenAPISpec } from './openapi-types.ts';
 import { parseEndpoints, getAllTags } from '../lib/parse-endpoints.ts';
 import { testParamsStoreActions } from '@/entities/test-params/@x/openapi-spec.ts';
+import { sidebarStoreActions } from '@/entities/openapi-sidebar/@x/openapi-spec.ts';
 
 const initialState: SpecState = {
   spec: null,
@@ -48,6 +49,9 @@ export const useSpecStore = create<SpecStore>()(
             lastRefreshTime: Date.now(),
             refreshError: null,
           });
+
+          // Expand all tags by default when spec is loaded
+          sidebarStoreActions.expandAllTags();
         },
 
         clearSpec: () => {
@@ -87,6 +91,9 @@ export const useSpecStore = create<SpecStore>()(
             endpoints,
             tags,
           });
+
+          // Expand all tags after hydration
+          sidebarStoreActions.expandAllTags();
         }
       },
     },
