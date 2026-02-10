@@ -9,7 +9,7 @@ let hasInitiallyMounted = false;
 export function ResizableSidebarLayout({ children }: PropsWithChildren) {
   const isSidebarOpen = useIsSidebarOpen();
 
-  const { sidebarWidth, isResizing, startResizing } = useResizeSidebar();
+  const { sidebarWidth, isResizing, startResizing, expandToFitContent } = useResizeSidebar();
 
   useEffect(() => {
     hasInitiallyMounted = true;
@@ -42,6 +42,7 @@ export function ResizableSidebarLayout({ children }: PropsWithChildren) {
 
           <div
             onMouseDown={startResizing}
+            onDoubleClick={expandToFitContent}
             style={{
               position: 'absolute',
               top: 0,

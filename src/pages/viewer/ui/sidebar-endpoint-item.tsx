@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import type { RefObject } from 'react';
+import { useRef, useState, useEffect, type RefObject } from 'react';
 
 import { generateEndpointHash } from '../lib/generate-endpoint-hash';
 import { endpointSelectionStoreActions, useSelectedEndpoint } from '@/entities/endpoint-selection';
@@ -14,6 +14,24 @@ export function SidebarEndpointItem({
   endpoint: ParsedEndpoint;
 }) {
   const selectedEndpoint = useSelectedEndpoint();
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    const element = textRef.current;
+    if (!element) return;
+
+    const checkTruncation = () => {
+      setIsTruncated(element.scrollWidth > element.clientWidth);
+    };
+
+    checkTruncation();
+
+    const resizeObserver = new ResizeObserver(checkTruncation);
+    resizeObserver.observe(element);
+
+    return () => resizeObserver.disconnect();
+  }, [endpoint.path]);
 
   const isSelected =
     selectedEndpoint?.path === endpoint.path && selectedEndpoint?.method === endpoint.method;
@@ -23,8 +41,9 @@ export function SidebarEndpointItem({
       key={`${endpoint.method}-${endpoint.path}`}
       content={endpoint.path}
       placement='right'
-      delay={800}
+      delay={0}
       fullWidth
+      disabled={!isTruncated}
     >
       <motion.button
         ref={(el) => {
@@ -68,6 +87,7 @@ export function SidebarEndpointItem({
       >
         <MethodBadge method={endpoint.method} size='sm' />
         <span
+          ref={textRef}
           style={{
             color: isSelected ? '#ffffff' : '#9ca3af',
             fontSize: '1.3rem',
