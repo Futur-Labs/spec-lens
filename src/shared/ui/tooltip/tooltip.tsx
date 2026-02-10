@@ -13,9 +13,10 @@ import {
   type Placement,
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState, type ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 
 export function Tooltip({
+  contentStyle,
   children,
   content,
   placement = 'top',
@@ -23,6 +24,7 @@ export function Tooltip({
   fullWidth = false,
   disabled = false,
 }: {
+  contentStyle?: CSSProperties;
   children: ReactNode;
   content: string;
   placement?: Placement;
@@ -98,6 +100,7 @@ export function Tooltip({
                       '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     whiteSpace: 'nowrap',
+                    ...contentStyle,
                   }}
                 >
                   {content}
