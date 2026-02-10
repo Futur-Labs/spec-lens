@@ -1,33 +1,25 @@
-import { useNavigate } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { Navigate } from '@tanstack/react-router';
+import { useState } from 'react';
 
+import { SpecInputModeTabs } from './spec-input-mode-tabs';
+import { SpecLoaderContent } from './spec-loader-content';
+import { SpecLoaderHeader } from './spec-loader-header';
+import type { SpecLoaderType } from '../model/spec-loader-types';
 import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
-import {
-  SpecLoaderHeader,
-  SpecInputModeTabs,
-  SpecLoaderContent,
-  type SpecLoaderType,
-} from '@/widgets/spec-loader';
 
 export function SpecLoaderPage() {
-  const navigate = useNavigate();
   const hydrated = useSpecStoreHydration();
   const spec = useSpec();
   const [inputMode, setInputMode] = useState<SpecLoaderType>('file');
 
-  // Redirect to /api-docs when spec is loaded
-  useEffect(() => {
-    if (hydrated && spec) {
-      navigate({ to: '/api-docs', replace: true });
-    }
-  }, [hydrated, spec, navigate]);
+  if (hydrated && spec) {
+    return <Navigate to='/api-docs' replace />;
+  }
 
-  // Wait for hydration to complete before rendering
   if (!hydrated) {
     return null;
   }
 
-  // If spec exists, show nothing while redirecting
   if (spec) {
     return null;
   }

@@ -7,6 +7,7 @@ import { Menu, X, Upload, RefreshCw, Link, FileJson } from 'lucide-react';
 import { EndpointDetail } from './endpoint-detail.tsx';
 import { Sidebar } from './sidebar.tsx';
 import { useSelectedEndpoint } from '@/entities/endpoint-selection';
+import { sidebarStoreActions, useIsSidebarOpen } from '@/entities/openapi-sidebar';
 import {
   specStoreActions,
   useSpecStore,
@@ -14,7 +15,6 @@ import {
   type OpenAPISpec,
   validateOpenAPISpec,
 } from '@/entities/openapi-spec';
-import { sidebarStoreActions, useIsSidebarOpen } from '@/entities/openapi-sidebar';
 import { GlobalAuthPanel } from '@/features/api-tester';
 import { checkSpecUpdate } from '@/shared/server';
 
