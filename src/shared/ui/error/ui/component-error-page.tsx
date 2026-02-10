@@ -3,6 +3,8 @@ import { FlexColumn, SolidButton, Typography } from '@jigoooo/shared-ui';
 import type { ComponentErrorPageProps } from '../model/error-type.ts';
 
 export function ComponentErrorPage({ error, resetErrorBoundary }: ComponentErrorPageProps) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+
   return (
     <FlexColumn
       style={{
@@ -23,7 +25,7 @@ export function ComponentErrorPage({ error, resetErrorBoundary }: ComponentError
             color: '#888888',
           }}
         >
-          {error?.message}
+          {errorMessage}
         </Typography>
       </FlexColumn>
       <SolidButton onClick={resetErrorBoundary}>새로고침</SolidButton>

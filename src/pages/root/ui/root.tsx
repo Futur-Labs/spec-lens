@@ -5,7 +5,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { preconnect, prefetchDNS } from 'react-dom';
 
 import { RootDocument } from './root-document';
-import { AlertProvider } from '@/app/providers';
+import { AlertProvider, StoreSubscriptionProvider } from '@/app/providers';
 import { theme } from '@/shared/theme';
 
 const PRODUCTION_API_URL = `${import.meta.env.VITE_PRODUCTION_API_URL}:${import.meta.env.VITE_API_PORT}`;
@@ -18,22 +18,24 @@ export function RootComponent() {
 
   return (
     <RootDocument>
-      <BottomSheetProvider>
-        <ThemeProvider theme={theme}>
-          <AlertProvider />
+      <StoreSubscriptionProvider>
+        <BottomSheetProvider>
+          <ThemeProvider theme={theme}>
+            <AlertProvider />
 
-          <FlexColumn
-            style={{
-              height: '100vh',
-              maxHeight: '100vh',
-              overflow: 'hidden',
-              backgroundColor: '#0a0a0a',
-            }}
-          >
-            <Outlet />
-          </FlexColumn>
-        </ThemeProvider>
-      </BottomSheetProvider>
+            <FlexColumn
+              style={{
+                height: '100vh',
+                maxHeight: '100vh',
+                overflow: 'hidden',
+                backgroundColor: '#0a0a0a',
+              }}
+            >
+              <Outlet />
+            </FlexColumn>
+          </ThemeProvider>
+        </BottomSheetProvider>
+      </StoreSubscriptionProvider>
       <ReactQueryDevtools buttonPosition='bottom-left' />
       <TanStackRouterDevtools position='bottom-right' />
     </RootDocument>

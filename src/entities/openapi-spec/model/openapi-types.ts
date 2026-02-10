@@ -275,6 +275,10 @@ export type EndpointsByTag = {
   [tag: string]: ParsedEndpoint[];
 };
 
+export type EndpointFlatItem =
+  | { type: 'header'; tag: string; count: number; isExpanded: boolean }
+  | { type: 'endpoint'; endpoint: ParsedEndpoint };
+
 // Type guard for ReferenceObject
 export function isReferenceObject(obj: unknown): obj is ReferenceObject {
   return typeof obj === 'object' && obj !== null && '$ref' in obj;

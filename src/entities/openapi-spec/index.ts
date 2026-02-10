@@ -11,6 +11,7 @@ export type { SpecSource } from './model/spec-types.ts';
 export type {
   OpenAPISpec,
   ParsedEndpoint,
+  EndpointFlatItem,
   ParameterObject,
   ResponseObject,
   SchemaObject,

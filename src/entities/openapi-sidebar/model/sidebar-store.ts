@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { SidebarState, SidebarStore } from './sidebar-types.ts';
-import { useSpecStore } from '@/entities/openapi-spec/@x/openapi-sidebar.ts';
 
 const initialState: SidebarState = {
   isSidebarOpen: true,
@@ -32,8 +31,7 @@ export const useSidebarStore = create<SidebarStore>()(
           }));
         },
 
-        expandAllTags: () => {
-          const tags = useSpecStore.getState().tags;
+        expandAllTags: (tags: string[]) => {
           set({ expandedTags: [...tags] });
         },
 

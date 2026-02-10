@@ -7,7 +7,7 @@ export type SidebarActions = {
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   toggleTagExpanded: (tag: string) => void;
-  expandAllTags: () => void;
+  expandAllTags: (tags: string[]) => void;
   collapseAllTags: () => void;
 };
 

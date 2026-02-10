@@ -1,11 +1,10 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, subscribeWithSelector } from 'zustand/middleware';
 
 import type { OpenAPISpec } from './openapi-types.ts';
 import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import { parseEndpoints, getAllTags } from '../lib/parse-endpoints.ts';
-import { testParamsStoreActions } from '@/entities/test-params/@x/openapi-spec.ts';
 
 const initialState: SpecState = {
   spec: null,
@@ -20,76 +19,70 @@ const initialState: SpecState = {
 };
 
 export const useSpecStore = create<SpecStore>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
+  subscribeWithSelector(
+    persist(
+      (set) => ({
+        ...initialState,
 
-      actions: {
-        setSpec: (spec: OpenAPISpec, source: SpecSource) => {
-          const prevSource = get().specSource;
-          const endpoints = parseEndpoints(spec);
-          const tags = getAllTags(spec);
+        actions: {
+          setSpec: (spec: OpenAPISpec, source: SpecSource) => {
+            const endpoints = parseEndpoints(spec);
+            const tags = getAllTags(spec);
 
-          // Clear test params when spec source changes (different file/URL)
-          const prevSourceId = prevSource?.name || 'default';
-          const newSourceId = source?.name || 'default';
-          if (prevSource && prevSourceId !== newSourceId) {
-            testParamsStoreActions.clearAllParams(prevSourceId);
-          }
+            set({
+              spec,
+              specSource: source,
+              endpoints,
+              tags,
+              error: null,
+              isLoading: false,
+              isRefreshing: false,
+              lastRefreshTime: Date.now(),
+              refreshError: null,
+            });
+          },
 
-          set({
-            spec,
-            specSource: source,
-            endpoints,
-            tags,
-            error: null,
-            isLoading: false,
-            isRefreshing: false,
-            lastRefreshTime: Date.now(),
-            refreshError: null,
-          });
+          clearSpec: () => {
+            set({
+              ...initialState,
+            });
+          },
+
+          setLoading: (isLoading) => set({ isLoading }),
+
+          setError: (error) => set({ error, isLoading: false }),
+
+          setRefreshing: (isRefreshing) => set({ isRefreshing }),
+
+          setRefreshError: (refreshError) => set({ refreshError, isRefreshing: false }),
+
+          updateSpecSource: (sourceUpdate) =>
+            set((state) => ({
+              specSource: state.specSource ? { ...state.specSource, ...sourceUpdate } : null,
+            })),
         },
-
-        clearSpec: () => {
-          set({
-            ...initialState,
-          });
-        },
-
-        setLoading: (isLoading) => set({ isLoading }),
-
-        setError: (error) => set({ error, isLoading: false }),
-
-        setRefreshing: (isRefreshing) => set({ isRefreshing }),
-
-        setRefreshError: (refreshError) => set({ refreshError, isRefreshing: false }),
-
-        updateSpecSource: (sourceUpdate) =>
-          set((state) => ({
-            specSource: state.specSource ? { ...state.specSource, ...sourceUpdate } : null,
-          })),
-      },
-    }),
-    {
-      name: 'openapi-spec-store',
-      version: 1,
-      partialize: (state) => ({
-        spec: state.spec,
-        specSource: state.specSource,
       }),
-      skipHydration: true,
-      onRehydrateStorage: () => (state) => {
-        // Re-parse endpoints and tags from stored spec after hydration
-        if (state?.spec) {
-          const endpoints = parseEndpoints(state.spec);
-          const tags = getAllTags(state.spec);
-          useSpecStore.setState({
-            endpoints,
-            tags,
-          });
-        }
+      {
+        name: 'openapi-spec-store',
+        version: 1,
+        partialize: (state) => ({
+          spec: state.spec,
+          specSource: state.specSource,
+        }),
+        skipHydration: true,
+        onRehydrateStorage: () => (state) => {
+          // Re-parse endpoints and tags from stored spec after hydration
+          if (state?.spec) {
+            const endpoints = parseEndpoints(state.spec);
+            const tags = getAllTags(state.spec);
+            useSpecStore.setState({
+              endpoints,
+              tags,
+            });
+          }
+        },
       },
-    },
+    ),
   ),
 );
 

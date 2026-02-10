@@ -1,6 +1,5 @@
-import type { HttpMethod } from '@/shared/type';
-
 import { getMethodColor } from '../lib/method-color.ts';
+import type { HttpMethod } from '@/shared/type';
 
 export function MethodBadge({
   method,

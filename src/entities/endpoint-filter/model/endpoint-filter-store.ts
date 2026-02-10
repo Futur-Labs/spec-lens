@@ -2,9 +2,8 @@ import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { HttpMethod } from '@/shared/type';
-
 import type { EndpointFilterState, EndpointFilterStore } from './endpoint-filter-types.ts';
+import type { HttpMethod } from '@/shared/type';
 
 const initialState: EndpointFilterState = {
   searchQuery: '',

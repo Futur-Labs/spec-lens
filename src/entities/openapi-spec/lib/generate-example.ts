@@ -1,3 +1,4 @@
+import { resolveSchema } from './resolve-schema.ts';
 import {
   type OpenAPISpec,
   type SchemaObject,
@@ -6,7 +7,6 @@ import {
   type ExampleObject,
   type ParameterObject,
 } from '../model/openapi-types.ts';
-import { resolveSchema } from './resolve-schema.ts';
 
 /**
  * recursively generate example value from schema
@@ -73,7 +73,7 @@ export function generateExample(
  */
 export function getSchemaExample(schema: SchemaObject): unknown {
   // Simple non-recursive fallback for legacy calls without spec
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   return generateExample(schema, { openapi: '3.0.0', info: {} as any, paths: {} });
 }
 

@@ -1,7 +1,13 @@
 import { sidebarStoreActions } from '@/entities/openapi-sidebar';
-import { type OpenAPISpec, type SpecSource, specStoreActions } from '@/entities/openapi-spec';
+import {
+  type OpenAPISpec,
+  type SpecSource,
+  getAllTags,
+  specStoreActions,
+} from '@/entities/openapi-spec';
 
 export function setSpecWithExpanded(spec: OpenAPISpec, source: SpecSource) {
   specStoreActions.setSpec(spec, source);
-  sidebarStoreActions.expandAllTags();
+  const tags = getAllTags(spec);
+  sidebarStoreActions.expandAllTags(tags);
 }

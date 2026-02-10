@@ -13,12 +13,8 @@ import {
   filterEndpoints,
   groupEndpointsByTag,
   useSpecStore,
-  type ParsedEndpoint,
+  type EndpointFlatItem,
 } from '@/entities/openapi-spec';
-
-type FlatItem =
-  | { type: 'header'; tag: string; count: number; isExpanded: boolean }
-  | { type: 'endpoint'; endpoint: ParsedEndpoint };
 
 const TAG_HEADER_HEIGHT = 40;
 const ENDPOINT_ITEM_HEIGHT = 36;
@@ -49,8 +45,8 @@ export function SidebarEndpointList() {
   useScrollToSelectedEndpoint(endpointRefs);
 
   // 플랫 리스트 생성
-  const flatItems = useMemo<FlatItem[]>(() => {
-    const items: FlatItem[] = [];
+  const flatItems = useMemo<EndpointFlatItem[]>(() => {
+    const items: EndpointFlatItem[] = [];
     for (const [tag, tagEndpoints] of tagEntries) {
       const isExpanded = expandedTags.includes(tag);
       items.push({ type: 'header', tag, count: tagEndpoints.length, isExpanded });

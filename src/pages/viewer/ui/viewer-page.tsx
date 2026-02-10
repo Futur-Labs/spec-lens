@@ -2,11 +2,12 @@ import { Navigate } from '@tanstack/react-router';
 
 import { ViewerLayout } from './viewer-layout.tsx';
 import { sidebarStoreActions } from '@/entities/openapi-sidebar';
-import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
+import { useSpec, useSpecStore, useSpecStoreHydration } from '@/entities/openapi-spec';
 
 export function ViewerPage() {
   const hydrated = useSpecStoreHydration(() => {
-    sidebarStoreActions.expandAllTags();
+    const tags = useSpecStore.getState().tags;
+    sidebarStoreActions.expandAllTags(tags);
   });
   const spec = useSpec();
 
