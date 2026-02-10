@@ -26,7 +26,7 @@ export function Tooltip({
 }: {
   contentStyle?: CSSProperties;
   children: ReactNode;
-  content: string;
+  content: ReactNode;
   placement?: Placement;
   delay?: number;
   fullWidth?: boolean;
@@ -94,7 +94,7 @@ export function Tooltip({
                     color: '#111111',
                     padding: '0.6rem 1rem',
                     borderRadius: '0.4rem',
-                    fontSize: '1.3rem',
+                    fontSize: '1.4rem',
                     fontWeight: 600,
                     boxShadow:
                       '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',

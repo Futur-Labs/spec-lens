@@ -24,6 +24,8 @@ const TAG_HEADER_HEIGHT = 40;
 const ENDPOINT_ITEM_HEIGHT = 36;
 
 export function SidebarEndpointList() {
+  'use no memo';
+
   const searchQuery = useSearchQuery();
   const selectedTags = useSelectedTags();
   const selectedMethods = useSelectedMethods();
@@ -61,6 +63,7 @@ export function SidebarEndpointList() {
     return items;
   }, [tagEntries, expandedTags]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: flatItems.length,
     getScrollElement: () => parentRef.current,

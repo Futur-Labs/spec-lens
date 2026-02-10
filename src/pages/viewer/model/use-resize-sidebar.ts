@@ -2,19 +2,12 @@ import { useMotionValue } from 'framer-motion';
 import { useEffect, useEffectEvent, useState } from 'react';
 
 import { useSpecStore } from '@/entities/openapi-spec';
+import { measureTextWidth } from '@/shared/lib';
 
 const SIDEBAR_WIDTH = 320;
 const SIDEBAR_MIN_WIDTH = 240;
 const SIDEBAR_MAX_WIDTH = 850;
 const SIDEBAR_PADDING = 130; // indent(32) + badge(50) + gap(10) + padding(32) + buffer(6)
-
-function measureTextWidth(text: string, font: string): number {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) return 0;
-  context.font = font;
-  return context.measureText(text).width;
-}
 
 export function useResizeSidebar() {
   const sidebarWidth = useMotionValue(SIDEBAR_WIDTH);

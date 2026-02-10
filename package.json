@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.2",
     "@tanstack/eslint-plugin-query": "^5.91.4",
     "@tanstack/eslint-plugin-router": "^1.155.0",
     "@tanstack/router-plugin": "^1.159.5",
@@ -80,7 +80,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "@vitejs/plugin-react-swc": "^4.2.3",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^10.0.0",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.5",
@@ -114,7 +114,10 @@
     "onlyBuiltDependencies": [
       "prisma",
       "@prisma/engines"
-    ]
+    ],
+    "overrides": {
+      "@typescript-eslint/utils": "^8.55.0"
+    }
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

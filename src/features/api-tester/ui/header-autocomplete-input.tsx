@@ -43,15 +43,6 @@ function getHeaderValueOptions(headerName: string) {
   return header.values.map((v) => ({ label: v, value: v }));
 }
 
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  style?: React.CSSProperties;
-  type: 'name' | 'value';
-  headerName?: string;
-}
-
 export function HeaderAutocompleteInput({
   value,
   onChange,
@@ -59,7 +50,14 @@ export function HeaderAutocompleteInput({
   style,
   type,
   headerName,
-}: Props) {
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
+  type: 'name' | 'value';
+  headerName?: string;
+}) {
   const options = type === 'name' ? HEADER_NAME_OPTIONS : getHeaderValueOptions(headerName || '');
 
   return (

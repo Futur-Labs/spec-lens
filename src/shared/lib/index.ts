@@ -32,6 +32,7 @@ export {
   toPascalCase,
   deepCamelize,
   deepCamelToSnake,
+  measureTextWidth,
 } from './formatter/formatter-lib.ts';
 
 export {
