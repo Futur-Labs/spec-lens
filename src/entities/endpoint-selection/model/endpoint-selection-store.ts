@@ -2,9 +2,8 @@ import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { HttpMethod } from '@/shared/type';
-
 import type { EndpointSelectionState, EndpointSelectionStore } from './endpoint-selection-types.ts';
+import type { HttpMethod } from '@/shared/type';
 
 const initialState: EndpointSelectionState = {
   selectedEndpoint: null,
@@ -12,11 +11,14 @@ const initialState: EndpointSelectionState = {
 
 export const useEndpointSelectionStore = create<EndpointSelectionStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
 
       actions: {
         selectEndpoint: (path: string, method: HttpMethod) => {
+          const { selectedEndpoint } = get();
+          if (selectedEndpoint?.path === path && selectedEndpoint?.method === method) return;
+
           set({ selectedEndpoint: { path, method } });
         },
 

@@ -2,9 +2,8 @@ import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { useSpecStore } from '@/entities/openapi-spec/@x/openapi-sidebar.ts';
-
 import type { SidebarState, SidebarStore } from './sidebar-types.ts';
+import { useSpecStore } from '@/entities/openapi-spec/@x/openapi-sidebar.ts';
 
 const initialState: SidebarState = {
   isSidebarOpen: true,
@@ -54,7 +53,6 @@ export const useSidebarStore = create<SidebarStore>()(
   ),
 );
 
-// Actions (safe for SSR - no state access)
 export const sidebarStoreActions = useSidebarStore.getState().actions;
 
 // Selector hooks

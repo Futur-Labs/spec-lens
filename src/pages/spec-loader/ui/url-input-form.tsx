@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 
 import { Link, Loader2, AlertCircle } from 'lucide-react';
 
+import { setSpecWithExpanded } from '../lib/set-spec-with-expanded';
 import { type OpenAPISpec, validateOpenAPISpec, specStoreActions } from '@/entities/openapi-spec';
 import { fetchExternalSpec } from '@/shared/server';
 
@@ -62,7 +63,7 @@ export function UrlInputForm() {
         throw new Error(validation.error);
       }
 
-      specStoreActions.setSpec(json as OpenAPISpec, {
+      setSpecWithExpanded(json as OpenAPISpec, {
         type: 'url',
         name: url,
         etag,

@@ -1,10 +1,13 @@
 import { Navigate } from '@tanstack/react-router';
 
 import { ViewerLayout } from './viewer-layout.tsx';
+import { sidebarStoreActions } from '@/entities/openapi-sidebar';
 import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
 
 export function ViewerPage() {
-  const hydrated = useSpecStoreHydration();
+  const hydrated = useSpecStoreHydration(() => {
+    sidebarStoreActions.expandAllTags();
+  });
   const spec = useSpec();
 
   if (hydrated && !spec) {

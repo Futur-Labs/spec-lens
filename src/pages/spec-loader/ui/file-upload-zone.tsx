@@ -2,6 +2,7 @@ import { useState, type DragEvent, type ChangeEvent } from 'react';
 
 import { Upload, FileJson, AlertCircle } from 'lucide-react';
 
+import { setSpecWithExpanded } from '../lib/set-spec-with-expanded';
 import {
   type OpenAPISpec,
   validateOpenAPISpec,
@@ -28,7 +29,7 @@ export function FileUploadZone() {
         throw new Error(validation.error);
       }
 
-      specStoreActions.setSpec(json as OpenAPISpec, { type: 'file', name: file.name });
+      setSpecWithExpanded(json as OpenAPISpec, { type: 'file', name: file.name });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to parse file';
       specStoreActions.setError(message);

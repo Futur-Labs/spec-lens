@@ -1,12 +1,11 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import type { OpenAPISpec } from './openapi-types.ts';
+import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import { parseEndpoints, getAllTags } from '../lib/parse-endpoints.ts';
 import { testParamsStoreActions } from '@/entities/test-params/@x/openapi-spec.ts';
-import { sidebarStoreActions } from '@/entities/openapi-sidebar/@x/openapi-spec.ts';
 
 const initialState: SpecState = {
   spec: null,
@@ -49,9 +48,6 @@ export const useSpecStore = create<SpecStore>()(
             lastRefreshTime: Date.now(),
             refreshError: null,
           });
-
-          // Expand all tags by default when spec is loaded
-          sidebarStoreActions.expandAllTags();
         },
 
         clearSpec: () => {
@@ -91,9 +87,6 @@ export const useSpecStore = create<SpecStore>()(
             endpoints,
             tags,
           });
-
-          // Expand all tags after hydration
-          sidebarStoreActions.expandAllTags();
         }
       },
     },
@@ -117,12 +110,18 @@ export const useRefreshError = () => useSpecStore((state) => state.refreshError)
 // Hydration hook for SSR - uses persist's built-in hydration tracking
 const emptySubscribe = () => () => {};
 
-export function useSpecStoreHydration() {
+export function useSpecStoreHydration(onHydrated?: () => void) {
   const hydrated = useSyncExternalStore(
     useSpecStore.persist?.onFinishHydration ?? emptySubscribe,
     () => useSpecStore.persist?.hasHydrated() ?? false,
     () => false, // SSR always returns false
   );
+
+  useEffect(() => {
+    if (hydrated && onHydrated) {
+      onHydrated();
+    }
+  }, [hydrated, onHydrated]);
 
   // Trigger rehydration on client mount
   if (!hydrated && typeof window !== 'undefined' && useSpecStore.persist) {

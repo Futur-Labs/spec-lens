@@ -1,8 +1,12 @@
 import { useMotionValue } from 'framer-motion';
 import { useEffect, useEffectEvent, useState } from 'react';
 
-export function UseResizeSidebar() {
-  const sidebarWidth = useMotionValue(320);
+const SIDEBAR_WIDTH = 320;
+const SIDEBAR_MIN_WIDTH = 240;
+const SIDEBAR_MAX_WIDTH = 800;
+
+export function useResizeSidebar() {
+  const sidebarWidth = useMotionValue(SIDEBAR_WIDTH);
 
   const [isResizing, setIsResizing] = useState(false);
 
@@ -21,7 +25,7 @@ export function UseResizeSidebar() {
   const resize = (mouseMoveEvent: MouseEvent) => {
     if (isResizing) {
       const newWidth = mouseMoveEvent.clientX;
-      if (newWidth >= 240 && newWidth <= 800) {
+      if (newWidth >= SIDEBAR_MIN_WIDTH && newWidth <= SIDEBAR_MAX_WIDTH) {
         sidebarWidth.set(newWidth);
       }
     }
