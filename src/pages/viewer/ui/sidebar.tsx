@@ -1,31 +1,26 @@
-import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
-import { useDeferredValue, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useDeferredValue, useEffect, useRef } from 'react';
 
 import { ChevronRight, Search, X } from 'lucide-react';
 
-import {
-  endpointSelectionStoreActions,
-  useSelectedEndpoint,
-} from '@/entities/endpoint-selection';
+import { generateEndpointHash } from '../lib/generate-endpoint-hash';
+import { UseResizeSidebar } from '../model/use-resize-sidebar';
 import {
   endpointFilterStoreActions,
   useSearchQuery,
   useSelectedTags,
   useSelectedMethods,
 } from '@/entities/endpoint-filter';
+import { endpointSelectionStoreActions, useSelectedEndpoint } from '@/entities/endpoint-selection';
+import { sidebarStoreActions, useIsSidebarOpen, useExpandedTags } from '@/entities/openapi-sidebar';
 import {
   filterEndpoints,
   groupEndpointsByTag,
   MethodBadge,
   useSpecStore,
 } from '@/entities/openapi-spec';
-import { sidebarStoreActions, useIsSidebarOpen, useExpandedTags } from '@/entities/openapi-sidebar';
 import { smoothScrollTo } from '@/shared/lib';
 import { Tooltip } from '@/shared/ui/tooltip';
-
-function generateEndpointHash(method: string, path: string): string {
-  return `${method.toLowerCase()}${path.replace(/[{}]/g, '')}`;
-}
 
 let hasInitiallyMounted = false;
 
@@ -39,18 +34,13 @@ export function Sidebar() {
   const expandedTags = useExpandedTags();
   const isSidebarOpen = useIsSidebarOpen();
 
-  // Defer search query for smoother typing experience
-  // Input updates immediately, but expensive filtering happens with lower priority
+  const { sidebarWidth, isResizing, startResizing } = UseResizeSidebar();
+
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
-  // Use MotionValue for performance (no re-renders on drag)
-  const sidebarWidth = useMotionValue(320);
-  const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const endpointRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Filter endpoints using deferred search query for smooth typing
-  // React Compiler will auto-memoize this
   const filteredEndpoints = filterEndpoints(endpoints, {
     searchQuery: deferredSearchQuery,
     selectedTags,
@@ -121,42 +111,6 @@ export function Sidebar() {
 
     return () => clearTimeout(timeoutId);
   }, [selectedEndpoint]);
-
-  const startResizing = () => {
-    setIsResizing(true);
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'col-resize';
-  };
-
-  const stopResizing = () => {
-    setIsResizing(false);
-    document.body.style.userSelect = '';
-    document.body.style.cursor = '';
-  };
-
-  const resize = (mouseMoveEvent: MouseEvent) => {
-    if (isResizing) {
-      const newWidth = mouseMoveEvent.clientX;
-      if (newWidth >= 240 && newWidth <= 800) {
-        sidebarWidth.set(newWidth);
-      }
-    }
-  };
-
-  const stopResizingEvent = useEffectEvent(stopResizing);
-  const resizeEvent = useEffectEvent(resize);
-
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener('mousemove', resizeEvent);
-      window.addEventListener('mouseup', stopResizingEvent);
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', resizeEvent);
-      window.removeEventListener('mouseup', stopResizingEvent);
-    };
-  }, [isResizing]);
 
   // Mark as mounted after first render (in effect to satisfy React Compiler)
   useEffect(() => {
