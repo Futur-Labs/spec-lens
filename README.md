@@ -6,7 +6,8 @@ OpenAPI/Swagger 스펙을 시각화하고 API를 테스트할 수 있는 뷰어
 
 - **스펙 로딩**: JSON 파일 업로드 또는 URL 입력으로 OpenAPI 스펙 로드
 - **API 시각화**: 엔드포인트 목록, 파라미터, 스키마 등 시각적으로 표시
-- **API 테스트**: Try it out 기능으로 실제 API 호출 테스트
+- **API 테스트**: Try it out 기능으로 실제 API 호출 테스트 (서버 프록시 기반)
+- **스펙 변경 감지**: ETag/Last-Modified 기반 업데이트 확인
 - **다크 테마**: 눈이 편한 다크 모드 UI
 
 ## 지원 포맷
@@ -66,16 +67,20 @@ pnpm preview
 
 ```
 src/
-├── routes/          # TanStack Router 파일 기반 라우트
-├── pages/           # 페이지 컴포넌트
-├── widgets/         # 복합 UI 블록
-│   ├── openapi-viewer/  # API 뷰어 위젯
-│   └── spec-loader/     # 스펙 로더 위젯
-├── features/        # 비즈니스 기능
-│   └── openapi-loader/  # 스펙 로딩 기능
-├── entities/        # 비즈니스 엔티티
-│   └── openapi/         # OpenAPI 관련 타입, 스토어, 파서
-└── shared/          # 공유 코드 (api, hooks, lib, store, ui)
+├── app/             # 앱 레벨 provider/declare
+├── routes/          # 파일 기반 라우트 (/, /api-docs, /robots.txt, /sitemap.xml)
+├── pages/           # 페이지 컴포넌트 (spec-loader, viewer, root)
+├── features/        # 기능 단위 모듈 (spec-import, api-tester)
+├── entities/        # 도메인 상태/타입/로직 (openapi-spec 등)
+└── shared/          # 공용 유틸/UI/서버 함수
+
+server/
+└── pm2/             # PM2 실행 스크립트/설정
+
+prisma/
+├── schema.prisma    # DB 스키마
+├── migrations/      # 마이그레이션
+└── seed.ts          # 시드 스크립트
 ```
 
 ## 라이선스

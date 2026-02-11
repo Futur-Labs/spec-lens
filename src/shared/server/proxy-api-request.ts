@@ -4,10 +4,7 @@ import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 
 import { parseSetCookieHeader, type ParsedCookie } from './parse-set-cookie-header';
-
-// Module-level cookie jar to persist cookies across requests
-const cookieJar = new CookieJar();
-const axiosWithCookies: AxiosInstance = wrapper(axios.create({ jar: cookieJar }));
+import { validateTargetUrl } from './validate-target-url';
 
 type ProxyRequestParams = {
   url: string;
@@ -34,13 +31,16 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
   .inputValidator((data: ProxyRequestParams) => data)
   .handler(async ({ data }): Promise<ProxyResponse> => {
     const { url, method, headers = {}, queryParams = {}, body } = data;
+    const safeUrl = await validateTargetUrl(url);
 
     const startTime = performance.now();
+    const cookieJar = new CookieJar();
+    const axiosWithCookies: AxiosInstance = wrapper(axios.create({ jar: cookieJar }));
 
     try {
       const response = await axiosWithCookies({
         method,
-        url,
+        url: safeUrl.toString(),
         params: queryParams,
         headers: {
           ...headers,

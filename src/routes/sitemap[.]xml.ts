@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { db } from '@/shared/server/db';
-
 const BASE_URL = process.env.VITE_PRODUCTION_API_URL || '';
 
 interface SitemapUrl {
@@ -45,80 +43,11 @@ export const Route = createFileRoute('/sitemap.xml')({
         });
 
         urls.push({
-          loc: `${BASE_URL}/contact`,
-          lastmod: today,
-          changefreq: 'monthly',
-          priority: 0.8,
-        });
-
-        urls.push({
-          loc: `${BASE_URL}/menu`,
-          lastmod: today,
-          changefreq: 'monthly',
-          priority: 0.6,
-        });
-
-        urls.push({
-          loc: `${BASE_URL}/articles`,
-          lastmod: today,
-          changefreq: 'daily',
-          priority: 0.9,
-        });
-
-        urls.push({
-          loc: `${BASE_URL}/portfolio`,
+          loc: `${BASE_URL}/api-docs`,
           lastmod: today,
           changefreq: 'weekly',
           priority: 0.9,
         });
-
-        urls.push({
-          loc: `${BASE_URL}/policy/privacy`,
-          lastmod: today,
-          changefreq: 'yearly',
-          priority: 0.3,
-        });
-
-        urls.push({
-          loc: `${BASE_URL}/policy/terms`,
-          lastmod: today,
-          changefreq: 'yearly',
-          priority: 0.3,
-        });
-
-        // Dynamic articles
-        try {
-          const articles = await db.article.findMany({
-            select: { id: true, date: true },
-          });
-          for (const article of articles) {
-            urls.push({
-              loc: `${BASE_URL}/articles/${article.id}`,
-              lastmod: article.date,
-              changefreq: 'monthly',
-              priority: 0.7,
-            });
-          }
-        } catch {
-          // Continue without articles if fetch fails
-        }
-
-        // Dynamic portfolios
-        try {
-          const portfolios = await db.portfolio.findMany({
-            select: { id: true },
-          });
-          for (const portfolio of portfolios) {
-            urls.push({
-              loc: `${BASE_URL}/portfolio/${portfolio.id}`,
-              lastmod: today,
-              changefreq: 'monthly',
-              priority: 0.7,
-            });
-          }
-        } catch {
-          // Continue without portfolios if fetch fails
-        }
 
         const sitemap = generateSitemapXml(urls);
 

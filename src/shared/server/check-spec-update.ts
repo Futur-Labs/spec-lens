@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import axios, { AxiosError } from 'axios';
 
+import { validateTargetUrl } from './validate-target-url';
+
 interface CheckSpecUpdateResult {
   hasUpdate: boolean;
   newEtag: string | null;
@@ -17,12 +19,7 @@ export const checkSpecUpdate = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<CheckSpecUpdateResult> => {
     const { url, etag, lastModified } = data;
 
-    // Validate URL
-    try {
-      new URL(url);
-    } catch {
-      throw new Error('Invalid URL format');
-    }
+    const safeUrl = await validateTargetUrl(url);
 
     try {
       const headers: Record<string, string> = {
@@ -38,7 +35,7 @@ export const checkSpecUpdate = createServerFn({ method: 'POST' })
         headers['If-Modified-Since'] = lastModified;
       }
 
-      const response = await axios.get(url, {
+      const response = await axios.get(safeUrl.toString(), {
         headers,
         timeout: 30000,
         validateStatus: (status) => status === 200 || status === 304,

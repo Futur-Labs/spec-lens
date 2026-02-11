@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import axios, { AxiosError } from 'axios';
 
+import { validateTargetUrl } from './validate-target-url';
+
 interface FetchSpecResult {
   data: any;
   etag: string | null;
@@ -12,15 +14,10 @@ export const fetchExternalSpec = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<FetchSpecResult> => {
     const { url } = data;
 
-    // Validate URL
-    try {
-      new URL(url);
-    } catch {
-      throw new Error('Invalid URL format');
-    }
+    const safeUrl = await validateTargetUrl(url);
 
     try {
-      const response = await axios.get(url, {
+      const response = await axios.get(safeUrl.toString(), {
         headers: {
           Accept: 'application/json',
           'User-Agent': 'SpecLens/1.0',
