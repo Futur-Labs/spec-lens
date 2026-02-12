@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, type RefObject } from 'react';
 import { generateEndpointHash } from '../lib/generate-endpoint-hash';
 import { endpointSelectionStoreActions, useSelectedEndpoint } from '@/entities/endpoint-selection';
 import { MethodBadge, type ParsedEndpoint } from '@/entities/openapi-spec';
+import { useColors } from '@/shared/theme';
 import { Tooltip } from '@/shared/ui/tooltip';
 
 export function SidebarEndpointItem({
@@ -13,6 +14,7 @@ export function SidebarEndpointItem({
   endpointRefs: RefObject<Map<string, HTMLButtonElement>>;
   endpoint: ParsedEndpoint;
 }) {
+  const colors = useColors();
   const selectedEndpoint = useSelectedEndpoint();
   const textRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -65,7 +67,7 @@ export function SidebarEndpointItem({
         initial={false}
         animate={{
           backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0)',
-          borderLeftColor: isSelected ? '#10b981' : 'rgba(255, 255, 255, 0)',
+          borderLeftColor: isSelected ? colors.feedback.success : 'rgba(255, 255, 255, 0)',
           paddingLeft: isSelected ? '3.6rem' : '3.2rem',
         }}
         transition={{ duration: 0.2 }}
@@ -83,14 +85,14 @@ export function SidebarEndpointItem({
           position: 'relative',
         }}
         whileHover={{
-          backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.35)' : 'rgba(255,255,255,0.1)',
+          backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.35)' : colors.bg.overlayHover,
         }}
       >
         <MethodBadge method={endpoint.method} size='sm' />
         <span
           ref={textRef}
           style={{
-            color: isSelected ? '#ffffff' : '#9ca3af',
+            color: isSelected ? colors.text.primary : colors.text.secondary,
             fontSize: '1.3rem',
             fontFamily: 'monospace',
             fontWeight: isSelected ? 600 : 400,

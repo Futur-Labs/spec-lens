@@ -3,10 +3,12 @@ import { useEffect, type PropsWithChildren } from 'react';
 
 import { useResizeSidebar } from '../model/use-resize-sidebar';
 import { useIsSidebarOpen } from '@/entities/openapi-sidebar';
+import { useColors } from '@/shared/theme';
 
 let hasInitiallyMounted = false;
 
 export function ResizableSidebarLayout({ children }: PropsWithChildren) {
+  const colors = useColors();
   const isSidebarOpen = useIsSidebarOpen();
 
   const { sidebarWidth, isResizing, startResizing, expandToFitContent } = useResizeSidebar();
@@ -31,8 +33,8 @@ export function ResizableSidebarLayout({ children }: PropsWithChildren) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: '#161616',
-            borderRight: '1px solid rgba(255,255,255,0.08)',
+            backgroundColor: colors.bg.subtle,
+            borderRight: `1px solid ${colors.border.subtle}`,
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             position: 'relative',
@@ -50,7 +52,7 @@ export function ResizableSidebarLayout({ children }: PropsWithChildren) {
               bottom: 0,
               width: '0.4rem',
               cursor: 'col-resize',
-              backgroundColor: isResizing ? '#10b981' : 'transparent',
+              backgroundColor: isResizing ? colors.feedback.success : 'transparent',
               transition: 'background-color 0.2s',
               zIndex: 10,
             }}

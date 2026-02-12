@@ -15,6 +15,7 @@ import {
   useSpecStore,
   type EndpointFlatItem,
 } from '@/entities/openapi-spec';
+import { useColors } from '@/shared/theme';
 
 const TAG_HEADER_HEIGHT = 40;
 const ENDPOINT_ITEM_HEIGHT = 36;
@@ -22,6 +23,7 @@ const ENDPOINT_ITEM_HEIGHT = 36;
 export function SidebarEndpointList() {
   'use no memo';
 
+  const colors = useColors();
   const searchQuery = useSearchQuery();
   const selectedTags = useSelectedTags();
   const selectedMethods = useSelectedMethods();
@@ -76,7 +78,7 @@ export function SidebarEndpointList() {
           flex: 1,
           padding: '3.2rem 1.6rem',
           textAlign: 'center',
-          color: '#6b7280',
+          color: colors.text.tertiary,
           fontSize: '1.3rem',
         }}
       >
@@ -142,11 +144,11 @@ export function SidebarEndpointList() {
                       justifyContent: 'center',
                     }}
                   >
-                    <ChevronRight size={14} color='#6b7280' />
+                    <ChevronRight size={14} color={colors.text.tertiary} />
                   </motion.div>
                   <span
                     style={{
-                      color: '#9ca3af',
+                      color: colors.text.secondary,
                       fontSize: '1.2rem',
                       fontWeight: 600,
                       textTransform: 'uppercase',
@@ -157,7 +159,7 @@ export function SidebarEndpointList() {
                   </span>
                   <span
                     style={{
-                      color: '#9ca3af',
+                      color: colors.text.secondary,
                       fontSize: '1.2rem',
                       marginLeft: 'auto',
                       fontWeight: 500,
