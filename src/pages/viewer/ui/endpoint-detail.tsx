@@ -17,6 +17,7 @@ import {
   getExampleFromMediaType,
 } from '@/entities/openapi-spec';
 import { TryItPanel } from '@/features/api-tester';
+import { useColors, useIsDarkMode } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function EndpointDetail({
@@ -26,6 +27,7 @@ export function EndpointDetail({
   endpoint: ParsedEndpoint;
   spec: OpenAPISpec;
 }) {
+  const colors = useColors();
   const containerRef = useRef<HTMLDivElement>(null);
   const { operation, path, method } = endpoint;
 
@@ -73,7 +75,7 @@ export function EndpointDetail({
           <MethodBadge method={method} size='lg' />
           <h1
             style={{
-              color: '#f3f4f6', // Softened white (Gray-100) for less eye strain
+              color: colors.text.primary,
               fontSize: '2rem',
               fontWeight: 600,
               fontFamily: 'monospace',
@@ -86,7 +88,7 @@ export function EndpointDetail({
                 {index > 0 && (
                   <>
                     <wbr />
-                    <span style={{ color: '#6b7280' }}>/</span>
+                    <span style={{ color: colors.text.tertiary }}>/</span>
                   </>
                 )}
                 {segment}
@@ -98,7 +100,7 @@ export function EndpointDetail({
         {operation.summary && (
           <p
             style={{
-              color: '#e5e7eb', // Gray-200
+              color: colors.text.primary,
               fontSize: '1.6rem',
               marginBottom: '0.8rem',
             }}
@@ -110,7 +112,7 @@ export function EndpointDetail({
         {operation.description && (
           <p
             style={{
-              color: '#d1d5db', // gray-300 (lighter than previous 400)
+              color: colors.text.secondary,
               fontSize: '1.4rem',
               lineHeight: 1.6,
             }}
@@ -133,9 +135,9 @@ export function EndpointDetail({
                 key={tag}
                 style={{
                   padding: '0.4rem 1rem',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)', // Lighter background
+                  backgroundColor: colors.bg.overlayHover,
                   borderRadius: '0.4rem',
-                  color: '#e5e5e5', // Lighter text
+                  color: colors.text.primary,
                   fontSize: '1.2rem',
                 }}
               >
@@ -155,7 +157,7 @@ export function EndpointDetail({
               border: '1px solid rgba(239, 68, 68, 0.2)',
             }}
           >
-            <span style={{ color: '#ef4444', fontSize: '1.3rem', fontWeight: 500 }}>
+            <span style={{ color: colors.feedback.error, fontSize: '1.3rem', fontWeight: 500 }}>
               Deprecated
             </span>
           </div>
@@ -191,7 +193,7 @@ export function EndpointDetail({
             <span
               style={{
                 fontSize: '1.1rem',
-                color: '#9ca3af',
+                color: colors.text.secondary,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
                 fontWeight: 600,
@@ -201,10 +203,10 @@ export function EndpointDetail({
             </span>
             <span
               style={{
-                backgroundColor: 'rgba(255,255,255,0.08)',
+                backgroundColor: colors.border.subtle,
                 padding: '0.2rem 0.6rem',
                 borderRadius: '0.4rem',
-                color: '#e5e5e5',
+                color: colors.text.primary,
                 fontFamily: 'monospace',
                 fontSize: '1.2rem',
               }}
@@ -263,6 +265,7 @@ function Section({
   children: React.ReactNode;
   defaultExpanded?: boolean;
 }) {
+  const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
@@ -278,7 +281,7 @@ function Section({
           border: 'none',
           padding: '0 0 0.8rem 0',
           cursor: 'pointer',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          borderBottom: `1px solid ${colors.border.subtle}`,
           marginBottom: '1.2rem',
         }}
       >
@@ -287,11 +290,11 @@ function Section({
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           style={{ display: 'flex', alignItems: 'center' }}
         >
-          <ChevronDown size={20} color='#f3f4f6' />
+          <ChevronDown size={20} color={colors.text.primary} />
         </motion.div>
         <h2
           style={{
-            color: '#f3f4f6', // Gray-100
+            color: colors.text.primary,
             fontSize: '1.5rem',
             fontWeight: 600,
             margin: 0,
@@ -341,18 +344,21 @@ function ParameterGroup({
     {} as Record<string, any>,
   );
 
+  const colors = useColors();
+  const isDark = useIsDarkMode();
+
   return (
     <div style={{ marginBottom: '1.6rem' }}>
       <h3
         style={{
-          color: '#e5e5e5', // Lighter gray
+          color: colors.text.primary,
           fontSize: '1.2rem',
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
           marginBottom: '1rem',
           paddingLeft: '0.8rem',
-          borderLeft: '2px solid #3b82f6',
+          borderLeft: `2px solid ${colors.feedback.info}`,
         }}
       >
         {title}
@@ -362,9 +368,9 @@ function ParameterGroup({
           style={{
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: 'rgba(255,255,255,0.02)',
+            backgroundColor: colors.bg.overlay,
             borderRadius: '0.8rem',
-            border: '1px solid rgba(255,255,255,0.05)',
+            border: `1px solid ${colors.border.default}`,
             overflow: 'hidden',
           }}
         >
@@ -375,9 +381,9 @@ function ParameterGroup({
               gridTemplateColumns: 'minmax(150px, 2fr) 1fr 3fr',
               gap: '1.6rem',
               padding: '1rem 1.6rem',
-              backgroundColor: 'rgba(255,255,255,0.04)',
-              borderBottom: '1px solid rgba(255,255,255,0.08)',
-              color: '#9ca3af',
+              backgroundColor: colors.bg.overlay,
+              borderBottom: `1px solid ${colors.border.subtle}`,
+              color: colors.text.secondary,
               fontSize: '1.1rem',
               fontWeight: 600,
               textTransform: 'uppercase',
@@ -399,7 +405,7 @@ function ParameterGroup({
                 gap: '1.6rem',
                 padding: '1.2rem 1.6rem',
                 borderBottom:
-                  index < params.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                  index < params.length - 1 ? `1px solid ${colors.border.default}` : 'none',
                 fontSize: '1.3rem',
                 alignItems: 'start', // Align items to top for multiline descriptions
               }}
@@ -409,7 +415,7 @@ function ParameterGroup({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <span
                     style={{
-                      color: '#f3f4f6',
+                      color: colors.text.primary,
                       fontFamily: 'monospace',
                       fontWeight: 600,
                     }}
@@ -420,7 +426,7 @@ function ParameterGroup({
                     <span
                       style={{
                         fontSize: '1rem',
-                        color: '#ef4444',
+                        color: colors.feedback.error,
                         border: '1px solid rgba(239, 68, 68, 0.3)',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         padding: '0.1rem 0.6rem',
@@ -440,10 +446,10 @@ function ParameterGroup({
                   <span
                     style={{
                       display: 'inline-block',
-                      backgroundColor: 'rgba(255,255,255,0.08)',
+                      backgroundColor: colors.border.subtle,
                       padding: '0.2rem 0.8rem',
                       borderRadius: '1rem',
-                      color: getTypeColor(param.schema.type),
+                      color: getTypeColor(param.schema.type, isDark),
                       fontFamily: 'monospace',
                       fontSize: '1.1rem',
                       fontWeight: 500,
@@ -455,11 +461,13 @@ function ParameterGroup({
               </div>
 
               {/* Description Column */}
-              <div style={{ color: '#d1d5db', lineHeight: 1.5, fontSize: '1.2rem' }}>
+              <div style={{ color: colors.text.secondary, lineHeight: 1.5, fontSize: '1.2rem' }}>
                 {param.description ? (
                   <FormattedText text={param.description} />
                 ) : (
-                  <span style={{ color: '#6b7280', fontStyle: 'italic' }}>No description</span>
+                  <span style={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
+                    No description
+                  </span>
                 )}
               </div>
             </div>
@@ -482,6 +490,7 @@ function ResponseItem({
   schema: any;
   spec: OpenAPISpec;
 }) {
+  const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(statusCode.startsWith('2'));
 
   const statusColor = getStatusCodeColor(statusCode);
@@ -489,9 +498,9 @@ function ResponseItem({
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255,255,255,0.02)', // Even more subtle background
+        backgroundColor: colors.bg.overlay,
         borderRadius: '0.8rem',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: `1px solid ${colors.border.subtle}`,
         overflow: 'hidden',
       }}
     >
@@ -514,7 +523,10 @@ function ResponseItem({
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
         >
-          <ChevronDown size={14} color={isExpanded ? '#9ca3af' : '#6b7280'} />
+          <ChevronDown
+            size={14}
+            color={isExpanded ? colors.text.secondary : colors.text.tertiary}
+          />
         </motion.div>
 
         <span
@@ -534,10 +546,9 @@ function ResponseItem({
           {statusCode}
         </span>
 
-        <span style={{ color: '#e5e5e5', fontSize: '1.3rem', flex: 1, fontWeight: 500 }}>
+        <span style={{ color: colors.text.primary, fontSize: '1.3rem', flex: 1, fontWeight: 500 }}>
           <FormattedText text={response.description} />
         </span>
-        {/* White response desc */}
       </button>
 
       <AnimatePresence initial={false}>
@@ -552,7 +563,7 @@ function ResponseItem({
             <div
               style={{
                 padding: '0 1.6rem 1.6rem',
-                borderTop: '1px solid rgba(255,255,255,0.05)',
+                borderTop: `1px solid ${colors.border.default}`,
               }}
             >
               <div style={{ paddingTop: '1.2rem' }}>
@@ -583,20 +594,37 @@ function getStatusCodeColor(statusCode: string): string {
   return '#6b7280';
 }
 
-function getTypeColor(type?: string): string {
+function getTypeColor(type?: string, isDark = true): string {
+  if (isDark) {
+    switch (type) {
+      case 'string':
+        return '#34d399';
+      case 'number':
+      case 'integer':
+        return '#22d3ee';
+      case 'boolean':
+        return '#fbbf24';
+      case 'array':
+        return '#facc15';
+      case 'object':
+        return '#f472b6';
+      default:
+        return '#9ca3af';
+    }
+  }
   switch (type) {
     case 'string':
-      return '#34d399'; // emerald-400
+      return '#059669';
     case 'number':
     case 'integer':
-      return '#22d3ee'; // cyan-400 (Bright Cyan)
+      return '#0891b2';
     case 'boolean':
-      return '#fbbf24'; // amber-400
+      return '#d97706';
     case 'array':
-      return '#facc15'; // yellow-400 (Bright Yellow)
+      return '#a16207';
     case 'object':
-      return '#f472b6'; // pink-400
+      return '#db2777';
     default:
-      return '#9ca3af'; // gray-400
+      return '#4b5563';
   }
 }

@@ -47,6 +47,7 @@ import {
   useSelectedServer,
 } from '@/entities/test-params';
 import { useShowSkeleton } from '@/shared/hooks';
+import { type SemanticColors, useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';
 
 const DEFAULT_SERVERS = [{ url: 'http://localhost:3000', description: 'Local' }];
@@ -61,6 +62,9 @@ function formatBytes(bytes: number): string {
 }
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: OpenAPISpec }) {
+  const colors = useColors();
+  const inputStyle = getInputStyle(colors);
+  const iconButtonStyle = getIconButtonStyle(colors);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showHeaders, setShowHeaders] = useState(true);
   const [copiedResponse, setCopiedResponse] = useState(false);
@@ -315,9 +319,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
     <div
       style={{
         marginTop: '2.4rem',
-        backgroundColor: 'rgba(255,255,255,0.04)', // Matched to EndpointDetail cards
+        backgroundColor: colors.bg.overlay,
         borderRadius: '0.8rem',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: `1px solid ${colors.border.subtle}`,
         overflow: 'hidden',
       }}
     >
@@ -341,14 +345,21 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
             padding: 0,
           }}
         >
-          <Play size={16} fill='#f3f4f6' color='#f3f4f6' style={{ opacity: 0.8 }} />
-          <span style={{ color: '#f3f4f6', fontSize: '1.4rem', fontWeight: 600 }}>Try it out</span>
+          <Play
+            size={16}
+            fill={colors.text.primary}
+            color={colors.text.primary}
+            style={{ opacity: 0.8 }}
+          />
+          <span style={{ color: colors.text.primary, fontSize: '1.4rem', fontWeight: 600 }}>
+            Try it out
+          </span>
           <motion.div
             animate={{ rotate: isExpanded ? 0 : -90 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             style={{ display: 'flex', alignItems: 'center' }}
           >
-            <ChevronDown size={18} color='#9ca3af' />
+            <ChevronDown size={18} color={colors.text.secondary} />
           </motion.div>
         </button>
         <button
@@ -365,7 +376,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             border: '1px solid rgba(239, 68, 68, 0.3)',
             borderRadius: '0.4rem',
-            color: '#ef4444',
+            color: colors.feedback.error,
             fontSize: '1.1rem',
             cursor: isExecuting ? 'not-allowed' : 'pointer',
             opacity: isExecuting ? 0.5 : 1,
@@ -399,7 +410,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 <label
                   style={{
                     display: 'block',
-                    color: '#9ca3af',
+                    color: colors.text.secondary,
                     fontSize: '1.2rem',
                     fontWeight: 500,
                     marginBottom: '0.6rem',
@@ -425,25 +436,33 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   alignItems: 'center',
                   gap: '1.6rem',
                   padding: '1rem 1.2rem',
-                  backgroundColor: 'rgba(255,255,255,0.02)',
+                  backgroundColor: colors.bg.overlay,
                   borderRadius: '0.6rem',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  border: `1px solid ${colors.border.subtle}`,
                 }}
               >
                 {/* Auth Status */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <Key size={14} color={authConfig.type !== 'none' ? '#22c55e' : '#9ca3af'} />
-                  <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Auth:</span>
+                  <Key
+                    size={14}
+                    color={
+                      authConfig.type !== 'none' ? colors.feedback.success : colors.text.secondary
+                    }
+                  />
+                  <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>Auth:</span>
                   <span
                     style={{
                       backgroundColor:
                         authConfig.type !== 'none'
                           ? 'rgba(34, 197, 94, 0.2)'
-                          : 'rgba(255,255,255,0.1)',
+                          : colors.bg.overlayHover,
                       padding: '0.2rem 0.8rem',
                       borderRadius: '1rem',
                       fontSize: '1.1rem',
-                      color: authConfig.type !== 'none' ? '#22c55e' : '#9ca3af',
+                      color:
+                        authConfig.type !== 'none'
+                          ? colors.feedback.success
+                          : colors.text.secondary,
                       fontWeight: 500,
                     }}
                   >
@@ -456,7 +475,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   style={{
                     width: '1px',
                     height: '1.6rem',
-                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: colors.border.default,
                   }}
                 />
 
@@ -464,20 +483,26 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <Cookie
                     size={14}
-                    color={customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af'}
+                    color={
+                      customCookies.length + sessionCookies.length > 0
+                        ? colors.feedback.warning
+                        : colors.text.secondary
+                    }
                   />
-                  <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>Cookies:</span>
+                  <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>Cookies:</span>
                   <span
                     style={{
                       backgroundColor:
                         customCookies.length + sessionCookies.length > 0
                           ? 'rgba(245, 158, 11, 0.2)'
-                          : 'rgba(255,255,255,0.1)',
+                          : colors.bg.overlayHover,
                       padding: '0.2rem 0.8rem',
                       borderRadius: '1rem',
                       fontSize: '1.1rem',
                       color:
-                        customCookies.length + sessionCookies.length > 0 ? '#f59e0b' : '#9ca3af',
+                        customCookies.length + sessionCookies.length > 0
+                          ? colors.feedback.warning
+                          : colors.text.secondary,
                       fontWeight: 500,
                     }}
                   >
@@ -489,7 +514,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 <span
                   style={{
                     marginLeft: 'auto',
-                    color: '#6b7280',
+                    color: colors.text.tertiary,
                     fontSize: '1.1rem',
                     fontStyle: 'italic',
                   }}
@@ -512,7 +537,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       >
                         <span
                           style={{
-                            color: '#e5e5e5',
+                            color: colors.text.primary,
                             fontSize: '1.2rem',
                             fontWeight: 600,
                             textTransform: 'uppercase',
@@ -530,7 +555,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             background: 'transparent',
                             border: 'none',
                             cursor: 'pointer',
-                            color: '#f59e0b',
+                            color: colors.feedback.warning,
                             fontSize: '1.1rem',
                             visibility: Object.keys(pathParams).length > 0 ? 'visible' : 'hidden',
                           }}
@@ -563,7 +588,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       >
                         <span
                           style={{
-                            color: '#e5e5e5',
+                            color: colors.text.primary,
                             fontSize: '1.2rem',
                             fontWeight: 600,
                             textTransform: 'uppercase',
@@ -581,7 +606,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             background: 'transparent',
                             border: 'none',
                             cursor: 'pointer',
-                            color: '#f59e0b',
+                            color: colors.feedback.warning,
                             fontSize: '1.1rem',
                             visibility: Object.keys(queryParams).length > 0 ? 'visible' : 'hidden',
                           }}
@@ -619,24 +644,26 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     style={{ cursor: 'pointer', alignItems: 'center', gap: '0.8rem' }}
                     onClick={() => setShowHeaders(!showHeaders)}
                   >
-                    <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+                    <span
+                      style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}
+                    >
                       Headers
                     </span>
                     <span
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        backgroundColor: colors.bg.overlayHover,
                         padding: '0.2rem 0.6rem',
                         borderRadius: '1rem',
                         fontSize: '1rem',
-                        color: '#e5e5e5',
+                        color: colors.text.primary,
                       }}
                     >
                       {Object.keys(headers).length}
                     </span>
                     {showHeaders ? (
-                      <ChevronUp size={12} color='#9ca3af' />
+                      <ChevronUp size={12} color={colors.text.secondary} />
                     ) : (
-                      <ChevronDown size={12} color='#9ca3af' />
+                      <ChevronDown size={12} color={colors.text.secondary} />
                     )}
                   </FlexRow>
                   <button
@@ -648,7 +675,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
-                      color: '#f59e0b',
+                      color: colors.feedback.warning,
                       fontSize: '1.1rem',
                     }}
                     title='Reset headers to default'
@@ -686,18 +713,26 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                           >
                             <Key
                               size={12}
-                              color={headers['Authorization'] ? '#f59e0b' : '#22c55e'}
+                              color={
+                                headers['Authorization']
+                                  ? colors.feedback.warning
+                                  : colors.feedback.success
+                              }
                             />
                             <span
                               style={{
-                                color: headers['Authorization'] ? '#f59e0b' : '#22c55e',
+                                color: headers['Authorization']
+                                  ? colors.feedback.warning
+                                  : colors.feedback.success,
                                 fontSize: '1.1rem',
                                 fontWeight: 500,
                               }}
                             >
                               Authorization
                             </span>
-                            <span style={{ color: '#6b7280', fontSize: '1.1rem', flex: 1 }}>
+                            <span
+                              style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}
+                            >
                               {headers['Authorization']
                                 ? '(Custom header overrides Global Auth)'
                                 : `(from Global Auth: ${authConfig.type.toUpperCase()})`}
@@ -780,7 +815,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                               backgroundColor: newHeaderName.trim()
                                 ? 'rgba(34, 197, 94, 0.2)'
                                 : 'rgba(255,255,255,0.05)',
-                              color: newHeaderName.trim() ? '#22c55e' : '#6b7280',
+                              color: newHeaderName.trim()
+                                ? colors.feedback.success
+                                : colors.text.tertiary,
                             }}
                             title='Add header'
                           >
@@ -804,7 +841,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       marginBottom: '0.8rem',
                     }}
                   >
-                    <label style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+                    <label
+                      style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}
+                    >
                       Request Body (JSON)
                     </label>
                     <button
@@ -819,7 +858,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        color: '#f59e0b',
+                        color: colors.feedback.warning,
                         fontSize: '1.1rem',
                       }}
                     >
@@ -847,9 +886,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       width: '100%',
                       padding: '1.2rem',
                       backgroundColor: 'rgba(0,0,0,0.2)',
-                      border: `1px solid ${jsonError ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      border: `1px solid ${jsonError ? 'rgba(239, 68, 68, 0.5)' : colors.border.default}`,
                       borderRadius: '0.6rem',
-                      color: '#e5e5e5',
+                      color: colors.text.primary,
                       fontSize: '1.3rem',
                       fontFamily: 'monospace',
                       resize: 'vertical',
@@ -865,7 +904,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         border: '1px solid rgba(239, 68, 68, 0.2)',
                         borderRadius: '0.4rem',
-                        color: '#ef4444',
+                        color: colors.feedback.error,
                         fontSize: '1.2rem',
                       }}
                     >
@@ -885,9 +924,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     gap: '0.6rem',
                     padding: '0.6rem 1rem',
                     backgroundColor: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: `1px solid ${colors.border.default}`,
                     borderRadius: '0.4rem',
-                    color: requestCount > 1 ? '#f59e0b' : '#9ca3af',
+                    color: requestCount > 1 ? colors.feedback.warning : colors.text.secondary,
                     fontSize: '1.2rem',
                     cursor: 'pointer',
                   }}
@@ -895,7 +934,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   <Repeat size={12} />
                   <span>Repeat: {requestCount}x</span>
                   {requestCount > 1 && requestInterval > 0 && (
-                    <span style={{ color: '#6b7280' }}>({requestInterval}ms interval)</span>
+                    <span style={{ color: colors.text.tertiary }}>
+                      ({requestInterval}ms interval)
+                    </span>
                   )}
                   {showRepeatSettings ? (
                     <ChevronUp size={12} color='#9ca3af' />
@@ -909,8 +950,8 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     style={{
                       marginTop: '0.8rem',
                       padding: '1.2rem',
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      backgroundColor: colors.bg.overlay,
+                      border: `1px solid ${colors.border.subtle}`,
                       borderRadius: '0.6rem',
                       display: 'flex',
                       gap: '1.6rem',
@@ -921,7 +962,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       <label
                         style={{
                           display: 'block',
-                          color: '#9ca3af',
+                          color: colors.text.secondary,
                           fontSize: '1.1rem',
                           marginBottom: '0.4rem',
                         }}
@@ -939,7 +980,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       <label
                         style={{
                           display: 'block',
-                          color: '#9ca3af',
+                          color: colors.text.secondary,
                           fontSize: '1.1rem',
                           marginBottom: '0.4rem',
                         }}
@@ -962,9 +1003,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       style={{
                         padding: '0.8rem 1.2rem',
                         backgroundColor: 'transparent',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        border: `1px solid ${colors.border.default}`,
                         borderRadius: '0.4rem',
-                        color: '#9ca3af',
+                        color: colors.text.secondary,
                         fontSize: '1.2rem',
                         cursor: 'pointer',
                       }}
@@ -1046,7 +1087,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     border: '1px solid rgba(239, 68, 68, 0.2)',
                     borderRadius: '0.6rem',
-                    color: '#ef4444',
+                    color: colors.feedback.error,
                     fontSize: '1.3rem',
                   }}
                 >
@@ -1059,7 +1100,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 <div
                   style={{
                     marginTop: '0.8rem',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: `1px solid ${colors.border.default}`,
                     borderRadius: '0.6rem',
                     overflow: 'hidden',
                   }}
@@ -1069,15 +1110,21 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       display: 'flex',
                       justifyContent: 'space-between',
                       padding: '1rem 1.2rem',
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      borderBottom: '1px solid rgba(255,255,255,0.08)',
+                      backgroundColor: colors.bg.overlay,
+                      borderBottom: `1px solid ${colors.border.subtle}`,
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       {showSkeleton && !response ? (
                         <>
-                          <Loader2 size={14} color='#9ca3af' className='animate-spin' />
-                          <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>Loading...</span>
+                          <Loader2
+                            size={14}
+                            color={colors.text.secondary}
+                            className='animate-spin'
+                          />
+                          <span style={{ fontSize: '1.2rem', color: colors.text.secondary }}>
+                            Loading...
+                          </span>
                         </>
                       ) : response ? (
                         <>
@@ -1090,7 +1137,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                           >
                             {response.status}
                           </span>
-                          <span style={{ fontSize: '1.2rem', color: '#9ca3af' }}>
+                          <span style={{ fontSize: '1.2rem', color: colors.text.secondary }}>
                             {response.duration}ms · {formatBytes(response.size)}
                           </span>
                         </>
@@ -1125,7 +1172,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                           alignItems: 'center',
                           justifyContent: 'center',
                           height: '100%',
-                          color: '#6b7280',
+                          color: colors.text.tertiary,
                           fontSize: '1.3rem',
                         }}
                       >
@@ -1137,7 +1184,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                           margin: 0,
                           fontSize: '1.2rem',
                           fontFamily: 'monospace',
-                          color: '#e5e5e5',
+                          color: colors.text.primary,
                         }}
                       >
                         {typeof response.data === 'string'
@@ -1156,30 +1203,34 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   );
 }
 
-const inputStyle = {
-  flex: 1,
-  width: '100%',
-  padding: '0.8rem 1.2rem',
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '0.6rem',
-  color: '#e5e5e5',
-  fontSize: '1.3rem',
-  outline: 'none',
-};
+function getInputStyle(colors: SemanticColors) {
+  return {
+    flex: 1,
+    width: '100%',
+    padding: '0.8rem 1.2rem',
+    backgroundColor: colors.bg.overlay,
+    border: `1px solid ${colors.border.default}`,
+    borderRadius: '0.6rem',
+    color: colors.text.primary,
+    fontSize: '1.3rem',
+    outline: 'none',
+  } as const;
+}
 
-const iconButtonStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '2.4rem',
-  height: '2.4rem',
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '0.4rem',
-  color: '#e5e5e5',
-  cursor: 'pointer',
-};
+function getIconButtonStyle(colors: SemanticColors) {
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '2.4rem',
+    height: '2.4rem',
+    backgroundColor: colors.bg.overlay,
+    border: `1px solid ${colors.border.default}`,
+    borderRadius: '0.4rem',
+    color: colors.text.primary,
+    cursor: 'pointer',
+  } as const;
+}
 
 function ParameterInput({
   param,
@@ -1190,13 +1241,18 @@ function ParameterInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const colors = useColors();
+  const inputStyle = getInputStyle(colors);
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <div style={{ width: '120px', flexShrink: 0 }}>
-        <span style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: '#e5e5e5' }}>
+        <span style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}>
           {param.name}
         </span>
-        {param.required && <span style={{ color: '#ef4444', marginLeft: '0.2rem' }}>*</span>}
+        {param.required && (
+          <span style={{ color: colors.feedback.error, marginLeft: '0.2rem' }}>*</span>
+        )}
       </div>
       <VariableAutocompleteInput
         value={value}
@@ -1224,6 +1280,7 @@ function NumberInput({
   max?: number;
   step?: number;
 }) {
+  const colors = useColors();
   const [inputValue, setInputValue] = useState(String(value));
 
   // Sync with external value changes
@@ -1287,7 +1344,7 @@ function NumberInput({
       style={{
         display: 'flex',
         alignItems: 'stretch',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: `1px solid ${colors.border.default}`,
         borderRadius: '0.6rem',
         overflow: 'hidden',
       }}
@@ -1298,10 +1355,10 @@ function NumberInput({
         disabled={value <= min}
         style={{
           padding: '0.6rem 1rem',
-          backgroundColor: 'rgba(255,255,255,0.05)',
+          backgroundColor: colors.bg.overlay,
           border: 'none',
-          borderRight: '1px solid rgba(255,255,255,0.1)',
-          color: value <= min ? '#4b5563' : '#9ca3af',
+          borderRight: `1px solid ${colors.border.default}`,
+          color: value <= min ? colors.text.tertiary : colors.text.secondary,
           fontSize: '1.4rem',
           cursor: value <= min ? 'not-allowed' : 'pointer',
           transition: 'background-color 0.15s',
@@ -1320,9 +1377,9 @@ function NumberInput({
           width: '100%',
           minWidth: '60px',
           padding: '0.8rem 1rem',
-          backgroundColor: 'rgba(255,255,255,0.05)',
+          backgroundColor: colors.bg.overlay,
           border: 'none',
-          color: '#e5e5e5',
+          color: colors.text.primary,
           fontSize: '1.3rem',
           textAlign: 'center',
           outline: 'none',
@@ -1334,10 +1391,10 @@ function NumberInput({
         disabled={value >= max}
         style={{
           padding: '0.6rem 1rem',
-          backgroundColor: 'rgba(255,255,255,0.05)',
+          backgroundColor: colors.bg.overlay,
           border: 'none',
-          borderLeft: '1px solid rgba(255,255,255,0.1)',
-          color: value >= max ? '#4b5563' : '#9ca3af',
+          borderLeft: `1px solid ${colors.border.default}`,
+          color: value >= max ? colors.text.tertiary : colors.text.secondary,
           fontSize: '1.4rem',
           cursor: value >= max ? 'not-allowed' : 'pointer',
           transition: 'background-color 0.15s',

@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { Check, Copy, FileCode, FileJson } from 'lucide-react';
 
+import { useColors } from '@/shared/theme';
+
 export function JsonActionWrapper({
   data,
   children,
@@ -11,6 +13,7 @@ export function JsonActionWrapper({
   children: React.ReactNode;
   defaultView?: 'schema' | 'json';
 }) {
+  const colors = useColors();
   const [view, setView] = useState<'schema' | 'json'>(defaultView);
   const [copied, setCopied] = useState(false);
 
@@ -36,7 +39,7 @@ export function JsonActionWrapper({
         <div
           style={{
             display: 'flex',
-            backgroundColor: 'rgba(255,255,255,0.05)',
+            backgroundColor: colors.bg.overlay,
             padding: '0.4rem',
             borderRadius: '0.6rem',
             gap: '0.4rem',
@@ -51,8 +54,8 @@ export function JsonActionWrapper({
               padding: '0.6rem 1.2rem',
               borderRadius: '0.4rem',
               border: 'none',
-              backgroundColor: view === 'schema' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: view === 'schema' ? '#f3f4f6' : '#9ca3af',
+              backgroundColor: view === 'schema' ? colors.bg.overlayHover : 'transparent',
+              color: view === 'schema' ? colors.text.primary : colors.text.secondary,
               fontSize: '1.2rem',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -70,8 +73,8 @@ export function JsonActionWrapper({
               padding: '0.6rem 1.2rem',
               borderRadius: '0.4rem',
               border: 'none',
-              backgroundColor: view === 'json' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: view === 'json' ? '#f3f4f6' : '#9ca3af',
+              backgroundColor: view === 'json' ? colors.bg.overlayHover : 'transparent',
+              color: view === 'json' ? colors.text.primary : colors.text.secondary,
               fontSize: '1.2rem',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -92,19 +95,19 @@ export function JsonActionWrapper({
               alignItems: 'center',
               gap: '0.6rem',
               padding: '0.6rem 1rem',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: colors.bg.overlay,
+              border: `1px solid ${colors.border.default}`,
               borderRadius: '0.6rem',
-              color: '#e5e5e5',
+              color: colors.text.primary,
               cursor: 'pointer',
               fontSize: '1.2rem',
               transition: 'background-color 0.2s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.backgroundColor = colors.bg.overlayHover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.backgroundColor = colors.bg.overlay;
             }}
           >
             {copied ? <Check size={14} color='#10b981' /> : <Copy size={14} />}
@@ -116,9 +119,9 @@ export function JsonActionWrapper({
       {/* Content */}
       <div
         style={{
-          backgroundColor: 'rgba(255,255,255,0.04)',
+          backgroundColor: colors.bg.overlay,
           borderRadius: '0.8rem',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: `1px solid ${colors.border.subtle}`,
           overflow: 'hidden',
         }}
       >
@@ -132,7 +135,7 @@ export function JsonActionWrapper({
               overflow: 'auto',
               fontSize: '1.3rem',
               fontFamily: 'monospace',
-              color: '#d1d5db',
+              color: colors.text.secondary,
               lineHeight: 1.5,
               maxHeight: '40rem',
             }}

@@ -14,6 +14,8 @@ import { type CSSProperties, useCallback, useRef, useState } from 'react';
 
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
+import { useColors } from '@/shared/theme';
+
 interface Option<Value extends string> {
   label: string;
   value: Value;
@@ -38,6 +40,7 @@ export function FuturAutocompleteSelect<Value extends string>({
   className?: string;
   allowCustomValue?: boolean;
 }) {
+  const colors = useColors();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -213,13 +216,13 @@ export function FuturAutocompleteSelect<Value extends string>({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '1rem 1.2rem',
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backgroundColor: colors.bg.overlay,
           border: isOpen
-            ? '1px solid rgba(255, 255, 255, 0.3)'
-            : '1px solid rgba(255, 255, 255, 0.1)',
+            ? `1px solid ${colors.border.focus}`
+            : `1px solid ${colors.border.default}`,
           borderRadius: '0.6rem',
           cursor: 'pointer',
-          color: displayValue ? '#e5e5e5' : '#9ca3af',
+          color: displayValue ? colors.text.primary : colors.text.secondary,
           fontSize: '1.3rem',
           transition: 'border-color 0.2s ease',
           minHeight: '3.8rem',
@@ -238,9 +241,9 @@ export function FuturAutocompleteSelect<Value extends string>({
           {displayValue || placeholder}
         </span>
         {isOpen ? (
-          <ChevronUp size={16} color='#9ca3af' style={{ flexShrink: 0 }} />
+          <ChevronUp size={16} color={colors.text.secondary} style={{ flexShrink: 0 }} />
         ) : (
-          <ChevronDown size={16} color='#9ca3af' style={{ flexShrink: 0 }} />
+          <ChevronDown size={16} color={colors.text.secondary} style={{ flexShrink: 0 }} />
         )}
       </div>
 
@@ -265,12 +268,12 @@ export function FuturAutocompleteSelect<Value extends string>({
                 style={{
                   width: '100%',
                   padding: '1rem 1.2rem',
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: colors.bg.elevated,
+                  border: `1px solid ${colors.border.focus}`,
                   borderBottom: 'none',
                   borderRadius: '0.6rem 0.6rem 0 0',
                   outline: 'none',
-                  color: '#e5e5e5',
+                  color: colors.text.primary,
                   fontSize: '1.3rem',
                   fontFamily: 'inherit',
                   boxSizing: 'border-box',
@@ -283,8 +286,8 @@ export function FuturAutocompleteSelect<Value extends string>({
                 style={{
                   maxHeight: '20rem',
                   overflowY: 'auto',
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  backgroundColor: colors.bg.elevated,
+                  border: `1px solid ${colors.border.default}`,
                   borderTop: 'none',
                   borderRadius: '0 0 0.6rem 0.6rem',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
@@ -294,7 +297,7 @@ export function FuturAutocompleteSelect<Value extends string>({
                   <div
                     style={{
                       padding: '1.2rem',
-                      color: '#6b7280',
+                      color: colors.text.tertiary,
                       fontSize: '1.2rem',
                       textAlign: 'center',
                     }}
@@ -321,18 +324,18 @@ export function FuturAutocompleteSelect<Value extends string>({
                           justifyContent: 'space-between',
                           padding: '1rem 1.2rem',
                           cursor: 'pointer',
-                          color: isSelected ? '#fff' : '#d1d5db',
+                          color: isSelected ? colors.text.primary : colors.text.secondary,
                           fontSize: '1.3rem',
                           backgroundColor: isHighlighted
-                            ? 'rgba(255, 255, 255, 0.1)'
+                            ? colors.bg.overlayHover
                             : isSelected
-                              ? 'rgba(255, 255, 255, 0.05)'
+                              ? colors.bg.overlay
                               : 'transparent',
                           transition: 'background-color 0.1s',
                         }}
                       >
                         <span style={{ flex: 1 }}>{option.label}</span>
-                        {isSelected && <Check size={14} color='#10b981' />}
+                        {isSelected && <Check size={14} color={colors.feedback.success} />}
                       </div>
                     );
                   })

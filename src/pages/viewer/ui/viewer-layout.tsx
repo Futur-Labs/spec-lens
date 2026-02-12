@@ -17,8 +17,10 @@ import {
 } from '@/entities/openapi-spec';
 import { GlobalAuthPanel } from '@/features/api-tester';
 import { checkSpecUpdate } from '@/shared/server';
+import { useColors } from '@/shared/theme';
 
 export function ViewerLayout() {
+  const colors = useColors();
   const navigate = useNavigate();
   const spec = useSpec();
   const isSidebarOpen = useIsSidebarOpen();
@@ -128,8 +130,8 @@ export function ViewerLayout() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 1.6rem',
-          backgroundColor: '#111111',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          backgroundColor: colors.bg.elevated,
+          borderBottom: `1px solid ${colors.border.default}`,
           zIndex: 100,
         }}
         className='mobile-only'
@@ -137,7 +139,7 @@ export function ViewerLayout() {
         <motion.button
           onClick={sidebarStoreActions.toggleSidebar}
           whileHover={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
+            backgroundColor: colors.bg.overlayHover,
             scale: 1.05,
           }}
           whileTap={{ scale: 0.95 }}
@@ -153,15 +155,19 @@ export function ViewerLayout() {
             cursor: 'pointer',
           }}
         >
-          {isSidebarOpen ? <X size={24} color='#e5e5e5' /> : <Menu size={24} color='#e5e5e5' />}
+          {isSidebarOpen ? (
+            <X size={24} color={colors.text.primary} />
+          ) : (
+            <Menu size={24} color={colors.text.primary} />
+          )}
         </motion.button>
-        <span style={{ color: '#e5e5e5', fontSize: '1.4rem', fontWeight: 600 }}>
+        <span style={{ color: colors.text.primary, fontSize: '1.4rem', fontWeight: 600 }}>
           {spec.info.title}
         </span>
         <motion.button
           onClick={handleClearSpec}
           whileHover={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
+            backgroundColor: colors.bg.overlayHover,
             scale: 1.05,
           }}
           whileTap={{ scale: 0.95 }}
@@ -177,7 +183,7 @@ export function ViewerLayout() {
             cursor: 'pointer',
           }}
         >
-          <RefreshCw size={20} color='#6b7280' />
+          <RefreshCw size={20} color={colors.text.tertiary} />
         </motion.button>
       </div>
 
@@ -191,7 +197,7 @@ export function ViewerLayout() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: colors.bg.base,
         }}
       >
         {/* Desktop Header */}
@@ -201,8 +207,8 @@ export function ViewerLayout() {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '1.2rem 2.4rem',
-            backgroundColor: '#111111',
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: colors.bg.elevated,
+            borderBottom: `1px solid ${colors.border.default}`,
             flexShrink: 0,
           }}
         >
@@ -210,7 +216,7 @@ export function ViewerLayout() {
             <motion.button
               onClick={sidebarStoreActions.toggleSidebar}
               whileHover={{
-                backgroundColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: colors.bg.overlayHover,
                 borderColor: 'rgba(255,255,255,0.2)',
                 scale: 1.02,
               }}
@@ -221,18 +227,22 @@ export function ViewerLayout() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '0.8rem',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: colors.bg.overlay,
+                border: `1px solid ${colors.border.default}`,
                 borderRadius: '0.6rem',
                 cursor: 'pointer',
               }}
             >
-              {isSidebarOpen ? <X size={18} color='#9ca3af' /> : <Menu size={18} color='#9ca3af' />}
+              {isSidebarOpen ? (
+                <X size={18} color={colors.text.secondary} />
+              ) : (
+                <Menu size={18} color={colors.text.secondary} />
+              )}
             </motion.button>
             <div>
               <h1
                 style={{
-                  color: '#e5e5e5',
+                  color: colors.text.primary,
                   fontSize: '1.6rem',
                   fontWeight: 600,
                   margin: 0,
@@ -241,7 +251,9 @@ export function ViewerLayout() {
                 {spec.info.title}
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                <span style={{ color: '#6b7280', fontSize: '1.2rem' }}>v{spec.info.version}</span>
+                <span style={{ color: colors.text.tertiary, fontSize: '1.2rem' }}>
+                  v{spec.info.version}
+                </span>
                 {specSource && (
                   <span
                     style={{
@@ -276,7 +288,7 @@ export function ViewerLayout() {
                   isSpinning
                     ? {}
                     : {
-                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        backgroundColor: colors.bg.overlayHover,
                         borderColor: 'rgba(255,255,255,0.2)',
                         scale: 1.02,
                       }
@@ -292,10 +304,10 @@ export function ViewerLayout() {
                   alignItems: 'center',
                   gap: '0.8rem',
                   padding: '0.8rem 1.4rem',
-                  backgroundColor: isSpinning ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: colors.bg.overlay,
+                  border: `1px solid ${colors.border.default}`,
                   borderRadius: '0.6rem',
-                  color: isSpinning ? '#6b7280' : '#e5e5e5',
+                  color: isSpinning ? colors.text.tertiary : colors.text.primary,
                   fontSize: '1.3rem',
                   cursor: isSpinning ? 'not-allowed' : 'pointer',
                   fontWeight: 500,
@@ -328,7 +340,7 @@ export function ViewerLayout() {
             <motion.button
               onClick={handleClearSpec}
               whileHover={{
-                backgroundColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: colors.bg.overlayHover,
                 borderColor: 'rgba(255,255,255,0.2)',
                 scale: 1.02,
               }}
@@ -339,10 +351,10 @@ export function ViewerLayout() {
                 alignItems: 'center',
                 gap: '0.8rem',
                 padding: '0.8rem 1.4rem',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: colors.bg.overlay,
+                border: `1px solid ${colors.border.default}`,
                 borderRadius: '0.6rem',
-                color: '#e5e5e5',
+                color: colors.text.primary,
                 fontSize: '1.3rem',
                 cursor: 'pointer',
                 fontWeight: 500,
@@ -376,6 +388,8 @@ export function ViewerLayout() {
 }
 
 function EmptyState() {
+  const colors = useColors();
+
   return (
     <div
       style={{
@@ -393,18 +407,18 @@ function EmptyState() {
           width: '6.4rem',
           height: '6.4rem',
           borderRadius: '50%',
-          backgroundColor: 'rgba(255,255,255,0.05)',
+          backgroundColor: colors.bg.overlay,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '1.6rem',
         }}
       >
-        <Menu size={24} color='#6b7280' />
+        <Menu size={24} color={colors.text.tertiary} />
       </div>
       <h2
         style={{
-          color: '#e5e5e5',
+          color: colors.text.primary,
           fontSize: '1.8rem',
           fontWeight: 600,
           marginBottom: '0.8rem',
@@ -412,7 +426,7 @@ function EmptyState() {
       >
         Select an endpoint
       </h2>
-      <p style={{ color: '#6b7280', fontSize: '1.4rem', maxWidth: '30rem' }}>
+      <p style={{ color: colors.text.tertiary, fontSize: '1.4rem', maxWidth: '30rem' }}>
         Choose an endpoint from the sidebar to view its documentation and test the API.
       </p>
     </div>

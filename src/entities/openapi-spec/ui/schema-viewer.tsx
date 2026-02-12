@@ -10,6 +10,7 @@ import {
   type ReferenceObject,
   type SchemaObject,
 } from '../model/openapi-types.ts';
+import { useColors, useIsDarkMode } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function SchemaViewer({
@@ -25,6 +26,8 @@ export function SchemaViewer({
   depth?: number;
   required?: boolean;
 }) {
+  const colors = useColors();
+  const isDark = useIsDarkMode();
   const [isExpanded, setIsExpanded] = useState(depth < 2);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -37,7 +40,7 @@ export function SchemaViewer({
           display: 'flex',
           alignItems: 'center',
           gap: '0.8rem',
-          color: '#ef4444',
+          color: colors.feedback.error,
           fontSize: '1.2rem',
           padding: '0.4rem 0',
         }}
@@ -71,14 +74,14 @@ export function SchemaViewer({
   };
 
   const typeDisplay = getTypeDisplay(resolvedSchema);
-  const typeColor = getTypeColor(resolvedSchema.type);
+  const typeColor = getTypeColor(resolvedSchema.type, isDark);
 
   // Styles based on 10px rem (e.g., 1.4rem = 14px)
   const styles = {
     container: {
       marginLeft: depth > 0 ? '1.6rem' : 0,
       paddingLeft: depth > 0 ? '1.2rem' : 0,
-      borderLeft: depth > 0 ? '1px solid rgba(255,255,255,0.1)' : 'none', // Subtle white for dark mode
+      borderLeft: depth > 0 ? `1px solid ${colors.border.default}` : 'none',
       fontSize: '1.4rem',
       position: 'relative' as const,
     },
@@ -90,14 +93,12 @@ export function SchemaViewer({
       cursor: hasChildren ? 'pointer' : 'default',
       transition: 'background-color 0.2s',
       borderRadius: '0.4rem',
-      // Changed from #f9fafb (very white) to rgba(255,255,255,0.05) for dark mode compatibility
-      backgroundColor:
-        isHovered && hasChildren ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0)',
+      backgroundColor: isHovered && hasChildren ? colors.bg.overlayHover : 'rgba(255, 255, 255, 0)',
     },
     chevron: {
       marginTop: '0.2rem',
       flexShrink: 0,
-      color: '#9ca3af', // gray-400
+      color: colors.text.secondary,
     },
     content: {
       flex: 1,
@@ -114,11 +115,11 @@ export function SchemaViewer({
       fontFamily: 'monospace',
       fontSize: '1.4rem',
       fontWeight: 500,
-      color: '#e5e5e5', // gray-200
+      color: colors.text.primary,
     },
     requiredBadge: {
       fontSize: '1rem',
-      color: '#ef4444',
+      color: colors.feedback.error,
       border: '1px solid rgba(239, 68, 68, 0.3)',
       backgroundColor: 'rgba(239, 68, 68, 0.1)',
       padding: '0.1rem 0.5rem',
@@ -133,7 +134,7 @@ export function SchemaViewer({
       fontSize: '1.1rem',
       fontWeight: 500,
       fontFamily: 'monospace',
-      backgroundColor: 'rgba(255,255,255,0.08)',
+      backgroundColor: colors.border.subtle,
     },
     typeInfo: {
       display: 'flex',
@@ -153,18 +154,18 @@ export function SchemaViewer({
       fontSize: '1rem',
       textTransform: 'uppercase' as const,
       fontWeight: 'bold' as const,
-      color: '#9ca3af', // gray-400
-      backgroundColor: 'rgba(255, 255, 255, 0.08)', // Darker background
+      color: colors.text.secondary,
+      backgroundColor: colors.border.subtle,
       borderRadius: '0.2rem',
     },
     validation: {
       fontSize: '1rem',
-      color: '#6b7280', // gray-500
+      color: colors.text.tertiary,
     },
     description: {
       marginTop: '0.4rem',
       fontSize: '1.2rem',
-      color: '#d1d5db', // gray-300 (light gray for readability)
+      color: colors.text.secondary,
       lineHeight: 1.5,
     },
     enumContainer: {
@@ -356,20 +357,37 @@ export function SchemaViewer({
   );
 }
 
-function getTypeColor(type?: string): string {
+function getTypeColor(type?: string, isDark = true): string {
+  if (isDark) {
+    switch (type) {
+      case 'string':
+        return '#34d399';
+      case 'number':
+      case 'integer':
+        return '#22d3ee';
+      case 'boolean':
+        return '#fbbf24';
+      case 'array':
+        return '#facc15';
+      case 'object':
+        return '#f472b6';
+      default:
+        return '#9ca3af';
+    }
+  }
   switch (type) {
     case 'string':
-      return '#34d399'; // emerald-400
+      return '#059669';
     case 'number':
     case 'integer':
-      return '#22d3ee'; // cyan-400 (Bright Cyan)
+      return '#0891b2';
     case 'boolean':
-      return '#fbbf24'; // amber-400
+      return '#d97706';
     case 'array':
-      return '#facc15'; // yellow-400 (Bright Yellow)
+      return '#a16207';
     case 'object':
-      return '#f472b6'; // pink-400
+      return '#db2777';
     default:
-      return '#9ca3af'; // gray-400
+      return '#4b5563';
   }
 }

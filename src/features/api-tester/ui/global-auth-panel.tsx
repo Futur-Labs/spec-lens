@@ -26,21 +26,25 @@ import {
 import { historyStoreActions, useHistory, type HistoryEntry } from '@/entities/history';
 import { getMethodColor } from '@/entities/openapi-spec';
 import { useVariables, variableStoreActions } from '@/entities/variable';
+import { type SemanticColors, useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';
 
-const inputStyle = {
-  flex: 1,
-  width: '100%',
-  padding: '0.8rem 1.2rem',
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '0.6rem',
-  color: '#e5e5e5',
-  fontSize: '1.3rem',
-  outline: 'none',
-};
+function getInputStyle(colors: SemanticColors) {
+  return {
+    flex: 1,
+    width: '100%',
+    padding: '0.8rem 1.2rem',
+    backgroundColor: colors.bg.overlay,
+    border: `1px solid ${colors.border.default}`,
+    borderRadius: '0.6rem',
+    color: colors.text.primary,
+    fontSize: '1.3rem',
+    outline: 'none',
+  } as const;
+}
 
 export function GlobalAuthPanel() {
+  const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'auth' | 'cookies' | 'variables' | 'history'>('auth');
 
@@ -58,8 +62,8 @@ export function GlobalAuthPanel() {
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255,255,255,0.02)',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        backgroundColor: colors.bg.overlay,
+        borderBottom: `1px solid ${colors.border.subtle}`,
       }}
     >
       {/* Header */}
@@ -79,10 +83,10 @@ export function GlobalAuthPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <Shield
             size={16}
-            color={hasActiveSession ? '#22c55e' : '#6b7280'}
+            color={hasActiveSession ? colors.feedback.success : colors.text.tertiary}
             fill={hasActiveSession ? 'rgba(34, 197, 94, 0.2)' : 'transparent'}
           />
-          <span style={{ color: '#e5e5e5', fontSize: '1.3rem', fontWeight: 500 }}>
+          <span style={{ color: colors.text.primary, fontSize: '1.3rem', fontWeight: 500 }}>
             Global Auth & Cookies
           </span>
 
@@ -143,9 +147,9 @@ export function GlobalAuthPanel() {
         </div>
 
         {isExpanded ? (
-          <ChevronUp size={16} color='#9ca3af' />
+          <ChevronUp size={16} color={colors.text.secondary} />
         ) : (
-          <ChevronDown size={16} color='#9ca3af' />
+          <ChevronDown size={16} color={colors.text.secondary} />
         )}
       </button>
 
@@ -159,7 +163,7 @@ export function GlobalAuthPanel() {
               gap: '0.4rem',
               marginBottom: '1.2rem',
               padding: '0.4rem',
-              backgroundColor: 'rgba(0,0,0,0.2)',
+              backgroundColor: colors.bg.overlay,
               borderRadius: '0.6rem',
             }}
           >
@@ -221,6 +225,8 @@ function TabButton({
   label: string;
   count?: number;
 }) {
+  const colors = useColors();
+
   return (
     <button
       onClick={onClick}
@@ -231,10 +237,10 @@ function TabButton({
         justifyContent: 'center',
         gap: '0.6rem',
         padding: '1rem 1rem',
-        backgroundColor: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+        backgroundColor: active ? colors.bg.overlayHover : 'transparent',
         border: 'none',
         borderRadius: '0.4rem',
-        color: active ? '#e5e5e5' : '#9ca3af',
+        color: active ? colors.text.primary : colors.text.secondary,
         fontSize: '1.2rem',
         fontWeight: 500,
         cursor: 'pointer',
@@ -250,7 +256,7 @@ function TabButton({
             backgroundColor: 'rgba(245, 158, 11, 0.3)',
             borderRadius: '1rem',
             fontSize: '1rem',
-            color: '#f59e0b',
+            color: colors.feedback.warning,
           }}
         >
           {count}
@@ -261,7 +267,9 @@ function TabButton({
 }
 
 function AuthTab() {
+  const colors = useColors();
   const authConfig = useAuthConfig();
+  const inputStyle = getInputStyle(colors);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -270,7 +278,7 @@ function AuthTab() {
         <label
           style={{
             display: 'block',
-            color: '#9ca3af',
+            color: colors.text.secondary,
             fontSize: '1.1rem',
             marginBottom: '0.4rem',
           }}
@@ -295,7 +303,7 @@ function AuthTab() {
           <label
             style={{
               display: 'block',
-              color: '#9ca3af',
+              color: colors.text.secondary,
               fontSize: '1.1rem',
               marginBottom: '0.4rem',
             }}
@@ -320,7 +328,7 @@ function AuthTab() {
               <label
                 style={{
                   display: 'block',
-                  color: '#9ca3af',
+                  color: colors.text.secondary,
                   fontSize: '1.1rem',
                   marginBottom: '0.4rem',
                 }}
@@ -340,7 +348,7 @@ function AuthTab() {
               <label
                 style={{
                   display: 'block',
-                  color: '#9ca3af',
+                  color: colors.text.secondary,
                   fontSize: '1.1rem',
                   marginBottom: '0.4rem',
                 }}
@@ -365,7 +373,7 @@ function AuthTab() {
             <label
               style={{
                 display: 'block',
-                color: '#9ca3af',
+                color: colors.text.secondary,
                 fontSize: '1.1rem',
                 marginBottom: '0.4rem',
               }}
@@ -392,7 +400,7 @@ function AuthTab() {
             <label
               style={{
                 display: 'block',
-                color: '#9ca3af',
+                color: colors.text.secondary,
                 fontSize: '1.1rem',
                 marginBottom: '0.4rem',
               }}
@@ -412,7 +420,7 @@ function AuthTab() {
             <label
               style={{
                 display: 'block',
-                color: '#9ca3af',
+                color: colors.text.secondary,
                 fontSize: '1.1rem',
                 marginBottom: '0.4rem',
               }}
@@ -448,7 +456,7 @@ function AuthTab() {
               alignItems: 'center',
               gap: '0.6rem',
               cursor: 'pointer',
-              color: '#9ca3af',
+              color: colors.text.secondary,
               fontSize: '1.2rem',
             }}
           >
@@ -473,7 +481,7 @@ function AuthTab() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '0.4rem',
-              color: '#ef4444',
+              color: colors.feedback.error,
               fontSize: '1.2rem',
               cursor: 'pointer',
             }}
@@ -488,8 +496,10 @@ function AuthTab() {
 }
 
 function CookiesTab() {
+  const colors = useColors();
   const customCookies = useCustomCookies();
   const sessionCookies = useSessionCookies();
+  const inputStyle = getInputStyle(colors);
   const [newCookieName, setNewCookieName] = useState('');
   const [newCookieValue, setNewCookieValue] = useState('');
   const [, forceUpdate] = useState(0);
@@ -543,9 +553,9 @@ function CookiesTab() {
           display: 'flex',
           gap: '0.8rem',
           padding: '1rem',
-          backgroundColor: 'rgba(255,255,255,0.02)',
+          backgroundColor: colors.bg.overlay,
           borderRadius: '0.6rem',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: `1px solid ${colors.border.subtle}`,
         }}
       >
         <input
@@ -571,10 +581,10 @@ function CookiesTab() {
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
             backgroundColor:
-              newCookieName.trim() && newCookieValue.trim() ? '#2563eb' : 'rgba(255,255,255,0.1)',
+              newCookieName.trim() && newCookieValue.trim() ? '#2563eb' : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
-            color: '#fff',
+            color: colors.text.onBrand,
             fontSize: '1.2rem',
             cursor: newCookieName.trim() && newCookieValue.trim() ? 'pointer' : 'not-allowed',
           }}
@@ -587,7 +597,7 @@ function CookiesTab() {
       {/* Session Cookies from Backend */}
       {sessionCookies.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-          <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+          <span style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}>
             🔐 Session Cookies (from server)
           </span>
           <div
@@ -613,7 +623,7 @@ function CookiesTab() {
                     padding: '0.6rem 0.8rem',
                     backgroundColor: expirationInfo.isExpiringSoon
                       ? 'rgba(245, 158, 11, 0.1)'
-                      : 'rgba(0,0,0,0.2)',
+                      : colors.bg.overlay,
                     borderRadius: '0.4rem',
                     border: expirationInfo.isExpiringSoon
                       ? '1px solid rgba(245, 158, 11, 0.3)'
@@ -622,7 +632,7 @@ function CookiesTab() {
                 >
                   <span
                     style={{
-                      color: '#22c55e',
+                      color: colors.feedback.success,
                       fontSize: '1.2rem',
                       fontFamily: 'monospace',
                       fontWeight: 500,
@@ -630,11 +640,11 @@ function CookiesTab() {
                   >
                     {cookie.name}
                   </span>
-                  <span style={{ color: '#6b7280', fontSize: '1.2rem' }}>=</span>
+                  <span style={{ color: colors.text.tertiary, fontSize: '1.2rem' }}>=</span>
                   <span
                     style={{
                       flex: 1,
-                      color: '#e5e5e5',
+                      color: colors.text.primary,
                       fontSize: '1.2rem',
                       fontFamily: 'monospace',
                       overflow: 'hidden',
@@ -659,7 +669,9 @@ function CookiesTab() {
                             : 'rgba(34, 197, 94, 0.2)',
                           borderRadius: '0.3rem',
                           fontSize: '0.9rem',
-                          color: expirationInfo.isExpiringSoon ? '#fbbf24' : '#22c55e',
+                          color: expirationInfo.isExpiringSoon
+                            ? colors.feedback.warning
+                            : colors.feedback.success,
                         }}
                         title={cookie.expires}
                       >
@@ -701,10 +713,10 @@ function CookiesTab() {
                       <span
                         style={{
                           padding: '0.2rem 0.4rem',
-                          backgroundColor: 'rgba(255,255,255,0.1)',
+                          backgroundColor: colors.bg.overlayHover,
                           borderRadius: '0.3rem',
                           fontSize: '0.9rem',
-                          color: '#9ca3af',
+                          color: colors.text.secondary,
                         }}
                       >
                         {cookie.path}
@@ -721,7 +733,7 @@ function CookiesTab() {
       {/* Custom Cookie List */}
       {customCookies.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <span style={{ color: '#9ca3af', fontSize: '1.2rem', fontWeight: 500 }}>
+          <span style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}>
             🍪 Custom Cookies
           </span>
           {customCookies.map((cookie, index) => (
@@ -752,16 +764,16 @@ function CookiesTab() {
                   height: '2rem',
                   backgroundColor: cookie.enabled
                     ? 'rgba(34, 197, 94, 0.2)'
-                    : 'rgba(255,255,255,0.1)',
+                    : colors.bg.overlayHover,
                   border: 'none',
                   borderRadius: '0.4rem',
                   cursor: 'pointer',
                 }}
               >
                 {cookie.enabled ? (
-                  <Check size={12} color='#22c55e' />
+                  <Check size={12} color={colors.feedback.success} />
                 ) : (
-                  <X size={12} color='#6b7280' />
+                  <X size={12} color={colors.text.tertiary} />
                 )}
               </button>
 
@@ -806,7 +818,7 @@ function CookiesTab() {
                   border: '1px solid rgba(239, 68, 68, 0.3)',
                   borderRadius: '0.4rem',
                   cursor: 'pointer',
-                  color: '#ef4444',
+                  color: colors.feedback.error,
                 }}
               >
                 <Trash2 size={12} />
@@ -826,7 +838,7 @@ function CookiesTab() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '0.4rem',
-              color: '#ef4444',
+              color: colors.feedback.error,
               fontSize: '1.2rem',
               cursor: 'pointer',
               alignSelf: 'flex-start',
@@ -842,7 +854,7 @@ function CookiesTab() {
             style={{
               padding: '2rem',
               textAlign: 'center',
-              color: '#6b7280',
+              color: colors.text.tertiary,
               fontSize: '1.2rem',
             }}
           >
@@ -856,7 +868,9 @@ function CookiesTab() {
 }
 
 function VariablesTab() {
+  const colors = useColors();
   const variables = useVariables();
+  const inputStyle = getInputStyle(colors);
   const [newName, setNewName] = useState('');
   const [newValue, setNewValue] = useState('');
 
@@ -887,7 +901,7 @@ function VariablesTab() {
         💡 Type{' '}
         <code
           style={{
-            backgroundColor: 'rgba(0,0,0,0.3)',
+            backgroundColor: colors.bg.overlay,
             padding: '0.2rem 0.4rem',
             borderRadius: '0.3rem',
           }}
@@ -903,9 +917,9 @@ function VariablesTab() {
           display: 'flex',
           gap: '0.8rem',
           padding: '1rem',
-          backgroundColor: 'rgba(255,255,255,0.02)',
+          backgroundColor: colors.bg.overlay,
           borderRadius: '0.6rem',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: `1px solid ${colors.border.subtle}`,
         }}
       >
         <input
@@ -930,10 +944,10 @@ function VariablesTab() {
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
-            backgroundColor: newName.trim() ? '#a855f7' : 'rgba(255,255,255,0.1)',
+            backgroundColor: newName.trim() ? '#a855f7' : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
-            color: '#fff',
+            color: colors.text.onBrand,
             fontSize: '1.2rem',
             cursor: newName.trim() ? 'pointer' : 'not-allowed',
           }}
@@ -970,7 +984,7 @@ function VariablesTab() {
                   style={{
                     ...inputStyle,
                     fontFamily: 'monospace',
-                    backgroundColor: 'rgba(0,0,0,0.2)',
+                    backgroundColor: colors.bg.overlay,
                   }}
                 />
               </div>
@@ -985,7 +999,7 @@ function VariablesTab() {
                 style={{
                   ...inputStyle,
                   flex: 2,
-                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  backgroundColor: colors.bg.overlay,
                 }}
               />
 
@@ -1002,7 +1016,7 @@ function VariablesTab() {
                   border: '1px solid rgba(239, 68, 68, 0.3)',
                   borderRadius: '0.4rem',
                   cursor: 'pointer',
-                  color: '#ef4444',
+                  color: colors.feedback.error,
                 }}
               >
                 <Trash2 size={12} />
@@ -1022,7 +1036,7 @@ function VariablesTab() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '0.4rem',
-              color: '#ef4444',
+              color: colors.feedback.error,
               fontSize: '1.2rem',
               cursor: 'pointer',
               alignSelf: 'flex-start',
@@ -1037,7 +1051,7 @@ function VariablesTab() {
           style={{
             padding: '2rem',
             textAlign: 'center',
-            color: '#6b7280',
+            color: colors.text.tertiary,
             fontSize: '1.2rem',
           }}
         >
@@ -1049,6 +1063,7 @@ function VariablesTab() {
 }
 
 function HistoryTab() {
+  const colors = useColors();
   const history = useHistory();
 
   if (history.length === 0) {
@@ -1057,7 +1072,7 @@ function HistoryTab() {
         style={{
           padding: '2rem',
           textAlign: 'center',
-          color: '#6b7280',
+          color: colors.text.tertiary,
           fontSize: '1.2rem',
         }}
       >
@@ -1076,7 +1091,7 @@ function HistoryTab() {
           alignItems: 'center',
         }}
       >
-        <span style={{ color: '#9ca3af', fontSize: '1.2rem' }}>
+        <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>
           Recent Requests ({history.length})
         </span>
         <button
@@ -1089,7 +1104,7 @@ function HistoryTab() {
             backgroundColor: 'transparent',
             border: '1px solid rgba(239, 68, 68, 0.3)',
             borderRadius: '0.4rem',
-            color: '#ef4444',
+            color: colors.feedback.error,
             fontSize: '1.1rem',
             cursor: 'pointer',
           }}
@@ -1118,11 +1133,12 @@ function HistoryTab() {
 }
 
 function HistoryItem({ entry }: { entry: HistoryEntry }) {
+  const colors = useColors();
   const statusColor = entry.error
-    ? '#ef4444'
+    ? colors.feedback.error
     : entry.response?.status && entry.response.status >= 400
-      ? '#f59e0b'
-      : '#22c55e';
+      ? colors.feedback.warning
+      : colors.feedback.success;
 
   const formattedTime = new Date(entry.timestamp).toLocaleString('ko-KR', {
     month: 'short',
@@ -1138,8 +1154,8 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
         alignItems: 'center',
         gap: '0.8rem',
         padding: '0.8rem 1rem',
-        backgroundColor: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        backgroundColor: colors.bg.overlay,
+        border: `1px solid ${colors.border.subtle}`,
         borderRadius: '0.6rem',
       }}
     >
@@ -1151,7 +1167,7 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
           borderRadius: '0.3rem',
           fontSize: '1rem',
           fontWeight: 600,
-          color: '#fff',
+          color: colors.text.onBrand,
           textTransform: 'uppercase',
           minWidth: '4.5rem',
           textAlign: 'center',
@@ -1164,7 +1180,7 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
       <span
         style={{
           flex: 1,
-          color: '#e5e5e5',
+          color: colors.text.primary,
           fontSize: '1.2rem',
           fontFamily: 'monospace',
           overflow: 'hidden',
@@ -1192,13 +1208,13 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
 
       {/* Duration */}
       {entry.duration !== undefined && (
-        <span style={{ color: '#6b7280', fontSize: '1.1rem', minWidth: '5rem' }}>
+        <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', minWidth: '5rem' }}>
           {entry.duration}ms
         </span>
       )}
 
       {/* Time */}
-      <span style={{ color: '#6b7280', fontSize: '1.1rem', minWidth: '7rem' }}>
+      <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', minWidth: '7rem' }}>
         {formattedTime}
       </span>
 
@@ -1215,7 +1231,7 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
           border: '1px solid rgba(239, 68, 68, 0.3)',
           borderRadius: '0.4rem',
           cursor: 'pointer',
-          color: '#ef4444',
+          color: colors.feedback.error,
         }}
         title='Delete'
       >
