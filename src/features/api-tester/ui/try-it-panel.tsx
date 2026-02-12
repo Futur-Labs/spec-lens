@@ -1208,7 +1208,7 @@ function getInputStyle(colors: SemanticColors) {
     flex: 1,
     width: '100%',
     padding: '0.8rem 1.2rem',
-    backgroundColor: colors.bg.overlay,
+    backgroundColor: colors.bg.input,
     border: `1px solid ${colors.border.default}`,
     borderRadius: '0.6rem',
     color: colors.text.primary,
@@ -1364,7 +1364,7 @@ function NumberInput({
           transition: 'background-color 0.15s',
         }}
       >
-        −
+        -
       </button>
       <input
         type='text'
@@ -1377,7 +1377,7 @@ function NumberInput({
           width: '100%',
           minWidth: '60px',
           padding: '0.8rem 1rem',
-          backgroundColor: colors.bg.overlay,
+          backgroundColor: colors.bg.base,
           border: 'none',
           color: colors.text.primary,
           fontSize: '1.3rem',

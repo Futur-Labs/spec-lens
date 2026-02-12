@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { useVariables } from '@/entities/variable';
+import { useColors } from '@/shared/theme';
 
 interface Props {
   value: string;
@@ -17,6 +18,7 @@ export function VariableAutocompleteInput({
   style,
   multiline,
 }: Props) {
+  const colors = useColors();
   const variables = useVariables();
   const [showDropdown, setShowDropdown] = useState(false);
   const [filteredVars, setFilteredVars] = useState(variables);
@@ -148,9 +150,10 @@ export function VariableAutocompleteInput({
             left: 0,
             right: 0,
             marginTop: '0.4rem',
-            backgroundColor: '#1f2937',
-            border: '1px solid rgba(255,255,255,0.15)',
+            backgroundColor: colors.bg.elevated,
+            border: `1px solid ${colors.border.default}`,
             borderRadius: '0.6rem',
+            // padding: '0.4rem 0',
             maxHeight: '200px',
             overflow: 'auto',
             zIndex: 100,
@@ -171,7 +174,7 @@ export function VariableAutocompleteInput({
                 backgroundColor:
                   index === selectedIndex ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
                 borderBottom:
-                  index < filteredVars.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                  index < filteredVars.length - 1 ? `1px solid ${colors.border.subtle}` : 'none',
               }}
             >
               <span style={{ color: '#a855f7', fontFamily: 'monospace', fontWeight: 500 }}>
@@ -179,7 +182,7 @@ export function VariableAutocompleteInput({
               </span>
               <span
                 style={{
-                  color: '#9ca3af',
+                  color: colors.text.secondary,
                   fontSize: '1.1rem',
                   maxWidth: '150px',
                   overflow: 'hidden',

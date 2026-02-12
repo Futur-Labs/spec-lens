@@ -269,8 +269,8 @@ export function FuturAutocompleteSelect<Value extends string>({
                   width: '100%',
                   padding: '1rem 1.2rem',
                   backgroundColor: colors.bg.elevated,
-                  border: `1px solid ${colors.border.focus}`,
-                  borderBottom: 'none',
+                  border: `1px solid ${colors.border.default}`,
+                  // borderBottom: 'none',
                   borderRadius: '0.6rem 0.6rem 0 0',
                   outline: 'none',
                   color: colors.text.primary,
@@ -290,7 +290,7 @@ export function FuturAutocompleteSelect<Value extends string>({
                   border: `1px solid ${colors.border.default}`,
                   borderTop: 'none',
                   borderRadius: '0 0 0.6rem 0.6rem',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 }}
               >
                 {filteredOptions.length === 0 ? (

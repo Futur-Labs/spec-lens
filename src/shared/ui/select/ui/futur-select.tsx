@@ -107,8 +107,9 @@ export function FuturSelect<Value extends string | number>({
             backgroundColor: colors.bg.elevated,
             border: `1px solid ${colors.border.default}`,
             borderRadius: '0.6rem',
+            padding: '0.4rem 0',
             zIndex: 100,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
           }}
         >
           {options.length === 0 ? (
