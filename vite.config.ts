@@ -112,21 +112,21 @@ export default defineConfig(({ mode }) => {
     assetsInclude: ['**/*.ttf', '**/*.woff', '**/*.woff2', '**/*.eot', '**/*.otf'],
     build: {
       sourcemap: true,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('/node_modules/')) {
-              if (id.includes('/framer-motion/')) return 'vendor-motion';
-              if (id.includes('/@jigoooo/shared-ui/')) return 'vendor-shared-ui';
-              if (id.includes('/@tanstack/react-query-devtools/')) return 'vendor-query-devtools';
-              if (id.includes('/@tanstack/react-router-devtools/')) {
-                return 'vendor-router-devtools';
-              }
-            }
-            return undefined;
-          },
-        },
-      },
+      // rollupOptions: {
+      //   output: {
+      //     manualChunks(id) {
+      //       if (id.includes('/node_modules/')) {
+      //         if (id.includes('/framer-motion/')) return 'vendor-motion';
+      //         if (id.includes('/@jigoooo/shared-ui/')) return 'vendor-shared-ui';
+      //         if (id.includes('/@tanstack/react-query-devtools/')) return 'vendor-query-devtools';
+      //         if (id.includes('/@tanstack/react-router-devtools/')) {
+      //           return 'vendor-router-devtools';
+      //         }
+      //       }
+      //       return undefined;
+      //     },
+      //   },
+      // },
     },
   };
 });
