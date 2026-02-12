@@ -425,16 +425,12 @@ function ParameterGroup({
                   {param.required && (
                     <span
                       style={{
-                        fontSize: '1rem',
                         color: colors.feedback.error,
-                        border: '1px solid rgba(239, 68, 68, 0.3)',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        padding: '0.1rem 0.6rem',
-                        borderRadius: '0.4rem',
-                        fontWeight: 500,
+                        fontWeight: 700,
+                        marginLeft: '0.2rem',
                       }}
                     >
-                      Required
+                      *
                     </span>
                   )}
                 </div>
@@ -512,7 +508,6 @@ function ResponseItem({
           alignItems: 'center',
           gap: '1.6rem',
           padding: '1.2rem 1.6rem',
-          backgroundColor: 'transparent',
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
@@ -572,7 +567,7 @@ function ResponseItem({
                     getExampleFromMediaType(response.content?.['application/json']) ||
                     generateExample(schema, spec)
                   }
-                  defaultView='schema'
+                  defaultView='json'
                 >
                   <SchemaViewer schema={schema} spec={spec} />
                 </JsonActionWrapper>

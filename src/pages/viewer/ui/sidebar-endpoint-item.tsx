@@ -42,7 +42,6 @@ export function SidebarEndpointItem({
     <Tooltip
       key={`${endpoint.method}-${endpoint.path}`}
       content={endpoint.path}
-      contentStyle={{ backgroundColor: '#ffffff', color: '#111111' }}
       placement='right'
       delay={0}
       fullWidth

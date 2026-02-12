@@ -15,6 +15,8 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, type CSSProperties, type ReactNode } from 'react';
 
+import { useIsDarkMode } from '@/shared/theme';
+
 export function Tooltip({
   contentStyle,
   children,
@@ -32,6 +34,7 @@ export function Tooltip({
   fullWidth?: boolean;
   disabled?: boolean;
 }) {
+  const isDark = useIsDarkMode();
   const [isOpen, setIsOpen] = useState(false);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
   const [floatingElement, setFloatingElement] = useState<HTMLElement | null>(null);
@@ -90,15 +93,18 @@ export function Tooltip({
               >
                 <div
                   style={{
-                    backgroundColor: '#ffffff',
-                    color: '#111111',
+                    backgroundColor: isDark ? '#ffffff' : '#1a1a1a',
+                    color: isDark ? '#111111' : '#f3f4f6',
                     padding: '0.6rem 1rem',
                     borderRadius: '0.4rem',
                     fontSize: '1.4rem',
                     fontWeight: 600,
-                    boxShadow:
-                      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: isDark
+                      ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      : '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12)',
+                    border: isDark
+                      ? '1px solid rgba(0,0,0,0.08)'
+                      : '1px solid rgba(255,255,255,0.1)',
                     whiteSpace: 'nowrap',
                     ...contentStyle,
                   }}

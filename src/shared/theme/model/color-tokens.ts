@@ -75,8 +75,8 @@ export const lightColors: SemanticColors = {
     base: p.neutral[1300],
     elevated: p.neutral[1200],
     subtle: p.neutral[1100],
-    overlay: p.blackAlpha[5],
-    overlayHover: p.blackAlpha[10],
+    overlay: p.blackAlpha[3],
+    overlayHover: p.blackAlpha[8],
     input: p.neutral[1300],
   },
   text: {

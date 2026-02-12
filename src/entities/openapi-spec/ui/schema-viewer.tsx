@@ -117,15 +117,10 @@ export function SchemaViewer({
       fontWeight: 500,
       color: colors.text.primary,
     },
-    requiredBadge: {
-      fontSize: '1rem',
+    requiredMark: {
       color: colors.feedback.error,
-      border: '1px solid rgba(239, 68, 68, 0.3)',
-      backgroundColor: 'rgba(239, 68, 68, 0.1)',
-      padding: '0.1rem 0.5rem',
-      borderRadius: '0.4rem',
-      fontWeight: 500,
-      marginLeft: '0.6rem',
+      fontWeight: 700,
+      marginLeft: '0.2rem',
     },
     typeBadge: {
       display: 'inline-block',
@@ -214,7 +209,7 @@ export function SchemaViewer({
             {name && (
               <span style={styles.name}>
                 {name}
-                {required && <span style={styles.requiredBadge}>Required</span>}
+                {required && <span style={styles.requiredMark}>*</span>}
               </span>
             )}
 
