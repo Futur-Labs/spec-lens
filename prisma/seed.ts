@@ -18,9 +18,6 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // Clear existing data
-  await prisma.contact.deleteMany();
-  await prisma.article.deleteMany();
-  await prisma.portfolio.deleteMany();
   await prisma.user.deleteMany();
 
   // Create admin user
@@ -32,18 +29,6 @@ async function main() {
     },
   });
   console.log('✅ Created admin user:', adminUser.username);
-
-  // Create articles
-  const articles = await prisma.article.createMany({
-    data: [],
-  });
-  console.log('✅ Created', articles.count, 'articles');
-
-  // Create portfolio items
-  const portfolioItems = await prisma.portfolio.createMany({
-    data: [],
-  });
-  console.log('✅ Created', portfolioItems.count, 'portfolio items');
 
   console.log('✨ Seeding completed!');
 }

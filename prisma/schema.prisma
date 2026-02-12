@@ -17,39 +17,3 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-model Article {
-  id        String   @id @default(cuid())
-  title     String
-  date      String
-  summary   String
-  content   String
-  tags      String // JSON string으로 저장
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Portfolio {
-  id              Int      @id @default(autoincrement())
-  title           String
-  category        String
-  description     String
-  gradient        String
-  image           String?
-  fullDescription String?
-  technologies    String? // JSON string으로 저장
-  client          String?
-  year            String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model Contact {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  company   String?
-  message   String
-  createdAt DateTime @default(now())
-}
