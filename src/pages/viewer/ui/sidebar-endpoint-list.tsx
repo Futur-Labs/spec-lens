@@ -66,7 +66,7 @@ export function SidebarEndpointList() {
     getScrollElement: () => parentRef.current,
     estimateSize: (index) =>
       flatItems[index].type === 'header' ? TAG_HEADER_HEIGHT : ENDPOINT_ITEM_HEIGHT,
-    overscan: 10,
+    overscan: 20,
     useFlushSync: false,
   });
 

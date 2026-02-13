@@ -1,3 +1,4 @@
+import { endpointSelectionStoreActions } from '@/entities/endpoint-selection';
 import { sidebarStoreActions } from '@/entities/openapi-sidebar';
 import {
   type OpenAPISpec,
@@ -11,4 +12,5 @@ export function setSpecWithExpanded(spec: OpenAPISpec, source: SpecSource) {
   const tags = getAllTags(spec);
   sidebarStoreActions.expandAllTags(tags);
   sidebarStoreActions.setSidebarOpen(true);
+  endpointSelectionStoreActions.clearSelection();
 }

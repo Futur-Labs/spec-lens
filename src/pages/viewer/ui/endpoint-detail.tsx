@@ -15,21 +15,17 @@ import {
   SchemaViewer,
   generateExample,
   getExampleFromMediaType,
+  useSpec,
 } from '@/entities/openapi-spec';
 import { TryItPanel } from '@/features/api-tester';
 import { useColors, useIsDarkMode } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 
-export function EndpointDetail({
-  endpoint,
-  spec,
-}: {
-  endpoint: ParsedEndpoint;
-  spec: OpenAPISpec;
-}) {
+export function EndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
   const colors = useColors();
   const containerRef = useRef<HTMLDivElement>(null);
   const { operation, path, method } = endpoint;
+  const spec = useSpec();
 
   // Scroll to top when endpoint changes
   useEffect(() => {
@@ -53,6 +49,8 @@ export function EndpointDetail({
 
   // Get responses
   const responses = Object.entries(operation.responses || {});
+
+  if (!spec) return null;
 
   return (
     <div

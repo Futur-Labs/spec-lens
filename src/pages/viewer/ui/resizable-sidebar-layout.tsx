@@ -33,7 +33,7 @@ export function ResizableSidebarLayout({ children }: PropsWithChildren) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: colors.bg.subtle,
+            backgroundColor: colors.bg.base,
             borderRight: `1px solid ${colors.border.subtle}`,
             overflow: 'hidden',
             whiteSpace: 'nowrap',
