@@ -8,6 +8,7 @@ export type SemanticColors = {
     overlay: string;
     overlayHover: string;
     input: string;
+    autoComplete: string;
   };
   text: {
     primary: string;
@@ -43,6 +44,7 @@ export const darkColors: SemanticColors = {
     overlay: p.whiteAlpha[5],
     overlayHover: p.whiteAlpha[10],
     input: p.whiteAlpha[5],
+    autoComplete: p.whiteAlpha[5],
   },
   text: {
     primary: p.neutral[1000],
@@ -78,6 +80,7 @@ export const lightColors: SemanticColors = {
     overlay: p.blackAlpha[3],
     overlayHover: p.blackAlpha[8],
     input: p.neutral[1300],
+    autoComplete: p.neutral[1300],
   },
   text: {
     primary: p.neutral[200],

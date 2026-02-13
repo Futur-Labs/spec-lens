@@ -511,6 +511,7 @@ function ResponseItem({
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
+          backgroundColor: colors.bg.overlay,
         }}
       >
         <motion.div

@@ -216,7 +216,7 @@ export function FuturAutocompleteSelect<Value extends string>({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '1rem 1.2rem',
-          backgroundColor: colors.bg.overlay,
+          backgroundColor: colors.bg.autoComplete,
           border: isOpen
             ? `1px solid ${colors.border.focus}`
             : `1px solid ${colors.border.default}`,

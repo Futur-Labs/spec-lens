@@ -67,7 +67,7 @@ export function FuturSelect<Value extends string | number>({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '1rem 1.2rem',
-          backgroundColor: colors.bg.overlay,
+          backgroundColor: colors.bg.autoComplete,
           border: isOpen
             ? `1px solid ${colors.border.focus}`
             : `1px solid ${colors.border.default}`,
@@ -107,7 +107,7 @@ export function FuturSelect<Value extends string | number>({
             backgroundColor: colors.bg.elevated,
             border: `1px solid ${colors.border.default}`,
             borderRadius: '0.6rem',
-            padding: '0.4rem 0',
+            padding: 0,
             zIndex: 100,
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
           }}

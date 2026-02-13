@@ -1,14 +1,12 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { motion } from 'framer-motion';
 import { useDeferredValue, useMemo, useRef } from 'react';
 
-import { ChevronRight } from 'lucide-react';
-
+import { SidebarEndpointGroupHeader } from './sidebar-endpoint-group-header';
 import { SidebarEndpointItem } from './sidebar-endpoint-item';
 import { useRestoreEndpointFromHash } from '../model/use-restore-endpoint-from-hash';
 import { useScrollToSelectedEndpoint } from '../model/use-scroll-to-selected-endpoint';
 import { useSearchQuery, useSelectedMethods, useSelectedTags } from '@/entities/endpoint-filter';
-import { sidebarStoreActions, useExpandedTags } from '@/entities/openapi-sidebar';
+import { useExpandedTags } from '@/entities/openapi-sidebar';
 import {
   filterEndpoints,
   groupEndpointsByTag,
@@ -46,9 +44,9 @@ export function SidebarEndpointList() {
   useRestoreEndpointFromHash();
   useScrollToSelectedEndpoint(endpointRefs);
 
-  // 플랫 리스트 생성
   const flatItems = useMemo<EndpointFlatItem[]>(() => {
     const items: EndpointFlatItem[] = [];
+
     for (const [tag, tagEndpoints] of tagEntries) {
       const isExpanded = expandedTags.includes(tag);
       items.push({ type: 'header', tag, count: tagEndpoints.length, isExpanded });
@@ -58,6 +56,7 @@ export function SidebarEndpointList() {
         }
       }
     }
+
     return items;
   }, [tagEntries, expandedTags]);
 
@@ -119,55 +118,7 @@ export function SidebarEndpointList() {
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
               >
-                <button
-                  onClick={() => sidebarStoreActions.toggleTagExpanded(item.tag)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.8rem',
-                    padding: '0 1.6rem',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                  }}
-                >
-                  <motion.div
-                    initial={false}
-                    animate={{ rotate: item.isExpanded ? 90 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <ChevronRight size={14} color={colors.text.tertiary} />
-                  </motion.div>
-                  <span
-                    style={{
-                      color: colors.text.secondary,
-                      fontSize: '1.2rem',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    {item.tag}
-                  </span>
-                  <span
-                    style={{
-                      color: colors.text.secondary,
-                      fontSize: '1.2rem',
-                      marginLeft: 'auto',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {item.count}
-                  </span>
-                </button>
+                <SidebarEndpointGroupHeader endpointHeaderItem={item} />
               </div>
             );
           }

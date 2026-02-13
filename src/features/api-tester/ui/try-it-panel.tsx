@@ -63,7 +63,7 @@ function formatBytes(bytes: number): string {
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: OpenAPISpec }) {
   const colors = useColors();
-  const inputStyle = getInputStyle(colors);
+  const autoCompleteStyle = getAutoCompleteStyle(colors);
   const iconButtonStyle = getIconButtonStyle(colors);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showHeaders, setShowHeaders] = useState(true);
@@ -755,14 +755,14 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                                   testParamsStoreActions.setHeader(newKey, v);
                                 }
                               }}
-                              style={{ ...inputStyle, flex: 1 }}
+                              style={{ ...autoCompleteStyle, flex: 1 }}
                             />
                             <HeaderAutocompleteInput
                               type='value'
                               headerName={k}
                               value={v}
                               onChange={(newValue) => testParamsStoreActions.setHeader(k, newValue)}
-                              style={{ ...inputStyle, flex: 2 }}
+                              style={{ ...autoCompleteStyle, flex: 2 }}
                             />
                             <button
                               onClick={() => testParamsStoreActions.removeHeader(k)}
@@ -788,7 +788,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             value={newHeaderName}
                             onChange={setNewHeaderName}
                             placeholder='Header name'
-                            style={{ ...inputStyle, flex: 1 }}
+                            style={{ ...autoCompleteStyle, flex: 1 }}
                           />
                           <HeaderAutocompleteInput
                             type='value'
@@ -796,7 +796,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             value={newHeaderValue}
                             onChange={setNewHeaderValue}
                             placeholder='Header value'
-                            style={{ ...inputStyle, flex: 2 }}
+                            style={{ ...autoCompleteStyle, flex: 2 }}
                           />
                           <button
                             onClick={() => {
@@ -1214,6 +1214,15 @@ function getInputStyle(colors: SemanticColors) {
     color: colors.text.primary,
     fontSize: '1.3rem',
     outline: 'none',
+  } as const;
+}
+
+function getAutoCompleteStyle(colors: SemanticColors) {
+  return {
+    ...getInputStyle(colors),
+    padding: 0,
+    border: 'none',
+    backgroundColor: colors.bg.autoComplete,
   } as const;
 }
 
