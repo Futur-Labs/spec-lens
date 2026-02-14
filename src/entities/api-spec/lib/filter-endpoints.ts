@@ -1,4 +1,4 @@
-import type { ParsedEndpoint } from '../model/openapi-types.ts';
+import type { ParsedEndpoint } from '../model/api-types.ts';
 import type { HttpMethod } from '@/shared/type';
 
 /**

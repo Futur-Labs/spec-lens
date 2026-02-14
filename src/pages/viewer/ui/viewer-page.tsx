@@ -2,7 +2,7 @@ import { Navigate } from '@tanstack/react-router';
 
 import { ViewerLayout } from './viewer-layout.tsx';
 import { sidebarStoreActions } from '@/entities/sidebar/index.ts';
-import { useSpec, useSpecStore, useSpecStoreHydration } from '@/entities/openapi-spec';
+import { useSpec, useSpecStore, useSpecStoreHydration } from '@/entities/api-spec/index.ts';
 
 export function ViewerPage() {
   const hydrated = useSpecStoreHydration(() => {

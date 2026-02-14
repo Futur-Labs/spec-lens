@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileJson, Link, Menu, X } from 'lucide-react';
 
 import { ViewerToolbarActions } from './viewer-toolbar-actions';
-import { useSpec, useSpecStore } from '@/entities/openapi-spec';
+import { useSpec, useSpecStore } from '@/entities/api-spec';
 import { sidebarStoreActions, useIsSidebarOpen } from '@/entities/sidebar';
 import { useColors } from '@/shared/theme';
 

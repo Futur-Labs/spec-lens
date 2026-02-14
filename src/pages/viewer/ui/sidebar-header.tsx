@@ -2,8 +2,7 @@ import { FlexRow } from '@jigoooo/shared-ui';
 
 import { Search, X } from 'lucide-react';
 
-import { endpointFilterStoreActions, useSearchQuery } from '@/entities/endpoint-filter';
-import { useSpecStore } from '@/entities/openapi-spec';
+import { endpointFilterStoreActions, useSearchQuery, useSpecStore } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
 

@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type DragEvent as ReactDragEvent } from 'react';
 
 import { setSpecWithExpanded } from '../lib/set-spec-with-expanded';
-import { specStoreActions, validateOpenAPISpec, type OpenAPISpec } from '@/entities/openapi-spec';
+import { specStoreActions, validateOpenAPISpec, type OpenAPISpec } from '@/entities/api-spec';
 
 export function useFileHandler() {
   const [fileName, setFileName] = useState<string | null>(null);

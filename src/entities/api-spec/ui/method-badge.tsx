@@ -1,4 +1,4 @@
-import { getMethodColor } from '../lib/method-color.ts';
+import { getMethodColor, getMethodSizeStyle } from '../lib/method-style.ts';
 import type { HttpMethod } from '@/shared/type';
 
 export function MethodBadge({
@@ -9,26 +9,7 @@ export function MethodBadge({
   size?: 'sm' | 'md' | 'lg';
 }) {
   const color = getMethodColor(method);
-
-  const sizeStyles = {
-    sm: {
-      fontSize: '1rem',
-      padding: '0.25rem 0.6rem',
-      minWidth: '4rem',
-    },
-    md: {
-      fontSize: '1.1rem',
-      padding: '0.4rem 0.8rem',
-      minWidth: '5.6rem',
-    },
-    lg: {
-      fontSize: '1.2rem',
-      padding: '0.4rem 1.2rem',
-      minWidth: '6.4rem',
-    },
-  };
-
-  const styles = sizeStyles[size];
+  const sizeStyle = getMethodSizeStyle(size);
 
   return (
     <span
@@ -45,7 +26,7 @@ export function MethodBadge({
         fontFamily: 'monospace',
         letterSpacing: '0.025em',
         flexShrink: 0,
-        ...styles,
+        ...sizeStyle,
       }}
     >
       {method}

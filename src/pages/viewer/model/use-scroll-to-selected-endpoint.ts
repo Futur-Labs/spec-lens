@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, type RefObject } from 'react';
 
-import { useSelectedEndpoint } from '@/entities/endpoint-selection';
+import { useSelectedEndpoint } from '@/entities/api-spec';
 import { smoothScrollTo } from '@/shared/lib';
 
 export function useScrollToSelectedEndpoint(

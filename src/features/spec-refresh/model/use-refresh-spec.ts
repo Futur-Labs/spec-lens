@@ -4,7 +4,7 @@ import {
   useSpecStore,
   validateOpenAPISpec,
   type OpenAPISpec,
-} from '@/entities/openapi-spec';
+} from '@/entities/api-spec';
 import { checkSpecUpdate } from '@/shared/server';
 
 const MIN_SPIN_DURATION = 800;

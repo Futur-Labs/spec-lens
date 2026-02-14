@@ -2,8 +2,12 @@ import { motion } from 'framer-motion';
 import { useRef, useState, useEffect, type RefObject } from 'react';
 
 import { generateEndpointHash } from '../lib/generate-endpoint-hash';
-import { endpointSelectionStoreActions, useSelectedEndpoint } from '@/entities/endpoint-selection';
-import { MethodBadge, type ParsedEndpoint } from '@/entities/openapi-spec';
+import {
+  endpointSelectionStoreActions,
+  useSelectedEndpoint,
+  MethodBadge,
+  type ParsedEndpoint,
+} from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { Tooltip } from '@/shared/ui/tooltip';
 

@@ -6,7 +6,7 @@ import {
   type MediaTypeObject,
   type ExampleObject,
   type ParameterObject,
-} from '../model/openapi-types.ts';
+} from '../model/api-types.ts';
 
 /**
  * recursively generate example value from schema
@@ -66,15 +66,6 @@ export function generateExample(
     default:
       return null;
   }
-}
-
-/**
- * Legacy wrapper for backward compatibility if needed, though we should migrate usage.
- */
-export function getSchemaExample(schema: SchemaObject): unknown {
-  // Simple non-recursive fallback for legacy calls without spec
-
-  return generateExample(schema, { openapi: '3.0.0', info: {} as any, paths: {} });
 }
 
 /**

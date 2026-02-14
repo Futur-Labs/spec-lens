@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 
-import { useSpecStore } from '@/entities/openapi-spec';
+import { useSpecStore } from '@/entities/api-spec';
 import { testParamsStoreActions } from '@/entities/test-params';
 import { initSystemThemeListener } from '@/shared/theme';
 

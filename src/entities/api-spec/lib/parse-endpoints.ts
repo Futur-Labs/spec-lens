@@ -1,4 +1,4 @@
-import type { OpenAPISpec, ParsedEndpoint, EndpointsByTag } from '../model/openapi-types.ts';
+import type { OpenAPISpec, ParsedEndpoint, EndpointsByTag } from '../model/api-types.ts';
 import { HTTP_METHODS } from '@/shared/type';
 
 /**

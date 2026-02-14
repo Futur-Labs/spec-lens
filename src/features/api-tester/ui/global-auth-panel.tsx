@@ -24,7 +24,7 @@ import {
   useSessionCookies,
 } from '@/entities/cookie';
 import { historyStoreActions, useHistory, type HistoryEntry } from '@/entities/history';
-import { getMethodColor } from '@/entities/openapi-spec';
+import { getMethodColor } from '@/entities/api-spec';
 import { useVariables, variableStoreActions } from '@/entities/variable';
 import { type SemanticColors, useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';

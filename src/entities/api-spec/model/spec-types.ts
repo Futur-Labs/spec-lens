@@ -1,4 +1,4 @@
-import type { OpenAPISpec, ParsedEndpoint } from './openapi-types.ts';
+import type { OpenAPISpec, ParsedEndpoint } from './api-types.ts';
 
 export type SpecSource = {
   type: 'file' | 'url';

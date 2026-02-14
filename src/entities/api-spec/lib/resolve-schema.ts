@@ -4,7 +4,7 @@ import {
   type ReferenceObject,
   type ParsedEndpoint,
   isReferenceObject,
-} from '../model/openapi-types.ts';
+} from '../model/api-types.ts';
 
 /**
  * Resolve a $ref reference to its actual schema

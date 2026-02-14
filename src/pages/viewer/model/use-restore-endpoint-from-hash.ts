@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 
 import { generateEndpointHash } from '../lib/generate-endpoint-hash';
-import { endpointSelectionStoreActions } from '@/entities/endpoint-selection';
+import { endpointSelectionStoreActions, useSpecStore } from '@/entities/api-spec';
 import { sidebarStoreActions, useExpandedTags } from '@/entities/sidebar';
-import { useSpecStore } from '@/entities/openapi-spec';
 
 export function useRestoreEndpointFromHash() {
   const endpoints = useSpecStore((s) => s.endpoints);

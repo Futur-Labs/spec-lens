@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 import { Upload } from 'lucide-react';
 
-import { specStoreActions } from '@/entities/openapi-spec';
+import { specStoreActions } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
 export function SpecClearButton() {

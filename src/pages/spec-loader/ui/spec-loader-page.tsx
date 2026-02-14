@@ -5,7 +5,7 @@ import { SpecInputModeTabs } from './spec-input-mode-tabs';
 import { SpecLoaderContent } from './spec-loader-content';
 import { SpecLoaderHeader } from './spec-loader-header';
 import type { SpecLoaderType } from '../model/spec-loader-types';
-import { useSpec, useSpecStoreHydration } from '@/entities/openapi-spec';
+import { useSpec, useSpecStoreHydration } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
 

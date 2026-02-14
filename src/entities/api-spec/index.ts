@@ -18,8 +18,8 @@ export type {
   ReferenceObject,
   MediaTypeObject,
   RequestBodyObject,
-} from './model/openapi-types.ts';
-export { isReferenceObject } from './model/openapi-types.ts';
+} from './model/api-types.ts';
+export { isReferenceObject } from './model/api-types.ts';
 
 // Lib - parsing
 export { parseEndpoints, groupEndpointsByTag, getAllTags } from './lib/parse-endpoints.ts';
@@ -31,7 +31,6 @@ export { resolveRef, resolveSchema, getMergedParameters } from './lib/resolve-sc
 // Lib - example generation
 export {
   generateExample,
-  getSchemaExample,
   getExampleFromMediaType,
   getExampleFromParameter,
 } from './lib/generate-example.ts';
@@ -40,8 +39,31 @@ export {
 export { validateOpenAPISpec } from './lib/validate-spec.ts';
 
 // Lib - method color
-export { getMethodColor } from './lib/method-color.ts';
+export { getMethodColor } from './lib/method-style.ts';
 
 // UI Components
 export { MethodBadge } from './ui/method-badge.tsx';
 export { SchemaViewer } from './ui/schema-viewer.tsx';
+export { ResponseItem } from './ui/response-item.tsx';
+export { ParameterGroup } from './ui/parameter-group.tsx';
+
+export {
+  endpointFilterStoreActions,
+  useEndpointFilterStore,
+} from './model/endpoint-filter-store.ts';
+export {
+  useSearchQuery,
+  useSelectedTags,
+  useSelectedMethods,
+  useEndpointFilterStoreHydration,
+} from './model/endpoint-filter-store.ts';
+export type { EndpointFilterState } from './model/endpoint-filter-types.ts';
+export {
+  endpointSelectionStoreActions,
+  useEndpointSelectionStore,
+} from './model/endpoint-selection-store.ts';
+export {
+  useSelectedEndpoint,
+  useEndpointSelectionStoreHydration,
+} from './model/endpoint-selection-store.ts';
+export type { SelectedEndpoint } from './model/endpoint-selection-types.ts';

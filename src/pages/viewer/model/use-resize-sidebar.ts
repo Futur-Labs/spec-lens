@@ -1,7 +1,7 @@
 import { useMotionValue } from 'framer-motion';
 import { useEffect, useEffectEvent, useState } from 'react';
 
-import { useSpecStore } from '@/entities/openapi-spec';
+import { useSpecStore } from '@/entities/api-spec';
 import { measureTextWidth } from '@/shared/lib';
 
 const SIDEBAR_WIDTH = 320;

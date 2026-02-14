@@ -1,4 +1,4 @@
-import { useSpecStore } from '@/entities/openapi-spec';
+import { useSpecStore } from '@/entities/api-spec';
 import { SpecClearButton, SpecRefreshButton } from '@/features/spec-refresh';
 
 export function ViewerToolbarActions() {

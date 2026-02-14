@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
 import { useRefreshSpec } from '../model/use-refresh-spec';
-import { useIsRefreshing } from '@/entities/openapi-spec';
+import { useIsRefreshing } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
 export function SpecRefreshButton() {

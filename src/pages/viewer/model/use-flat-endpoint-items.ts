@@ -1,13 +1,15 @@
 import { useDeferredValue, useMemo } from 'react';
 
-import { useSearchQuery, useSelectedMethods, useSelectedTags } from '@/entities/endpoint-filter';
-import { useExpandedTags } from '@/entities/sidebar';
 import {
+  useSearchQuery,
+  useSelectedMethods,
+  useSelectedTags,
   filterEndpoints,
   groupEndpointsByTag,
   useSpecStore,
   type EndpointFlatItem,
-} from '@/entities/openapi-spec';
+} from '@/entities/api-spec';
+import { useExpandedTags } from '@/entities/sidebar';
 
 export function useFlatEndpointItems() {
   const searchQuery = useSearchQuery();
