@@ -1,15 +1,25 @@
-import { ParameterGroup, type ApiSpec, type ParameterObject } from '@/entities/api-spec';
+import {
+  getMergedParameters,
+  isReferenceObject,
+  ParameterGroup,
+  type ApiSpec,
+  type ParameterObject,
+  type ParsedEndpoint,
+} from '@/entities/api-spec';
 import { CollapsibleSection } from '@/shared/ui/section';
 
 export function EndpointParametersSection({
-  parameters,
+  endpoint,
   spec,
 }: {
-  parameters: ParameterObject[];
+  endpoint: ParsedEndpoint;
   spec: ApiSpec;
 }) {
+  const allParams = getMergedParameters(endpoint);
+  const parameters = allParams.filter((p): p is ParameterObject => !isReferenceObject(p));
+
   if (parameters.length === 0) {
-    return;
+    return null;
   }
 
   const pathParams = parameters.filter((p) => p.in === 'path');

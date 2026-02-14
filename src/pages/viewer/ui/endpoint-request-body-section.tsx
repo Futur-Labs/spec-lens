@@ -1,22 +1,29 @@
 import {
   generateExample,
   getExampleFromMediaType,
+  isReferenceObject,
   SchemaViewer,
   type ApiSpec,
-  type MediaTypeObject,
+  type ReferenceObject,
+  type RequestBodyObject,
 } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { JsonActionWrapper } from '@/shared/ui/json-action-wrapper';
 import { CollapsibleSection } from '@/shared/ui/section';
 
 export function EndpointRequestBodySection({
-  requestBodyContent,
+  requestBody,
   spec,
 }: {
-  requestBodyContent: MediaTypeObject | null;
+  requestBody: RequestBodyObject | ReferenceObject | undefined;
   spec: ApiSpec;
 }) {
   const colors = useColors();
+
+  const requestBodyContent =
+    requestBody && !isReferenceObject(requestBody)
+      ? requestBody.content?.['application/json']
+      : null;
 
   if (!requestBodyContent?.schema) {
     return null;
