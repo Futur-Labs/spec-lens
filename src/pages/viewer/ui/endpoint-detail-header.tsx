@@ -16,12 +16,38 @@ export function EndpointDetailHeader({
 
   return (
     <div style={{ marginBottom: '2.4rem' }}>
+      {operation.tags && operation.tags.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.8rem',
+            marginBottom: '2rem',
+          }}
+        >
+          {operation.tags.map((tag) => (
+            <span
+              key={tag}
+              style={{
+                padding: '0.4rem 1rem',
+                backgroundColor: colors.bg.overlayHover,
+                borderRadius: '0.4rem',
+                color: colors.text.primary,
+                fontSize: '1.2rem',
+              }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div
         style={{
           display: 'flex',
           alignItems: 'flex-start',
           gap: '1.2rem',
-          marginBottom: '1.2rem',
+          marginBottom: '2rem',
         }}
       >
         <MethodBadge method={method} size='lg' />
@@ -50,52 +76,28 @@ export function EndpointDetailHeader({
       </div>
 
       {operation.summary && (
-        <p
+        <h2
           style={{
             color: colors.text.primary,
-            fontSize: '1.6rem',
-            marginBottom: '0.8rem',
+            fontSize: '1.8rem',
+            fontWeight: 600,
+            marginBottom: '1.2rem',
+            lineHeight: 1.4,
           }}
         >
           {operation.summary}
-        </p>
+        </h2>
       )}
 
       {operation.description && (
-        <p
+        <div
           style={{
             color: colors.text.secondary,
-            fontSize: '1.4rem',
+            fontSize: '1.5rem',
             lineHeight: 1.6,
           }}
         >
           <FormattedText text={operation.description} />
-        </p>
-      )}
-
-      {operation.tags && operation.tags.length > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.8rem',
-            marginTop: '1.2rem',
-          }}
-        >
-          {operation.tags.map((tag) => (
-            <span
-              key={tag}
-              style={{
-                padding: '0.4rem 1rem',
-                backgroundColor: colors.bg.overlayHover,
-                borderRadius: '0.4rem',
-                color: colors.text.primary,
-                fontSize: '1.2rem',
-              }}
-            >
-              {tag}
-            </span>
-          ))}
         </div>
       )}
 
