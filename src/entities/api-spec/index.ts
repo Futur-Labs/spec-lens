@@ -1,52 +1,27 @@
-// Store & Actions
-export { specStoreActions, useSpecStore } from './model/spec-store.ts';
+export { MethodBadge } from './ui/method-badge.tsx';
+export { SchemaViewer } from './ui/schema-viewer.tsx';
+export { ResponseItem } from './ui/response-item.tsx';
+export { ParameterGroup } from './ui/parameter-group.tsx';
 
-// Selector hooks
+export { specStoreActions, useSpecStore } from './model/spec-store.ts';
 export { useSpec, useSpecSource, useEndpoints, useTags } from './model/spec-store.ts';
 export { useIsLoading, useIsRefreshing } from './model/spec-store.ts';
 export { useSpecStoreHydration } from './model/spec-store.ts';
-
-// Types
 export type { SpecSource } from './model/spec-types.ts';
 export type {
-  OpenAPISpec,
+  ApiSpec,
   ParsedEndpoint,
   EndpointFlatItem,
+  OperationObject,
   ParameterObject,
   ResponseObject,
+  ResponsesObject,
   SchemaObject,
   ReferenceObject,
   MediaTypeObject,
   RequestBodyObject,
 } from './model/api-types.ts';
 export { isReferenceObject } from './model/api-types.ts';
-
-// Lib - parsing
-export { parseEndpoints, groupEndpointsByTag, getAllTags } from './lib/parse-endpoints.ts';
-export { filterEndpoints } from './lib/filter-endpoints.ts';
-
-// Lib - schema resolution
-export { resolveRef, resolveSchema, getMergedParameters } from './lib/resolve-schema.ts';
-
-// Lib - example generation
-export {
-  generateExample,
-  getExampleFromMediaType,
-  getExampleFromParameter,
-} from './lib/generate-example.ts';
-
-// Lib - validation
-export { validateOpenAPISpec } from './lib/validate-spec.ts';
-
-// Lib - method color
-export { getMethodColor } from './lib/method-style.ts';
-
-// UI Components
-export { MethodBadge } from './ui/method-badge.tsx';
-export { SchemaViewer } from './ui/schema-viewer.tsx';
-export { ResponseItem } from './ui/response-item.tsx';
-export { ParameterGroup } from './ui/parameter-group.tsx';
-
 export {
   endpointFilterStoreActions,
   useEndpointFilterStore,
@@ -67,3 +42,14 @@ export {
   useEndpointSelectionStoreHydration,
 } from './model/endpoint-selection-store.ts';
 export type { SelectedEndpoint } from './model/endpoint-selection-types.ts';
+
+export { parseEndpoints, groupEndpointsByTag, getAllTags } from './lib/parse-endpoints.ts';
+export { filterEndpoints } from './lib/filter-endpoints.ts';
+export { resolveRef, resolveSchema, getMergedParameters } from './lib/resolve-schema.ts';
+export {
+  generateExample,
+  getExampleFromMediaType,
+  getExampleFromParameter,
+} from './lib/generate-example.ts';
+export { validateOpenAPISpec } from './lib/validate-spec.ts';
+export { getMethodColor } from './lib/method-style.ts';

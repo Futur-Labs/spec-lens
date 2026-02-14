@@ -1,10 +1,10 @@
-import type { OpenAPISpec, ParsedEndpoint, EndpointsByTag } from '../model/api-types.ts';
+import type { ApiSpec, ParsedEndpoint, EndpointsByTag } from '../model/api-types.ts';
 import { HTTP_METHODS } from '@/shared/type';
 
 /**
  * Parse OpenAPI spec and extract all endpoints
  */
-export function parseEndpoints(spec: OpenAPISpec): ParsedEndpoint[] {
+export function parseEndpoints(spec: ApiSpec): ParsedEndpoint[] {
   const endpoints: ParsedEndpoint[] = [];
 
   for (const [path, pathItem] of Object.entries(spec.paths)) {
@@ -56,7 +56,7 @@ export function groupEndpointsByTag(endpoints: ParsedEndpoint[]): EndpointsByTag
 /**
  * Get all unique tags from spec
  */
-export function getAllTags(spec: OpenAPISpec): string[] {
+export function getAllTags(spec: ApiSpec): string[] {
   const tagSet = new Set<string>();
 
   // From spec.tags

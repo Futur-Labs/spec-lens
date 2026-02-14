@@ -1,6 +1,6 @@
 import { resolveSchema } from './resolve-schema.ts';
 import {
-  type OpenAPISpec,
+  type ApiSpec,
   type SchemaObject,
   type ReferenceObject,
   type MediaTypeObject,
@@ -13,7 +13,7 @@ import {
  */
 export function generateExample(
   schemaOrRef: SchemaObject | ReferenceObject | undefined,
-  spec: OpenAPISpec,
+  spec: ApiSpec,
   depth = 0,
 ): unknown {
   if (!schemaOrRef) return null;

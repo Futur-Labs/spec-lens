@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { useState, type FormEvent } from 'react';
 
 import { setSpecWithExpanded } from '../lib/set-spec-with-expanded';
-import { specStoreActions, validateOpenAPISpec, type OpenAPISpec } from '@/entities/api-spec';
+import { specStoreActions, validateOpenAPISpec, type ApiSpec } from '@/entities/api-spec';
 import { fetchExternalSpec } from '@/shared/server';
 
 export function useUrlSubmit() {
@@ -61,7 +61,7 @@ export function useUrlSubmit() {
         throw new Error(validation.error);
       }
 
-      setSpecWithExpanded(json as OpenAPISpec, {
+      setSpecWithExpanded(json as ApiSpec, {
         type: 'url',
         name: url,
         etag,

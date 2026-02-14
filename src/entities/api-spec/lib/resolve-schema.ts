@@ -1,5 +1,5 @@
 import {
-  type OpenAPISpec,
+  type ApiSpec,
   type SchemaObject,
   type ReferenceObject,
   type ParsedEndpoint,
@@ -9,7 +9,7 @@ import {
 /**
  * Resolve a $ref reference to its actual schema
  */
-export function resolveRef<T>(ref: string, spec: OpenAPISpec): T | null {
+export function resolveRef<T>(ref: string, spec: ApiSpec): T | null {
   // Format: #/components/schemas/SchemaName
   const parts = ref.replace('#/', '').split('/');
 
@@ -30,7 +30,7 @@ export function resolveRef<T>(ref: string, spec: OpenAPISpec): T | null {
  */
 export function resolveSchema(
   schemaOrRef: SchemaObject | ReferenceObject | undefined,
-  spec: OpenAPISpec,
+  spec: ApiSpec,
 ): SchemaObject | null {
   if (!schemaOrRef) return null;
 

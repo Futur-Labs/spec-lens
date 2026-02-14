@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { SchemaViewer } from './schema-viewer.tsx';
 import { generateExample, getExampleFromMediaType } from '../lib/generate-example.ts';
 import { getStatusCodeColor } from '../lib/status-code-color';
-import { type ResponseObject, type OpenAPISpec } from '../model/api-types.ts';
+import { type ResponseObject, type ApiSpec } from '../model/api-types.ts';
 import { useColors } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 import { JsonActionWrapper } from '@/shared/ui/json-action-wrapper';
@@ -20,7 +20,7 @@ export function ResponseItem({
   statusCode: string;
   response: ResponseObject;
   schema: any;
-  spec: OpenAPISpec;
+  spec: ApiSpec;
 }) {
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(statusCode.startsWith('2'));

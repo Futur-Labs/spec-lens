@@ -1,4 +1,4 @@
-import type { OpenAPISpec, ParsedEndpoint } from './api-types.ts';
+import type { ApiSpec, ParsedEndpoint } from './api-types.ts';
 
 export type SpecSource = {
   type: 'file' | 'url';
@@ -8,7 +8,7 @@ export type SpecSource = {
 };
 
 export type SpecState = {
-  spec: OpenAPISpec | null;
+  spec: ApiSpec | null;
   specSource: SpecSource | null;
 
   endpoints: ParsedEndpoint[];
@@ -22,7 +22,7 @@ export type SpecState = {
 };
 
 export type SpecActions = {
-  setSpec: (spec: OpenAPISpec, source: SpecSource) => void;
+  setSpec: (spec: ApiSpec, source: SpecSource) => void;
   clearSpec: () => void;
   setLoading: (loading: boolean) => void;
   setRefreshing: (refreshing: boolean) => void;

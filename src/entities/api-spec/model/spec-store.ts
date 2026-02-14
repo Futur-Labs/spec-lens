@@ -2,7 +2,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 
-import type { OpenAPISpec } from './api-types.ts';
+import type { ApiSpec } from './api-types.ts';
 import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import { parseEndpoints, getAllTags } from '../lib/parse-endpoints.ts';
 
@@ -24,7 +24,7 @@ export const useSpecStore = create<SpecStore>()(
         ...initialState,
 
         actions: {
-          setSpec: (spec: OpenAPISpec, source: SpecSource) => {
+          setSpec: (spec: ApiSpec, source: SpecSource) => {
             const endpoints = parseEndpoints(spec);
             const tags = getAllTags(spec);
 

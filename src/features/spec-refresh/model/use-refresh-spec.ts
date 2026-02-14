@@ -3,7 +3,7 @@ import {
   useIsRefreshing,
   useSpecStore,
   validateOpenAPISpec,
-  type OpenAPISpec,
+  type ApiSpec,
 } from '@/entities/api-spec';
 import { checkSpecUpdate } from '@/shared/server';
 
@@ -38,7 +38,7 @@ export function useRefreshSpec() {
           throw new Error(validation.error);
         }
 
-        specStoreActions.setSpec(result.data as OpenAPISpec, {
+        specStoreActions.setSpec(result.data as ApiSpec, {
           type: 'url',
           name: specSource.name,
           etag: result.newEtag,

@@ -1,7 +1,17 @@
-import { MethodBadge } from '@/entities/api-spec';
+import { MethodBadge, type OperationObject } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
+import type { HttpMethod } from '@/shared/type';
+import { FormattedText } from '@/shared/ui/formatted-text';
 
-export function EndpointDetailHeader() {
+export function EndpointDetailHeader({
+  method,
+  path,
+  operation,
+}: {
+  method: HttpMethod;
+  path: string;
+  operation: OperationObject;
+}) {
   const colors = useColors();
 
   return (

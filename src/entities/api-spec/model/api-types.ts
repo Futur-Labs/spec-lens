@@ -5,7 +5,7 @@
 
 import type { HttpMethod } from '@/shared/type';
 
-export type OpenAPISpec = {
+export type ApiSpec = {
   openapi: string;
   info: InfoObject;
   servers?: ServerObject[];

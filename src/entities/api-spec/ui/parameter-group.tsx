@@ -1,6 +1,6 @@
 import { generateExample } from '../lib/generate-example.ts';
 import { getTypeColor } from '../lib/type-color';
-import { type ParameterObject, type OpenAPISpec, isReferenceObject } from '../model/api-types.ts';
+import { type ParameterObject, type ApiSpec, isReferenceObject } from '../model/api-types.ts';
 import { useColors, useIsDarkMode } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 import { JsonActionWrapper } from '@/shared/ui/json-action-wrapper';
@@ -12,7 +12,7 @@ export function ParameterGroup({
 }: {
   title: string;
   params: ParameterObject[];
-  spec: OpenAPISpec;
+  spec: ApiSpec;
 }) {
   // Generate JSON example for parameters
   const paramExample = params.reduce(

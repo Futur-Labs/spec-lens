@@ -7,7 +7,7 @@ import { resolveSchema } from '../lib/resolve-schema.ts';
 import { getTypeColor } from '../lib/type-color.ts';
 import {
   isReferenceObject,
-  type OpenAPISpec,
+  type ApiSpec,
   type ReferenceObject,
   type SchemaObject,
 } from '../model/api-types.ts';
@@ -22,7 +22,7 @@ export function SchemaViewer({
   required = false,
 }: {
   schema: SchemaObject | ReferenceObject;
-  spec: OpenAPISpec;
+  spec: ApiSpec;
   name?: string;
   depth?: number;
   required?: boolean;

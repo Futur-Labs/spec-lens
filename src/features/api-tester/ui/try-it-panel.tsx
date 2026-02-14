@@ -25,7 +25,7 @@ import { useAuthConfig } from '@/entities/api-auth';
 import { cookieStoreActions, useCustomCookies, useSessionCookies } from '@/entities/cookie';
 import { historyStoreActions } from '@/entities/history';
 import {
-  type OpenAPISpec,
+  type ApiSpec,
   type ParameterObject,
   type ParsedEndpoint,
   generateExample,
@@ -61,7 +61,7 @@ function formatBytes(bytes: number): string {
   return `${size < 10 ? size.toFixed(1) : Math.round(size)} ${sizes[i]}`;
 }
 
-export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: OpenAPISpec }) {
+export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
   const autoCompleteStyle = getAutoCompleteStyle(colors);
   const iconButtonStyle = getIconButtonStyle(colors);
