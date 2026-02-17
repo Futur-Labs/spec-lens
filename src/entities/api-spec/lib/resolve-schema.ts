@@ -9,7 +9,7 @@ import {
 /**
  * Resolve a $ref reference to its actual schema
  */
-export function resolveRef<T>(ref: string, spec: ApiSpec): T | null {
+function resolveRef<T>(ref: string, spec: ApiSpec): T | null {
   // Format: #/components/schemas/SchemaName
   const parts = ref.replace('#/', '').split('/');
 
