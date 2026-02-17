@@ -1,3 +1,4 @@
+import { generateTypeSchema } from '../lib/generate-type-schema.ts';
 import { getParameterExample } from '../lib/parameter-example.ts';
 import { getTypeColor } from '../lib/type-color';
 import { type ParameterObject, type ApiSpec, isReferenceObject } from '../model/api-types.ts';
@@ -18,6 +19,14 @@ export function ParameterGroup({
   const isDark = useIsDarkMode();
 
   const paramExample = getParameterExample(params, spec);
+  const paramTypeData = params.reduce<Record<string, unknown>>((acc, param) => {
+    if (param.schema && !isReferenceObject(param.schema)) {
+      acc[param.name] = generateTypeSchema(param.schema, spec) ?? 'any';
+    } else {
+      acc[param.name] = 'any';
+    }
+    return acc;
+  }, {});
 
   return (
     <div style={{ marginBottom: '1.6rem' }}>
@@ -35,7 +44,7 @@ export function ParameterGroup({
       >
         {title}
       </h3>
-      <JsonActionWrapper data={paramExample}>
+      <JsonActionWrapper data={paramExample} typeData={paramTypeData}>
         <div
           style={{
             display: 'flex',

@@ -4,12 +4,49 @@ import { Check, Copy, FileCode, FileJson } from 'lucide-react';
 
 import { useColors } from '@/shared/theme';
 
+const TYPE_KEYWORDS = new Set(['string', 'integer', 'number', 'boolean', 'any']);
+
+function stringifyTyped(value: unknown, indent = 2): string {
+  function format(val: unknown, level: number): string {
+    const pad = ' '.repeat(level * indent);
+    const innerPad = ' '.repeat((level + 1) * indent);
+
+    if (val === null || val === undefined) return 'null';
+
+    if (typeof val === 'string') {
+      if (TYPE_KEYWORDS.has(val) || val.startsWith('enum(') || val.startsWith('string(')) {
+        return val;
+      }
+      return JSON.stringify(val);
+    }
+
+    if (Array.isArray(val)) {
+      if (val.length === 0) return '[]';
+      const items = val.map((item) => `${innerPad}${format(item, level + 1)}`);
+      return `[\n${items.join(',\n')}\n${pad}]`;
+    }
+
+    if (typeof val === 'object') {
+      const entries = Object.entries(val);
+      if (entries.length === 0) return '{}';
+      const items = entries.map(([key, v]) => `${innerPad}"${key}": ${format(v, level + 1)}`);
+      return `{\n${items.join(',\n')}\n${pad}}`;
+    }
+
+    return String(val);
+  }
+
+  return format(value, 0);
+}
+
 export function JsonActionWrapper({
   data,
+  typeData,
   children,
   defaultView = 'schema',
 }: {
   data: any;
+  typeData?: unknown;
   children: React.ReactNode;
   defaultView?: 'schema' | 'json';
 }) {
@@ -18,13 +55,16 @@ export function JsonActionWrapper({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(jsonString);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const jsonString = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  const jsonString = typeData
+    ? stringifyTyped(typeData)
+    : typeof data === 'string'
+      ? data
+      : JSON.stringify(data, null, 2);
 
   return (
     <div

@@ -50,5 +50,6 @@ export {
   getExampleFromMediaType,
   getExampleFromParameter,
 } from './lib/generate-example.ts';
+export { generateTypeSchema } from './lib/generate-type-schema.ts';
 export { validateOpenAPISpec } from './lib/validate-spec.ts';
 export { getMethodColor } from './lib/method-style.ts';

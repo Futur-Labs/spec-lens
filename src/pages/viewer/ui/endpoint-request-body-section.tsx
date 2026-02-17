@@ -1,5 +1,6 @@
 import {
   generateExample,
+  generateTypeSchema,
   getExampleFromMediaType,
   isReferenceObject,
   SchemaViewer,
@@ -68,6 +69,7 @@ export function EndpointRequestBodySection({
           getExampleFromMediaType(requestBodyContent) ||
           generateExample(requestBodyContent.schema, spec)
         }
+        typeData={generateTypeSchema(requestBodyContent.schema, spec)}
         defaultView='schema'
       >
         <SchemaViewer schema={requestBodyContent.schema} spec={spec} />
