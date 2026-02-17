@@ -22,8 +22,6 @@ import { VariableAutocompleteInput } from './variable-autocomplete-input';
 import { getExecuteStatusColor } from '../config/execute-status-color';
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
 import { useAuthConfig } from '@/entities/api-auth';
-import { cookieStoreActions, useCustomCookies, useSessionCookies } from '@/entities/cookie';
-import { historyStoreActions } from '@/entities/history';
 import {
   type ApiSpec,
   type ParameterObject,
@@ -35,6 +33,8 @@ import {
   isReferenceObject,
   useSpecSource,
 } from '@/entities/api-spec';
+import { cookieStoreActions, useCustomCookies, useSessionCookies } from '@/entities/cookie';
+import { historyStoreActions } from '@/entities/history';
 import {
   testParamsStoreActions,
   useExecuteError,

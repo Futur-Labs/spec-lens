@@ -1,4 +1,4 @@
-import { generateExample } from '../lib/generate-example.ts';
+import { getParameterExample } from '../lib/parameter-example.ts';
 import { getTypeColor } from '../lib/type-color';
 import { type ParameterObject, type ApiSpec, isReferenceObject } from '../model/api-types.ts';
 import { useColors, useIsDarkMode } from '@/shared/theme';
@@ -14,21 +14,10 @@ export function ParameterGroup({
   params: ParameterObject[];
   spec: ApiSpec;
 }) {
-  // Generate JSON example for parameters
-  const paramExample = params.reduce(
-    (acc, param) => {
-      if (param.schema && !isReferenceObject(param.schema)) {
-        acc[param.name] = generateExample(param.schema, spec) ?? 'string';
-      } else {
-        acc[param.name] = 'string';
-      }
-      return acc;
-    },
-    {} as Record<string, any>,
-  );
-
   const colors = useColors();
   const isDark = useIsDarkMode();
+
+  const paramExample = getParameterExample(params, spec);
 
   return (
     <div style={{ marginBottom: '1.6rem' }}>

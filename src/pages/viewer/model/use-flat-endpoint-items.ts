@@ -1,10 +1,10 @@
 import { useDeferredValue, useMemo } from 'react';
 
+import { filterEndpoints } from '../lib/filter-endpoints';
 import {
   useSearchQuery,
   useSelectedMethods,
   useSelectedTags,
-  filterEndpoints,
   groupEndpointsByTag,
   useSpecStore,
   type EndpointFlatItem,

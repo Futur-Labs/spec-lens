@@ -1,9 +1,6 @@
-import type { ParsedEndpoint } from '../model/api-types.ts';
+import type { ParsedEndpoint } from '@/entities/api-spec';
 import type { HttpMethod } from '@/shared/type';
 
-/**
- * Filter endpoints by search query, tags, and methods
- */
 export function filterEndpoints(
   endpoints: ParsedEndpoint[],
   options: {

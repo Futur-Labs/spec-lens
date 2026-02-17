@@ -44,7 +44,6 @@ export {
 export type { SelectedEndpoint } from './model/endpoint-selection-types.ts';
 
 export { parseEndpoints, groupEndpointsByTag, getAllTags } from './lib/parse-endpoints.ts';
-export { filterEndpoints } from './lib/filter-endpoints.ts';
 export { resolveRef, resolveSchema, getMergedParameters } from './lib/resolve-schema.ts';
 export {
   generateExample,
