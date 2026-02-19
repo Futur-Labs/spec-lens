@@ -222,7 +222,7 @@ export function FuturAutocompleteSelect<Value extends string>({
             : `1px solid ${colors.border.default}`,
           borderRadius: '0.6rem',
           cursor: 'pointer',
-          color: displayValue ? colors.text.primary : colors.text.secondary,
+          color: displayValue ? colors.text.primary : colors.text.disabled,
           fontSize: '1.3rem',
           transition: 'border-color 0.2s ease',
           minHeight: '3.8rem',

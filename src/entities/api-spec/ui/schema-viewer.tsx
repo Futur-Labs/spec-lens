@@ -3,15 +3,17 @@ import { useState } from 'react';
 
 import { ChevronDown, Info } from 'lucide-react';
 
+import { hasChildrenCondition } from '../lib/has-children.ts';
 import { resolveSchema } from '../lib/resolve-schema.ts';
-import { getTypeColor } from '../lib/type-color.ts';
+import { getTypeDisplay } from '../lib/type-display.ts';
 import {
   isReferenceObject,
   type ApiSpec,
   type ReferenceObject,
   type SchemaObject,
 } from '../model/api-types.ts';
-import { useColors, useIsDarkMode } from '@/shared/theme';
+import { useSchemaViewerStyles } from '../model/use-schema-viewer-styles.ts';
+import { useColors } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
 
 export function SchemaViewer({
@@ -28,11 +30,19 @@ export function SchemaViewer({
   required?: boolean;
 }) {
   const colors = useColors();
-  const isDark = useIsDarkMode();
   const [isExpanded, setIsExpanded] = useState(depth < 2);
   const [isHovered, setIsHovered] = useState(false);
 
   const resolvedSchema = isReferenceObject(schema) ? resolveSchema(schema, spec) : schema;
+  const refName = isReferenceObject(schema) ? schema.$ref.split('/').pop() : null;
+  const hasChildren = hasChildrenCondition(resolvedSchema);
+  const typeDisplay = getTypeDisplay(resolvedSchema, spec);
+
+  const schemaViewerStyles = useSchemaViewerStyles({
+    resolvedSchema,
+    depth,
+    isHovered,
+  });
 
   if (!resolvedSchema) {
     return (
@@ -52,137 +62,15 @@ export function SchemaViewer({
     );
   }
 
-  const refName = isReferenceObject(schema) ? schema.$ref.split('/').pop() : null;
-  const hasChildren =
-    resolvedSchema.type === 'object' ||
-    resolvedSchema.type === 'array' ||
-    resolvedSchema.allOf ||
-    resolvedSchema.oneOf ||
-    resolvedSchema.anyOf;
-
-  const getTypeDisplay = (s: SchemaObject): string => {
-    if (s.type === 'array' && s.items) {
-      const itemSchema = isReferenceObject(s.items) ? resolveSchema(s.items, spec) : s.items;
-      if (itemSchema) {
-        return `array<${getTypeDisplay(itemSchema)}>`;
-      }
-      return 'array';
-    }
-    if (s.enum) {
-      return `enum`;
-    }
-    return s.type || 'any';
-  };
-
-  const typeDisplay = getTypeDisplay(resolvedSchema);
-  const typeColor = getTypeColor(resolvedSchema.type, isDark);
-
-  // Styles based on 10px rem (e.g., 1.4rem = 14px)
-  const styles = {
-    container: {
-      marginLeft: depth > 0 ? '1.6rem' : 0,
-      paddingLeft: depth > 0 ? '1.2rem' : 0,
-      borderLeft: depth > 0 ? `1px solid ${colors.border.default}` : 'none',
-      fontSize: '1.4rem',
-      position: 'relative' as const,
-    },
-    row: {
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '0.8rem',
-      padding: '0.6rem 0',
-      cursor: hasChildren ? 'pointer' : 'default',
-      transition: 'background-color 0.2s',
-      borderRadius: '0.4rem',
-      backgroundColor: isHovered && hasChildren ? colors.bg.overlayHover : 'rgba(255, 255, 255, 0)',
-    },
-    chevron: {
-      marginTop: '0.2rem',
-      flexShrink: 0,
-      color: colors.text.secondary,
-    },
-    content: {
-      flex: 1,
-      minWidth: 0,
-    },
-    header: {
-      display: 'flex',
-      flexWrap: 'wrap' as const,
-      alignItems: 'center',
-      gap: '0.8rem',
-      rowGap: '0.4rem',
-    },
-    name: {
-      fontFamily: 'monospace',
-      fontSize: '1.4rem',
-      fontWeight: 500,
-      color: colors.text.primary,
-    },
-    requiredMark: {
-      color: colors.feedback.error,
-      fontWeight: 700,
-      marginLeft: '0.2rem',
-    },
-    typeBadge: {
-      display: 'inline-block',
-      padding: '0.1rem 0.6rem',
-      borderRadius: '0.4rem',
-      fontSize: '1.1rem',
-      fontWeight: 500,
-      fontFamily: 'monospace',
-      backgroundColor: colors.border.subtle,
-    },
-    typeInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.8rem',
-      fontSize: '1.2rem',
-      fontFamily: 'monospace',
-    },
-    typeText: {
-      color: typeColor,
-    },
-    refName: {
-      color: '#6366f1', // indigo-500
-    },
-    validation: {
-      fontSize: '1rem',
-      color: colors.text.tertiary,
-    },
-    description: {
-      marginTop: '0.4rem',
-      fontSize: '1.2rem',
-      color: colors.text.secondary,
-      lineHeight: 1.5,
-    },
-    enumContainer: {
-      marginTop: '0.6rem',
-      display: 'flex',
-      flexWrap: 'wrap' as const,
-      gap: '0.6rem',
-    },
-    enumBadge: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '0.2rem 0.8rem',
-      borderRadius: '0.2rem',
-      fontSize: '1rem',
-      fontFamily: 'monospace',
-      backgroundColor: 'rgba(251, 191, 36, 0.1)', // amber-400 with opacity
-      color: '#fbbf24', // amber-400
-      border: '1px solid rgba(251, 191, 36, 0.2)',
-    },
-  };
-
   return (
-    <div style={styles.container}>
+    <div style={schemaViewerStyles.container}>
       <div
-        style={styles.row}
+        style={schemaViewerStyles.row}
         onClick={() => hasChildren && setIsExpanded(!isExpanded)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div style={styles.chevron}>
+        <div style={schemaViewerStyles.chevron}>
           {hasChildren ? (
             <motion.div
               animate={{ rotate: isExpanded ? 0 : -90 }}
@@ -196,25 +84,25 @@ export function SchemaViewer({
           )}
         </div>
 
-        <div style={styles.content}>
-          <div style={styles.header}>
+        <div style={schemaViewerStyles.content}>
+          <div style={schemaViewerStyles.header}>
             {name && (
-              <span style={styles.name}>
+              <span style={schemaViewerStyles.name}>
                 {name}
-                {required && <span style={styles.requiredMark}>*</span>}
+                {required && <span style={schemaViewerStyles.requiredMark}>*</span>}
               </span>
             )}
 
-            <div style={styles.typeInfo}>
-              <span style={styles.typeBadge}>
-                <span style={styles.typeText}>{typeDisplay}</span>
+            <div style={schemaViewerStyles.typeInfo}>
+              <span style={schemaViewerStyles.typeBadge}>
+                <span style={schemaViewerStyles.typeText}>{typeDisplay}</span>
               </span>
-              {refName && <span style={styles.refName}>({refName})</span>}
+              {refName && <span style={schemaViewerStyles.refName}>({refName})</span>}
             </div>
 
             {/* Validations */}
             {(resolvedSchema.minLength !== undefined || resolvedSchema.maxLength !== undefined) && (
-              <span style={styles.validation}>
+              <span style={schemaViewerStyles.validation}>
                 [
                 {[
                   resolvedSchema.minLength !== undefined && `min:${resolvedSchema.minLength}`,
@@ -226,7 +114,7 @@ export function SchemaViewer({
               </span>
             )}
             {(resolvedSchema.minimum !== undefined || resolvedSchema.maximum !== undefined) && (
-              <span style={styles.validation}>
+              <span style={schemaViewerStyles.validation}>
                 [
                 {[
                   resolvedSchema.minimum !== undefined && `min:${resolvedSchema.minimum}`,
@@ -240,7 +128,7 @@ export function SchemaViewer({
             {resolvedSchema.pattern && (
               <span
                 style={{
-                  ...styles.validation,
+                  ...schemaViewerStyles.validation,
                   maxWidth: '150px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -254,15 +142,15 @@ export function SchemaViewer({
           </div>
 
           {resolvedSchema.description && (
-            <div style={styles.description}>
+            <div style={schemaViewerStyles.description}>
               <FormattedText text={resolvedSchema.description} />
             </div>
           )}
 
           {resolvedSchema.enum && (
-            <div style={styles.enumContainer}>
+            <div style={schemaViewerStyles.enumContainer}>
               {resolvedSchema.enum.map((value, i) => (
-                <span key={i} style={styles.enumBadge}>
+                <span key={i} style={schemaViewerStyles.enumBadge}>
                   {String(value)}
                 </span>
               ))}

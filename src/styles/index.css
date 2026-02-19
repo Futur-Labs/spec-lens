@@ -90,6 +90,14 @@ input::placeholder, textarea::placeholder {
   opacity: 1;
 }
 
+.placeholder::placeholder {
+  font-size: 1.4rem;
+}
+
+.placeholder-sm::placeholder {
+  font-size: 1.2rem;
+}
+
 /* Remove autofill background */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 

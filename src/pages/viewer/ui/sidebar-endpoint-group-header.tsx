@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 
 import { ChevronRight } from 'lucide-react';
 
-import { sidebarStoreActions } from '@/entities/sidebar';
 import type { EndpointFlatItem } from '@/entities/api-spec';
+import { sidebarStoreActions } from '@/entities/sidebar';
 import { useColors } from '@/shared/theme';
 
 export function SidebarEndpointGroupHeader({

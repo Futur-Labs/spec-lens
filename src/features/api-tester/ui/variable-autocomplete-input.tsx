@@ -133,6 +133,7 @@ export function VariableAutocompleteInput({
   return (
     <div style={{ position: 'relative', width: '100%' }}>
       <InputComponent
+        className='placeholder-sm'
         ref={inputRef as React.RefObject<HTMLInputElement & HTMLTextAreaElement>}
         value={value}
         onChange={handleChange}

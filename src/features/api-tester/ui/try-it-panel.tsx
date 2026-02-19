@@ -540,11 +540,10 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             color: colors.text.primary,
                             fontSize: '1.2rem',
                             fontWeight: 600,
-                            textTransform: 'uppercase',
                             opacity: 0.7,
                           }}
                         >
-                          Path Params
+                          PATH PARAMS
                         </span>
                         <button
                           onClick={() => testParamsStoreActions.resetPathParams()}
@@ -591,11 +590,10 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             color: colors.text.primary,
                             fontSize: '1.2rem',
                             fontWeight: 600,
-                            textTransform: 'uppercase',
                             opacity: 0.7,
                           }}
                         >
-                          Query Params
+                          QUERY PARAMS
                         </span>
                         <button
                           onClick={() => testParamsStoreActions.resetQueryParams()}
