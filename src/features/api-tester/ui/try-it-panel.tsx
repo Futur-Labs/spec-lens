@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
@@ -11,27 +11,17 @@ import { ParameterEditSection } from './parameter-edit-section';
 import { RepeatSettings } from './repeat-settings';
 import { RequestBodyEditor } from './request-body-editor';
 import { ServerSelector } from './server-selector';
-import {
-  type ApiSpec,
-  type ParameterObject,
-  type ParsedEndpoint,
-  generateExample,
-  getExampleFromMediaType,
-  getExampleFromParameter,
-  getMergedParameters,
-  isReferenceObject,
-  useSpecSource,
-} from '@/entities/api-spec';
+import { getBodyExample } from '../lib/body-example';
+import { useAutoSaveParams } from '../model/use-auto-save-params';
+import { useEndpointParameters } from '../model/use-endpoint-parameters';
+import { useEndpointParamsSync } from '../model/use-endpoint-params-sync';
+import { type ApiSpec, type ParsedEndpoint } from '@/entities/api-spec';
 import {
   testParamsStoreActions,
   useExecuteError,
-  useHeaders,
   useIsExecuting,
   usePathParams,
   useQueryParams,
-  useRequestBody,
-  useResponse,
-  useSelectedServer,
 } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 
@@ -44,120 +34,15 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const [requestCount, setRequestCount] = useState(1);
   const [requestInterval, setRequestInterval] = useState(0); // ms
 
-  const selectedServer = useSelectedServer();
-
-  const pathParams = usePathParams();
-  const queryParams = useQueryParams();
-  const headers = useHeaders();
-  const requestBody = useRequestBody();
-  const response = useResponse();
   const isExecuting = useIsExecuting();
   const executeError = useExecuteError();
-  const specSource = useSpecSource();
+  const pathParams = usePathParams();
+  const queryParams = useQueryParams();
 
-  // Track previous endpoint for saving params before switch
-  const prevEndpointRef = useRef<string | null>(null);
-  const isInitialMount = useRef(true);
-
-  // Derived values
-  const specSourceId = specSource?.name || 'default';
-
-  const bodyExample = (() => {
-    if (!endpoint.operation.requestBody || isReferenceObject(endpoint.operation.requestBody))
-      return '';
-
-    const content = endpoint.operation.requestBody.content?.['application/json'];
-    if (content) {
-      // Check examples field first (handles both example and examples)
-      const mediaTypeExample = getExampleFromMediaType(content);
-      if (mediaTypeExample !== null) {
-        return typeof mediaTypeExample === 'string'
-          ? mediaTypeExample
-          : JSON.stringify(mediaTypeExample, null, 2);
-      }
-
-      // Fallback: generate from schema
-      if (content.schema) {
-        const generated = generateExample(content.schema, spec);
-        return generated ? JSON.stringify(generated, null, 2) : '';
-      }
-    }
-    return '';
-  })();
-
-  // Save params before endpoint change, load saved params for new endpoint
-  useEffect(() => {
-    const currentEndpointKey = `${endpoint.method}:${endpoint.path}`;
-
-    // Save previous endpoint params (if not initial mount and endpoint changed)
-    if (
-      !isInitialMount.current &&
-      prevEndpointRef.current &&
-      prevEndpointRef.current !== currentEndpointKey
-    ) {
-      testParamsStoreActions.saveCurrentParams(specSourceId, prevEndpointRef.current);
-    }
-
-    // Load saved params for current endpoint
-    const hasData = testParamsStoreActions.loadSavedParams(specSourceId, currentEndpointKey);
-
-    // If no saved data, reset and initialize with examples from OpenAPI spec
-    if (!hasData) {
-      testParamsStoreActions.resetParams();
-      if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
-
-      // Initialize path and query params with examples from OpenAPI spec
-      const merged = getMergedParameters(endpoint);
-      const params = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
-      for (const param of params) {
-        const example = getExampleFromParameter(param);
-        if (example !== null) {
-          const exampleStr = typeof example === 'string' ? example : String(example);
-          if (param.in === 'path') {
-            testParamsStoreActions.setPathParam(param.name, exampleStr);
-          } else if (param.in === 'query') {
-            testParamsStoreActions.setQueryParam(param.name, exampleStr);
-          }
-        }
-      }
-    }
-
-    prevEndpointRef.current = currentEndpointKey;
-    isInitialMount.current = false;
-  }, [endpoint.path, endpoint.method, specSourceId, bodyExample, endpoint]);
-
-  // Auto-save params on change (debounced)
-  useEffect(() => {
-    const endpointKey = `${endpoint.method}:${endpoint.path}`;
-
-    const timeoutId = setTimeout(() => {
-      testParamsStoreActions.saveCurrentParams(specSourceId, endpointKey);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [
-    pathParams,
-    queryParams,
-    headers,
-    requestBody,
-    response,
-    selectedServer,
-    endpoint.method,
-    endpoint.path,
-    specSourceId,
-  ]);
-
-  const merged = getMergedParameters(endpoint);
-  const parameters = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
-  const pathParameters = parameters.filter((p) => p.in === 'path');
-  const queryParameters = parameters.filter((p) => p.in === 'query');
-  const hasRequestBody = !!endpoint.operation.requestBody;
-
-  function handleClearCurrent() {
-    const endpointKey = `${endpoint.method}:${endpoint.path}`;
-    testParamsStoreActions.clearEndpointParams(specSourceId, endpointKey);
-    if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
-  }
+  const bodyExample = getBodyExample(endpoint, spec);
+  const { handleClearCurrent } = useEndpointParamsSync(endpoint, bodyExample);
+  useAutoSaveParams(endpoint);
+  const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);
 
   return (
     <div
