@@ -53,7 +53,6 @@ export {
 export { generateTypeSchema } from './lib/generate-type-schema.ts';
 export { validateOpenAPISpec } from './lib/validate-spec.ts';
 export { getMethodColor } from './lib/method-style.ts';
-export { getIconButtonStyle } from './lib/input-style.ts';
 
 export { variableStoreActions, useVariables } from './model/variable-store.ts';
 

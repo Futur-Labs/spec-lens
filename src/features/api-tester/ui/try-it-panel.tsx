@@ -1,31 +1,21 @@
 import { FlexRow } from '@jigoooo/shared-ui';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-import {
-  Check,
-  ChevronDown,
-  ChevronUp,
-  Cookie,
-  Copy,
-  Key,
-  Loader2,
-  Play,
-  Plus,
-  Repeat,
-  Trash2,
-} from 'lucide-react';
+import { ChevronDown, Cookie, Key, Play, Trash2 } from 'lucide-react';
 
-import { getExecuteStatusColor } from '../config/execute-status-color';
-import { executeApiTestRequest } from '../lib/execute-api-test-request';
+import { ExecuteActions } from './execute-actions';
+import { ExecuteResponseViewer } from './execute-response-viewer';
+import { HeaderEditor } from './header-editor';
+import { RepeatSettings } from './repeat-settings';
+import { RequestBodyEditor } from './request-body-editor';
+import { ServerSelector } from './server-selector';
 import { useAuthConfig } from '@/entities/api-auth';
 import {
   type ApiSpec,
-  HeaderAutocompleteInput,
   ParameterInput,
   type ParameterObject,
   type ParsedEndpoint,
-  VariableAutocompleteInput,
   generateExample,
   getExampleFromMediaType,
   getExampleFromParameter,
@@ -33,8 +23,7 @@ import {
   isReferenceObject,
   useSpecSource,
 } from '@/entities/api-spec';
-import { cookieStoreActions, useCustomCookies, useSessionCookies } from '@/entities/cookie';
-import { historyStoreActions } from '@/entities/history';
+import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
 import {
   testParamsStoreActions,
   useExecuteError,
@@ -46,33 +35,17 @@ import {
   useResponse,
   useSelectedServer,
 } from '@/entities/test-params';
-import { useShowSkeleton } from '@/shared/hooks';
-import { formatBytes } from '@/shared/lib';
-import { type SemanticColors, useColors } from '@/shared/theme';
+import { useColors } from '@/shared/theme';
 import { ResetButton } from '@/shared/ui/button';
-import { StepperInput } from '@/shared/ui/input';
-import { FuturSelect } from '@/shared/ui/select';
-
-const DEFAULT_SERVERS = [{ url: 'http://localhost:3000', description: 'Local' }];
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
-  const iconButtonStyle = getIconButtonStyle(colors);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [showHeaders, setShowHeaders] = useState(true);
-  const [copiedResponse, setCopiedResponse] = useState(false);
   const [jsonError, setJsonError] = useState<string | null>(null);
 
-  // New header input state
-  const [newHeaderName, setNewHeaderName] = useState('');
-  const [newHeaderValue, setNewHeaderValue] = useState('');
-
   // Repeat request settings
-  const [showRepeatSettings, setShowRepeatSettings] = useState(false);
   const [requestCount, setRequestCount] = useState(1);
   const [requestInterval, setRequestInterval] = useState(0); // ms
-  const [currentRequestIndex, setCurrentRequestIndex] = useState(0);
-  const [isRepeating, setIsRepeating] = useState(false);
 
   const selectedServer = useSelectedServer();
   const authConfig = useAuthConfig();
@@ -86,11 +59,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const isExecuting = useIsExecuting();
   const executeError = useExecuteError();
   const specSource = useSpecSource();
-
-  // Only show loading UI after 300ms delay
-  const { showSkeleton } = useShowSkeleton(isExecuting, 300);
-
-  const servers = spec.servers ?? DEFAULT_SERVERS;
 
   // Track previous endpoint for saving params before switch
   const prevEndpointRef = useRef<string | null>(null);
@@ -121,14 +89,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
     }
     return '';
   })();
-
-  // Initialize server
-  useEffect(() => {
-    const serverList = spec.servers ?? DEFAULT_SERVERS;
-    if (!selectedServer && serverList.length > 0) {
-      testParamsStoreActions.setSelectedServer(serverList[0].url);
-    }
-  }, [spec.servers, selectedServer]);
 
   // Save params before endpoint change, load saved params for new endpoint
   useEffect(() => {
@@ -199,107 +159,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const hasRequestBody = !!endpoint.operation.requestBody;
 
   // Single request execution
-  async function executeSingleRequest() {
-    const startTime = Date.now();
-
-    const result = await executeApiTestRequest({
-      baseUrl: selectedServer,
-      path: endpoint.path,
-      method: endpoint.method,
-      pathParams,
-      queryParams,
-      headers,
-      body: requestBody,
-      authConfig,
-      customCookies,
-    });
-
-    const duration = Date.now() - startTime;
-
-    // Create history entry with extended format
-    const historyEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-      timestamp: Date.now(),
-      method: endpoint.method,
-      url: `${selectedServer}${endpoint.path}`,
-      path: endpoint.path,
-      request: {
-        pathParams,
-        queryParams,
-        headers,
-        body: requestBody,
-      },
-      response: result.success ? result.response : null,
-      error: result.success ? null : result.error,
-      duration,
-    };
-
-    if (result.success) {
-      testParamsStoreActions.setResponse(result.response);
-
-      // Clear session cookies on authentication failure (401 Unauthorized)
-      if (result.response.status === 401) {
-        cookieStoreActions.clearSessionCookies();
-      } else if (result.setCookies && result.setCookies.length > 0) {
-        cookieStoreActions.addSessionCookies(result.setCookies);
-      }
-    } else {
-      testParamsStoreActions.setExecuteError(result.error);
-    }
-
-    // Save to history
-    historyStoreActions.addToHistory(historyEntry);
-
-    return result;
-  }
-
-  // Handle execute with repeat support
-  async function handleExecute() {
-    if (!selectedServer) return;
-
-    testParamsStoreActions.setExecuting(true);
-    testParamsStoreActions.clearResponse();
-
-    if (requestCount <= 1) {
-      // Single request
-      await executeSingleRequest();
-      testParamsStoreActions.setExecuting(false);
-    } else {
-      // Multiple requests with interval
-      setIsRepeating(true);
-      setCurrentRequestIndex(0);
-
-      for (let i = 0; i < requestCount; i++) {
-        setCurrentRequestIndex(i + 1);
-
-        await executeSingleRequest();
-
-        // Wait for interval before next request (except for last one)
-        if (i < requestCount - 1 && requestInterval > 0) {
-          await new Promise((resolve) => setTimeout(resolve, requestInterval));
-        }
-      }
-
-      setIsRepeating(false);
-      setCurrentRequestIndex(0);
-      testParamsStoreActions.setExecuting(false);
-    }
-  }
-
-  // Cancel repeating requests
-  function handleCancelRepeat() {
-    setIsRepeating(false);
-    setCurrentRequestIndex(0);
-    testParamsStoreActions.setExecuting(false);
-  }
-
-  function handleCopyResponse() {
-    if (response?.data) {
-      navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
-      setCopiedResponse(true);
-      setTimeout(() => setCopiedResponse(false), 2000);
-    }
-  }
 
   // Clear current endpoint test data
   function handleClearCurrent() {
@@ -398,29 +257,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 gap: '1.6rem',
               }}
             >
-              {/* Server */}
-              <div>
-                <label
-                  style={{
-                    display: 'block',
-                    color: colors.text.secondary,
-                    fontSize: '1.2rem',
-                    fontWeight: 500,
-                    marginBottom: '0.6rem',
-                  }}
-                >
-                  Target Server
-                </label>
-                <FuturSelect
-                  value={selectedServer}
-                  onChange={(val) => testParamsStoreActions.setSelectedServer(val)}
-                  options={servers.map((s) => ({
-                    label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
-                    value: s.url,
-                  }))}
-                  placeholder='Select a server'
-                />
-              </div>
+              <ServerSelector spec={spec} />
 
               {/* Auth & Cookies Status (Read-only) */}
               <div
@@ -598,564 +435,35 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 </div>
               )}
 
-              {/* Headers */}
-              <div>
-                <FlexRow
-                  style={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.6rem',
-                  }}
-                >
-                  <FlexRow
-                    style={{ cursor: 'pointer', alignItems: 'center', gap: '0.8rem' }}
-                    onClick={() => setShowHeaders(!showHeaders)}
-                  >
-                    <span
-                      style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}
-                    >
-                      Headers
-                    </span>
-                    <span
-                      style={{
-                        backgroundColor: colors.bg.overlayHover,
-                        padding: '0.2rem 0.6rem',
-                        borderRadius: '1rem',
-                        fontSize: '1rem',
-                        color: colors.text.primary,
-                      }}
-                    >
-                      {Object.keys(headers).length}
-                    </span>
-                    {showHeaders ? (
-                      <ChevronUp size={12} color={colors.text.secondary} />
-                    ) : (
-                      <ChevronDown size={12} color={colors.text.secondary} />
-                    )}
-                  </FlexRow>
+              <HeaderEditor />
 
-                  <ResetButton
-                    title='Reset headers to default'
-                    onClick={() => testParamsStoreActions.resetHeaders()}
-                  />
-                </FlexRow>
-                <AnimatePresence initial={false}>
-                  {showHeaders && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: 'easeInOut' }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        {/* Global Auth header indicator */}
-                        {authConfig.type !== 'none' && (
-                          <div
-                            style={{
-                              display: 'flex',
-                              gap: '0.8rem',
-                              alignItems: 'center',
-                              padding: '0.6rem 1rem',
-                              backgroundColor: headers['Authorization']
-                                ? 'rgba(245, 158, 11, 0.1)'
-                                : 'rgba(34, 197, 94, 0.1)',
-                              border: headers['Authorization']
-                                ? '1px solid rgba(245, 158, 11, 0.2)'
-                                : '1px solid rgba(34, 197, 94, 0.2)',
-                              borderRadius: '0.6rem',
-                            }}
-                          >
-                            <Key
-                              size={12}
-                              color={
-                                headers['Authorization']
-                                  ? colors.feedback.warning
-                                  : colors.feedback.success
-                              }
-                            />
-                            <span
-                              style={{
-                                color: headers['Authorization']
-                                  ? colors.feedback.warning
-                                  : colors.feedback.success,
-                                fontSize: '1.1rem',
-                                fontWeight: 500,
-                              }}
-                            >
-                              Authorization
-                            </span>
-                            <span
-                              style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}
-                            >
-                              {headers['Authorization']
-                                ? '(Custom header overrides Global Auth)'
-                                : `(from Global Auth: ${authConfig.type.toUpperCase()})`}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Existing headers */}
-                        {Object.entries(headers).map(([k, v]) => (
-                          <div
-                            key={k}
-                            style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}
-                          >
-                            <HeaderAutocompleteInput
-                              type='name'
-                              value={k}
-                              onChange={(newKey) => {
-                                if (newKey !== k) {
-                                  testParamsStoreActions.removeHeader(k);
-                                  testParamsStoreActions.setHeader(newKey, v);
-                                }
-                              }}
-                              style={{ flex: 1 }}
-                            />
-                            <HeaderAutocompleteInput
-                              type='value'
-                              headerName={k}
-                              value={v}
-                              onChange={(newValue) => testParamsStoreActions.setHeader(k, newValue)}
-                              style={{ flex: 2 }}
-                            />
-                            <button
-                              onClick={() => testParamsStoreActions.removeHeader(k)}
-                              style={iconButtonStyle}
-                              title='Remove header'
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        ))}
-
-                        {/* Add new header form */}
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: '0.8rem',
-                            alignItems: 'center',
-                            marginTop: '0.4rem',
-                          }}
-                        >
-                          <HeaderAutocompleteInput
-                            type='name'
-                            value={newHeaderName}
-                            onChange={setNewHeaderName}
-                            placeholder='Header name'
-                            style={{ flex: 1 }}
-                          />
-                          <HeaderAutocompleteInput
-                            type='value'
-                            headerName={newHeaderName}
-                            value={newHeaderValue}
-                            onChange={setNewHeaderValue}
-                            placeholder='Header value'
-                            style={{ flex: 2 }}
-                          />
-                          <button
-                            onClick={() => {
-                              if (newHeaderName.trim()) {
-                                testParamsStoreActions.setHeader(
-                                  newHeaderName.trim(),
-                                  newHeaderValue,
-                                );
-                                setNewHeaderName('');
-                                setNewHeaderValue('');
-                              }
-                            }}
-                            disabled={!newHeaderName.trim()}
-                            style={{
-                              ...iconButtonStyle,
-                              backgroundColor: newHeaderName.trim()
-                                ? 'rgba(34, 197, 94, 0.2)'
-                                : 'rgba(255,255,255,0.05)',
-                              color: newHeaderName.trim()
-                                ? colors.feedback.success
-                                : colors.text.tertiary,
-                            }}
-                            title='Add header'
-                          >
-                            <Plus size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Request Body */}
               {hasRequestBody && (
-                <div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '0.8rem',
-                    }}
-                  >
-                    <label
-                      style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}
-                    >
-                      Request Body (JSON)
-                    </label>
-                    <ResetButton
-                      title='Reset to default example'
-                      onClick={() => {
-                        testParamsStoreActions.setRequestBody(bodyExample);
-                      }}
-                    />
-                  </div>
-                  <VariableAutocompleteInput
-                    value={requestBody}
-                    onChange={(value) => {
-                      testParamsStoreActions.setRequestBody(value);
-                      if (value.trim()) {
-                        try {
-                          JSON.parse(value);
-                          setJsonError(null);
-                        } catch (err) {
-                          setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
-                        }
-                      } else {
-                        setJsonError(null);
-                      }
-                    }}
-                    multiline
-                    style={{
-                      width: '100%',
-                      padding: '1.2rem',
-                      backgroundColor: colors.bg.overlay,
-                      border: `1px solid ${jsonError ? 'rgba(239, 68, 68, 0.5)' : colors.border.default}`,
-                      borderRadius: '0.6rem',
-                      color: colors.text.primary,
-                      fontSize: '1.3rem',
-                      fontFamily: 'monospace',
-                      resize: 'vertical',
-                      outline: 'none',
-                      minHeight: '160px',
-                    }}
-                  />
-                  {jsonError && (
-                    <div
-                      style={{
-                        marginTop: '0.6rem',
-                        padding: '0.8rem',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        border: '1px solid rgba(239, 68, 68, 0.2)',
-                        borderRadius: '0.4rem',
-                        color: colors.feedback.error,
-                        fontSize: '1.2rem',
-                      }}
-                    >
-                      Invalid JSON: {jsonError}
-                    </div>
-                  )}
-                </div>
+                <RequestBodyEditor
+                  bodyExample={bodyExample}
+                  jsonError={jsonError}
+                  setJsonError={setJsonError}
+                />
               )}
 
-              {/* Repeat Settings */}
-              <div>
-                <button
-                  onClick={() => setShowRepeatSettings(!showRepeatSettings)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                    padding: '0.6rem 1rem',
-                    backgroundColor: colors.bg.autoComplete,
-                    border: `1px solid ${colors.border.default}`,
-                    borderRadius: '0.4rem',
-                    color: requestCount > 1 ? colors.feedback.warning : colors.text.secondary,
-                    fontSize: '1.2rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Repeat size={12} />
-                  <span>Repeat: {requestCount}x</span>
-                  {requestCount > 1 && requestInterval > 0 && (
-                    <span style={{ color: colors.text.tertiary }}>
-                      ({requestInterval}ms interval)
-                    </span>
-                  )}
-                  {showRepeatSettings ? (
-                    <ChevronUp size={12} color='#9ca3af' />
-                  ) : (
-                    <ChevronDown size={12} color='#9ca3af' />
-                  )}
-                </button>
+              <RepeatSettings
+                requestCount={requestCount}
+                requestInterval={requestInterval}
+                setRequestCount={setRequestCount}
+                setRequestInterval={setRequestInterval}
+              />
 
-                {showRepeatSettings && (
-                  <div
-                    style={{
-                      marginTop: '0.8rem',
-                      padding: '1.2rem',
-                      backgroundColor: colors.bg.overlay,
-                      border: `1px solid ${colors.border.subtle}`,
-                      borderRadius: '0.6rem',
-                      display: 'flex',
-                      gap: '1.6rem',
-                      alignItems: 'flex-end',
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <label
-                        style={{
-                          display: 'block',
-                          color: colors.text.secondary,
-                          fontSize: '1.1rem',
-                          marginBottom: '0.4rem',
-                        }}
-                      >
-                        Request Count
-                      </label>
-                      <StepperInput
-                        value={requestCount}
-                        onChange={setRequestCount}
-                        min={1}
-                        max={100}
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <label
-                        style={{
-                          display: 'block',
-                          color: colors.text.secondary,
-                          fontSize: '1.1rem',
-                          marginBottom: '0.4rem',
-                        }}
-                      >
-                        Interval (ms)
-                      </label>
-                      <StepperInput
-                        value={requestInterval}
-                        onChange={setRequestInterval}
-                        min={0}
-                        max={60000}
-                        step={100}
-                      />
-                    </div>
-                    <button
-                      onClick={() => {
-                        setRequestCount(1);
-                        setRequestInterval(0);
-                      }}
-                      style={{
-                        padding: '0.8rem 1.2rem',
-                        backgroundColor: 'transparent',
-                        border: `1px solid ${colors.border.default}`,
-                        borderRadius: '0.4rem',
-                        color: colors.text.secondary,
-                        fontSize: '1.2rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Reset
-                    </button>
-                  </div>
-                )}
-              </div>
+              <ExecuteActions
+                requestCount={requestCount}
+                requestInterval={requestInterval}
+                endpoint={endpoint}
+                jsonError={jsonError}
+              />
 
-              {/* Actions */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                  paddingTop: '0.8rem',
-                }}
-              >
-                {/* Execute buttons */}
-                <div style={{ display: 'flex', gap: '0.8rem' }}>
-                  {isRepeating && (
-                    <button
-                      onClick={handleCancelRepeat}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.8rem',
-                        padding: '1rem 2rem',
-                        backgroundColor: '#dc2626',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '0.6rem',
-                        fontSize: '1.4rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                  <button
-                    onClick={handleExecute}
-                    disabled={isExecuting || !!jsonError}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.8rem',
-                      padding: '1rem 2.4rem',
-                      backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '0.6rem',
-                      fontSize: '1.4rem',
-                      fontWeight: 600,
-                      cursor: isExecuting || jsonError ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {isExecuting ? (
-                      <Loader2 size={16} className='animate-spin' />
-                    ) : (
-                      <Play size={16} fill='white' />
-                    )}
-                    {isRepeating
-                      ? `Sending ${currentRequestIndex}/${requestCount}...`
-                      : isExecuting
-                        ? 'Sending...'
-                        : requestCount > 1
-                          ? `Execute ${requestCount}x`
-                          : 'Execute Request'}
-                  </button>
-                </div>
-              </div>
-
-              {executeError && (
-                <div
-                  style={{
-                    padding: '1.2rem',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                    borderRadius: '0.6rem',
-                    color: colors.feedback.error,
-                    fontSize: '1.3rem',
-                  }}
-                >
-                  Error: {executeError}
-                </div>
-              )}
-
-              {/* Response area - show only after 300ms loading or when response exists */}
-              {(showSkeleton || response) && (
-                <div
-                  style={{
-                    marginTop: '0.8rem',
-                    border: `1px solid ${colors.border.default}`,
-                    borderRadius: '0.6rem',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      padding: '1rem 1.2rem',
-                      backgroundColor: colors.bg.overlay,
-                      borderBottom: `1px solid ${colors.border.subtle}`,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      {showSkeleton && !response ? (
-                        <>
-                          <Loader2
-                            size={14}
-                            color={colors.text.secondary}
-                            className='animate-spin'
-                          />
-                          <span style={{ fontSize: '1.2rem', color: colors.text.secondary }}>
-                            Loading...
-                          </span>
-                        </>
-                      ) : response ? (
-                        <>
-                          <span
-                            style={{
-                              fontWeight: 700,
-                              fontSize: '1.3rem',
-                              color: getExecuteStatusColor(response.status),
-                            }}
-                          >
-                            {response.status}
-                          </span>
-                          <span style={{ fontSize: '1.2rem', color: colors.text.secondary }}>
-                            {response.duration}ms · {formatBytes(response.size)}
-                          </span>
-                        </>
-                      ) : null}
-                    </div>
-                    {response && (
-                      <div style={{ display: 'flex', gap: '0.8rem' }}>
-                        <button onClick={handleCopyResponse} style={iconButtonStyle}>
-                          {copiedResponse ? <Check size={14} /> : <Copy size={14} />}
-                        </button>
-                        <button
-                          onClick={testParamsStoreActions.clearResponse}
-                          style={iconButtonStyle}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      padding: '1.2rem',
-                      backgroundColor: 'rgba(0,0,0,0.3)', // Darker well transparency instead of solid black
-                      overflow: 'auto',
-                      height: '300px',
-                    }}
-                  >
-                    {showSkeleton && !response ? (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '100%',
-                          color: colors.text.tertiary,
-                          fontSize: '1.3rem',
-                        }}
-                      >
-                        Waiting for response...
-                      </div>
-                    ) : response ? (
-                      <pre
-                        style={{
-                          margin: 0,
-                          fontSize: '1.2rem',
-                          fontFamily: 'monospace',
-                          color: colors.text.primary,
-                        }}
-                      >
-                        {typeof response.data === 'string'
-                          ? response.data
-                          : JSON.stringify(response.data, null, 2)}
-                      </pre>
-                    ) : null}
-                  </div>
-                </div>
-              )}
+              <ExecuteResponseViewer isExecuting={isExecuting} executeError={executeError} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
-}
-
-function getIconButtonStyle(colors: SemanticColors) {
-  return {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '2.4rem',
-    height: '2.4rem',
-    backgroundColor: colors.bg.overlay,
-    border: `1px solid ${colors.border.default}`,
-    borderRadius: '0.4rem',
-    color: colors.text.primary,
-    cursor: 'pointer',
-  } as const;
 }
