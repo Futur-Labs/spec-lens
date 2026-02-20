@@ -2,12 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 
+import type { Option } from '../model/types';
 import { useColors } from '@/shared/theme';
-
-interface Option<Value extends string | number> {
-  label: string;
-  value: Value;
-}
 
 export function FuturSelect<Value extends string | number>({
   options,
