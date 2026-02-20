@@ -1,19 +1,18 @@
-import { FlexRow } from '@jigoooo/shared-ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-import { ChevronDown, Cookie, Key, Play, Trash2 } from 'lucide-react';
+import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
+import { AuthCookieStatusBar } from './auth-cookie-status-bar';
 import { ExecuteActions } from './execute-actions';
 import { ExecuteResponseViewer } from './execute-response-viewer';
 import { HeaderEditor } from './header-editor';
+import { ParameterEditSection } from './parameter-edit-section';
 import { RepeatSettings } from './repeat-settings';
 import { RequestBodyEditor } from './request-body-editor';
 import { ServerSelector } from './server-selector';
-import { useAuthConfig } from '@/entities/api-auth';
 import {
   type ApiSpec,
-  ParameterInput,
   type ParameterObject,
   type ParsedEndpoint,
   generateExample,
@@ -23,7 +22,6 @@ import {
   isReferenceObject,
   useSpecSource,
 } from '@/entities/api-spec';
-import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
 import {
   testParamsStoreActions,
   useExecuteError,
@@ -36,7 +34,6 @@ import {
   useSelectedServer,
 } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
-import { ResetButton } from '@/shared/ui/button';
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
@@ -48,9 +45,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const [requestInterval, setRequestInterval] = useState(0); // ms
 
   const selectedServer = useSelectedServer();
-  const authConfig = useAuthConfig();
-  const customCookies = useCustomCookies();
-  const sessionCookies = useSessionCookies();
+
   const pathParams = usePathParams();
   const queryParams = useQueryParams();
   const headers = useHeaders();
@@ -158,9 +153,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const queryParameters = parameters.filter((p) => p.in === 'query');
   const hasRequestBody = !!endpoint.operation.requestBody;
 
-  // Single request execution
-
-  // Clear current endpoint test data
   function handleClearCurrent() {
     const endpointKey = `${endpoint.method}:${endpoint.path}`;
     testParamsStoreActions.clearEndpointParams(specSourceId, endpointKey);
@@ -259,179 +251,26 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
             >
               <ServerSelector spec={spec} />
 
-              {/* Auth & Cookies Status (Read-only) */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1.6rem',
-                  padding: '1rem 1.2rem',
-                  backgroundColor: colors.bg.overlay,
-                  borderRadius: '0.6rem',
-                  border: `1px solid ${colors.border.subtle}`,
-                }}
-              >
-                {/* Auth Status */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <Key
-                    size={14}
-                    color={
-                      authConfig.type !== 'none' ? colors.feedback.success : colors.text.secondary
-                    }
-                  />
-                  <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>Auth:</span>
-                  <span
-                    style={{
-                      backgroundColor:
-                        authConfig.type !== 'none'
-                          ? 'rgba(34, 197, 94, 0.2)'
-                          : colors.bg.overlayHover,
-                      padding: '0.2rem 0.8rem',
-                      borderRadius: '1rem',
-                      fontSize: '1.1rem',
-                      color:
-                        authConfig.type !== 'none'
-                          ? colors.feedback.success
-                          : colors.text.secondary,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {authConfig.type === 'none' ? 'None' : authConfig.type.toUpperCase()}
-                  </span>
-                </div>
+              <AuthCookieStatusBar />
 
-                {/* Separator */}
-                <div
-                  style={{
-                    width: '1px',
-                    height: '1.6rem',
-                    backgroundColor: colors.border.default,
-                  }}
-                />
-
-                {/* Cookies Status */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <Cookie
-                    size={14}
-                    color={
-                      customCookies.length + sessionCookies.length > 0
-                        ? colors.feedback.warning
-                        : colors.text.secondary
-                    }
-                  />
-                  <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>Cookies:</span>
-                  <span
-                    style={{
-                      backgroundColor:
-                        customCookies.length + sessionCookies.length > 0
-                          ? 'rgba(245, 158, 11, 0.2)'
-                          : colors.bg.overlayHover,
-                      padding: '0.2rem 0.8rem',
-                      borderRadius: '1rem',
-                      fontSize: '1.1rem',
-                      color:
-                        customCookies.length + sessionCookies.length > 0
-                          ? colors.feedback.warning
-                          : colors.text.secondary,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {customCookies.length + sessionCookies.length}
-                  </span>
-                </div>
-
-                {/* Info text */}
-                <span
-                  style={{
-                    marginLeft: 'auto',
-                    color: colors.text.tertiary,
-                    fontSize: '1.1rem',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Configure in Global Auth Panel
-                </span>
-              </div>
-
-              {/* Parameters Group */}
               {(pathParameters.length > 0 || queryParameters.length > 0) && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                  {pathParameters.length > 0 && (
-                    <div>
-                      <FlexRow
-                        style={{
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '0.8rem',
-                        }}
-                      >
-                        <span
-                          style={{
-                            color: colors.text.primary,
-                            fontSize: '1.2rem',
-                            fontWeight: 600,
-                            opacity: 0.7,
-                          }}
-                        >
-                          PATH PARAMS
-                        </span>
-                        {Object.keys(pathParams).length > 0 && (
-                          <ResetButton
-                            title='Reset path params'
-                            onClick={() => testParamsStoreActions.resetPathParams()}
-                          />
-                        )}
-                      </FlexRow>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        {pathParameters.map((p) => (
-                          <ParameterInput
-                            key={p.name}
-                            param={p}
-                            value={pathParams[p.name] || ''}
-                            onChange={(v) => testParamsStoreActions.setPathParam(p.name, v)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {queryParameters.length > 0 && (
-                    <div>
-                      <FlexRow
-                        style={{
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '0.8rem',
-                        }}
-                      >
-                        <span
-                          style={{
-                            color: colors.text.primary,
-                            fontSize: '1.2rem',
-                            fontWeight: 600,
-                            opacity: 0.7,
-                          }}
-                        >
-                          QUERY PARAMS
-                        </span>
-                        {Object.keys(queryParams).length > 0 && (
-                          <ResetButton
-                            title='Reset query params'
-                            onClick={() => testParamsStoreActions.resetQueryParams()}
-                          />
-                        )}
-                      </FlexRow>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        {queryParameters.map((p) => (
-                          <ParameterInput
-                            key={p.name}
-                            param={p}
-                            value={queryParams[p.name] || ''}
-                            onChange={(v) => testParamsStoreActions.setQueryParam(p.name, v)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <ParameterEditSection
+                    label='PATH PARAMS'
+                    parameters={pathParameters}
+                    values={pathParams}
+                    onChange={(name, v) => testParamsStoreActions.setPathParam(name, v)}
+                    onReset={() => testParamsStoreActions.resetPathParams()}
+                    resetTitle='Reset path params'
+                  />
+                  <ParameterEditSection
+                    label='QUERY PARAMS'
+                    parameters={queryParameters}
+                    values={queryParams}
+                    onChange={(name, v) => testParamsStoreActions.setQueryParam(name, v)}
+                    onReset={() => testParamsStoreActions.resetQueryParams()}
+                    resetTitle='Reset query params'
+                  />
                 </div>
               )}
 

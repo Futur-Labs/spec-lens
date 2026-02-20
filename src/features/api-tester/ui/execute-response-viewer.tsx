@@ -36,20 +36,20 @@ export function ExecuteResponseViewer({
 
   return (
     <>
-      executeError && (
-      <div
-        style={{
-          padding: '1.2rem',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.2)',
-          borderRadius: '0.6rem',
-          color: colors.feedback.error,
-          fontSize: '1.3rem',
-        }}
-      >
-        Error: {executeError}
-      </div>
-      )
+      {executeError && (
+        <div
+          style={{
+            padding: '1.2rem',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '0.6rem',
+            color: colors.feedback.error,
+            fontSize: '1.3rem',
+          }}
+        >
+          Error: {executeError}
+        </div>
+      )}
       <div
         style={{
           marginTop: '0.8rem',
