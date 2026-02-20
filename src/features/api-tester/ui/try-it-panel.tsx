@@ -921,7 +921,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     alignItems: 'center',
                     gap: '0.6rem',
                     padding: '0.6rem 1rem',
-                    backgroundColor: 'transparent',
+                    backgroundColor: colors.bg.autoComplete,
                     border: `1px solid ${colors.border.default}`,
                     borderRadius: '0.4rem',
                     color: requestCount > 1 ? colors.feedback.warning : colors.text.secondary,

@@ -215,7 +215,7 @@ export function FuturAutocompleteSelect<Value extends string>({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '1rem 1.2rem',
+          paddingInline: '1.2rem',
           backgroundColor: colors.bg.autoComplete,
           border: isOpen
             ? `1px solid ${colors.border.focus}`
@@ -223,9 +223,9 @@ export function FuturAutocompleteSelect<Value extends string>({
           borderRadius: '0.6rem',
           cursor: 'pointer',
           color: displayValue ? colors.text.primary : colors.text.disabled,
-          fontSize: '1.3rem',
-          transition: 'border-color 0.2s ease',
-          minHeight: '3.8rem',
+          fontSize: '1.2rem',
+          // transition: 'border-color 0.2s ease',
+          minHeight: '3.4rem',
           boxSizing: 'border-box',
         }}
       >
@@ -267,14 +267,14 @@ export function FuturAutocompleteSelect<Value extends string>({
                 placeholder={placeholder}
                 style={{
                   width: '100%',
-                  padding: '1rem 1.2rem',
+                  padding: '0.8rem 1.2rem',
                   backgroundColor: colors.bg.elevated,
                   border: `1px solid ${colors.border.default}`,
                   // borderBottom: 'none',
                   borderRadius: '0.6rem 0.6rem 0 0',
                   outline: 'none',
                   color: colors.text.primary,
-                  fontSize: '1.3rem',
+                  fontSize: '1.2rem',
                   fontFamily: 'inherit',
                   boxSizing: 'border-box',
                 }}
@@ -322,10 +322,10 @@ export function FuturAutocompleteSelect<Value extends string>({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1rem 1.2rem',
+                          padding: '0.7rem 1.2rem',
                           cursor: 'pointer',
                           color: isSelected ? colors.text.primary : colors.text.secondary,
-                          fontSize: '1.3rem',
+                          fontSize: '1.2rem',
                           backgroundColor: isHighlighted
                             ? colors.bg.overlayHover
                             : isSelected

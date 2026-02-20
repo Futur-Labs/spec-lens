@@ -3,13 +3,23 @@ import { hasChildrenCondition } from '../lib/has-children';
 import { getTypeColor } from '../lib/type-color';
 import { useColors, useIsDarkMode } from '@/shared/theme';
 
-export function useSchemaViewerStyles({
+export function useSchemaContainerStyle({ depth }: { depth: number }) {
+  const colors = useColors();
+
+  return {
+    marginLeft: depth > 0 ? '1.6rem' : 0,
+    paddingLeft: depth > 0 ? '1.2rem' : 0,
+    borderLeft: depth > 0 ? `1px solid ${colors.border.default}` : 'none',
+    fontSize: '1.4rem',
+    position: 'relative' as const,
+  };
+}
+
+export function useSchemaNodeRowStyles({
   resolvedSchema,
-  depth,
   isHovered,
 }: {
   resolvedSchema: SchemaObject | null;
-  depth: number;
   isHovered: boolean;
 }) {
   const colors = useColors();
@@ -19,18 +29,11 @@ export function useSchemaViewerStyles({
   const hasChildren = hasChildrenCondition(resolvedSchema);
 
   return {
-    container: {
-      marginLeft: depth > 0 ? '1.6rem' : 0,
-      paddingLeft: depth > 0 ? '1.2rem' : 0,
-      borderLeft: depth > 0 ? `1px solid ${colors.border.default}` : 'none',
-      fontSize: '1.4rem',
-      position: 'relative' as const,
-    },
     row: {
       display: 'flex',
       alignItems: 'flex-start',
       gap: '0.8rem',
-      padding: '0.6rem 0',
+      padding: '0.6rem 0.7rem',
       cursor: hasChildren ? 'pointer' : 'default',
       transition: 'background-color 0.2s',
       borderRadius: '0.4rem',
