@@ -33,6 +33,7 @@ export {
   deepCamelize,
   deepCamelToSnake,
   measureTextWidth,
+  formatBytes,
 } from './formatter/formatter-lib.ts';
 
 export {

@@ -5,7 +5,7 @@ export { ParameterGroup } from './ui/parameter-group.tsx';
 
 export { specStoreActions, useSpecStore } from './model/spec-store.ts';
 export { useSpec, useSpecSource, useEndpoints, useTags } from './model/spec-store.ts';
-export { useIsLoading, useIsRefreshing } from './model/spec-store.ts';
+export { useIsLoading, useIsSpecRefreshing } from './model/spec-store.ts';
 export { useSpecStoreHydration } from './model/spec-store.ts';
 export type { SpecSource } from './model/spec-types.ts';
 export type {
@@ -53,3 +53,10 @@ export {
 export { generateTypeSchema } from './lib/generate-type-schema.ts';
 export { validateOpenAPISpec } from './lib/validate-spec.ts';
 export { getMethodColor } from './lib/method-style.ts';
+export { getIconButtonStyle } from './lib/input-style.ts';
+
+export { variableStoreActions, useVariables } from './model/variable-store.ts';
+
+export { VariableAutocompleteInput } from './ui/variable-autocomplete-input.tsx';
+export { HeaderAutocompleteInput } from './ui/header-autocomplete-input.tsx';
+export { ParameterInput } from './ui/parameter-input.tsx';

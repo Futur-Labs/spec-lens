@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import { useVariables } from '@/entities/variable';
+import { useVariables } from '../model/variable-store';
 import { useColors } from '@/shared/theme';
 
 interface Props {
@@ -154,7 +154,6 @@ export function VariableAutocompleteInput({
             backgroundColor: colors.bg.elevated,
             border: `1px solid ${colors.border.default}`,
             borderRadius: '0.6rem',
-            // padding: '0.4rem 0',
             maxHeight: '200px',
             overflow: 'auto',
             zIndex: 100,

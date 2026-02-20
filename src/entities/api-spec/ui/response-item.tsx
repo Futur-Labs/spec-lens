@@ -63,7 +63,7 @@ export function ResponseItem({
 
         <span
           style={{
-            backgroundColor: `${statusColor}20`, // 20% opacity of status color
+            backgroundColor: `${statusColor}20`,
             color: statusColor,
             fontSize: '1.3rem',
             fontWeight: 700,

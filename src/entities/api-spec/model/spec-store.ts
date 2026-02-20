@@ -50,7 +50,8 @@ export const useSpecStore = create<SpecStore>()(
 
           setRefreshing: (isRefreshing) => set({ isRefreshing }),
 
-          setRefreshError: (refreshError) => set({ refreshError, isRefreshing: false }),
+          setRefreshError: (refreshError) =>
+            set(refreshError ? { refreshError, isRefreshing: false } : { refreshError }),
 
           updateSpecSource: (sourceUpdate) =>
             set((state) => ({
@@ -91,7 +92,7 @@ export const useSpecSource = () => useSpecStore((state) => state.specSource);
 export const useEndpoints = () => useSpecStore((state) => state.endpoints);
 export const useTags = () => useSpecStore((state) => state.tags);
 export const useIsLoading = () => useSpecStore((state) => state.isLoading);
-export const useIsRefreshing = () => useSpecStore((state) => state.isRefreshing);
+export const useIsSpecRefreshing = () => useSpecStore((state) => state.isRefreshing);
 export const useLastRefreshTime = () => useSpecStore((state) => state.lastRefreshTime);
 export const useRefreshError = () => useSpecStore((state) => state.refreshError);
 

@@ -1,3 +1,5 @@
+import { getAutoCompleteStyle } from '../lib/input-style';
+import { useColors } from '@/shared/theme';
 import { FuturAutocompleteSelect } from '@/shared/ui/select';
 
 // 자주 사용되는 HTTP 헤더 목록
@@ -58,6 +60,8 @@ export function HeaderAutocompleteInput({
   type: 'name' | 'value';
   headerName?: string;
 }) {
+  const colors = useColors();
+  const autocompleteStyle = getAutoCompleteStyle(colors);
   const options = type === 'name' ? HEADER_NAME_OPTIONS : getHeaderValueOptions(headerName || '');
 
   return (
@@ -66,7 +70,10 @@ export function HeaderAutocompleteInput({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      style={style}
+      style={{
+        ...autocompleteStyle,
+        ...style,
+      }}
       allowCustomValue={true}
     />
   );

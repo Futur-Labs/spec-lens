@@ -135,6 +135,7 @@ export function FuturSelect<Value extends string | number>({
                       : 'transparent';
                   }}
                   style={{
+                    userSelect: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',

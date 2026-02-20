@@ -42,14 +42,24 @@ export function SidebarEndpointItem({
   const isSelected =
     selectedEndpoint?.path === endpoint.path && selectedEndpoint?.method === endpoint.method;
 
+  const summary = endpoint.operation.summary;
+  const tooltipContent = summary ? (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <span style={{ fontFamily: 'monospace', fontSize: '1.2rem' }}>{endpoint.path}</span>
+      <span style={{ fontSize: '1.1rem', opacity: 0.7 }}>{summary}</span>
+    </div>
+  ) : (
+    endpoint.path
+  );
+
   return (
     <Tooltip
       key={`${endpoint.method}-${endpoint.path}`}
-      content={endpoint.path}
+      content={tooltipContent}
       placement='right'
       delay={0}
       fullWidth
-      disabled={!isTruncated}
+      disabled={!isTruncated && !summary}
     >
       <motion.button
         ref={(el) => {

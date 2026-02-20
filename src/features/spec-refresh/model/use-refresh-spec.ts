@@ -1,6 +1,6 @@
 import {
   specStoreActions,
-  useIsRefreshing,
+  useIsSpecRefreshing,
   useSpecStore,
   validateOpenAPISpec,
   type ApiSpec,
@@ -10,7 +10,7 @@ import { checkSpecUpdate } from '@/shared/server';
 const MIN_SPIN_DURATION = 800;
 
 export function useRefreshSpec() {
-  const isRefreshing = useIsRefreshing();
+  const isRefreshing = useIsSpecRefreshing();
   const specSource = useSpecStore((s) => s.specSource);
 
   const handleRefreshSpec = async () => {

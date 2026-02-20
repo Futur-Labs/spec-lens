@@ -13,19 +13,19 @@ import {
   Play,
   Plus,
   Repeat,
-  RotateCcw,
   Trash2,
 } from 'lucide-react';
 
-import { HeaderAutocompleteInput } from './header-autocomplete-input';
-import { VariableAutocompleteInput } from './variable-autocomplete-input';
 import { getExecuteStatusColor } from '../config/execute-status-color';
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
 import { useAuthConfig } from '@/entities/api-auth';
 import {
   type ApiSpec,
+  HeaderAutocompleteInput,
+  ParameterInput,
   type ParameterObject,
   type ParsedEndpoint,
+  VariableAutocompleteInput,
   generateExample,
   getExampleFromMediaType,
   getExampleFromParameter,
@@ -47,23 +47,16 @@ import {
   useSelectedServer,
 } from '@/entities/test-params';
 import { useShowSkeleton } from '@/shared/hooks';
+import { formatBytes } from '@/shared/lib';
 import { type SemanticColors, useColors } from '@/shared/theme';
+import { ResetButton } from '@/shared/ui/button';
+import { StepperInput } from '@/shared/ui/input';
 import { FuturSelect } from '@/shared/ui/select';
 
 const DEFAULT_SERVERS = [{ url: 'http://localhost:3000', description: 'Local' }];
 
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  const size = bytes / Math.pow(k, i);
-  return `${size < 10 ? size.toFixed(1) : Math.round(size)} ${sizes[i]}`;
-}
-
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
-  const autoCompleteStyle = getAutoCompleteStyle(colors);
   const iconButtonStyle = getIconButtonStyle(colors);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showHeaders, setShowHeaders] = useState(true);
@@ -545,24 +538,12 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                         >
                           PATH PARAMS
                         </span>
-                        <button
-                          onClick={() => testParamsStoreActions.resetPathParams()}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.4rem',
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: colors.feedback.warning,
-                            fontSize: '1.1rem',
-                            visibility: Object.keys(pathParams).length > 0 ? 'visible' : 'hidden',
-                          }}
-                          title='Reset path params'
-                        >
-                          <RotateCcw size={10} />
-                          Reset
-                        </button>
+                        {Object.keys(pathParams).length > 0 && (
+                          <ResetButton
+                            title='Reset path params'
+                            onClick={() => testParamsStoreActions.resetPathParams()}
+                          />
+                        )}
                       </FlexRow>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                         {pathParameters.map((p) => (
@@ -595,24 +576,12 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                         >
                           QUERY PARAMS
                         </span>
-                        <button
-                          onClick={() => testParamsStoreActions.resetQueryParams()}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.4rem',
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: colors.feedback.warning,
-                            fontSize: '1.1rem',
-                            visibility: Object.keys(queryParams).length > 0 ? 'visible' : 'hidden',
-                          }}
-                          title='Reset query params'
-                        >
-                          <RotateCcw size={10} />
-                          Reset
-                        </button>
+                        {Object.keys(queryParams).length > 0 && (
+                          <ResetButton
+                            title='Reset query params'
+                            onClick={() => testParamsStoreActions.resetQueryParams()}
+                          />
+                        )}
                       </FlexRow>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                         {queryParameters.map((p) => (
@@ -664,23 +633,11 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       <ChevronDown size={12} color={colors.text.secondary} />
                     )}
                   </FlexRow>
-                  <button
-                    onClick={() => testParamsStoreActions.resetHeaders()}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: colors.feedback.warning,
-                      fontSize: '1.1rem',
-                    }}
+
+                  <ResetButton
                     title='Reset headers to default'
-                  >
-                    <RotateCcw size={10} />
-                    Reset
-                  </button>
+                    onClick={() => testParamsStoreActions.resetHeaders()}
+                  />
                 </FlexRow>
                 <AnimatePresence initial={false}>
                   {showHeaders && (
@@ -753,14 +710,14 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                                   testParamsStoreActions.setHeader(newKey, v);
                                 }
                               }}
-                              style={{ ...autoCompleteStyle, flex: 1 }}
+                              style={{ flex: 1 }}
                             />
                             <HeaderAutocompleteInput
                               type='value'
                               headerName={k}
                               value={v}
                               onChange={(newValue) => testParamsStoreActions.setHeader(k, newValue)}
-                              style={{ ...autoCompleteStyle, flex: 2 }}
+                              style={{ flex: 2 }}
                             />
                             <button
                               onClick={() => testParamsStoreActions.removeHeader(k)}
@@ -786,7 +743,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             value={newHeaderName}
                             onChange={setNewHeaderName}
                             placeholder='Header name'
-                            style={{ ...autoCompleteStyle, flex: 1 }}
+                            style={{ flex: 1 }}
                           />
                           <HeaderAutocompleteInput
                             type='value'
@@ -794,7 +751,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                             value={newHeaderValue}
                             onChange={setNewHeaderValue}
                             placeholder='Header value'
-                            style={{ ...autoCompleteStyle, flex: 2 }}
+                            style={{ flex: 2 }}
                           />
                           <button
                             onClick={() => {
@@ -844,25 +801,12 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     >
                       Request Body (JSON)
                     </label>
-                    <button
+                    <ResetButton
+                      title='Reset to default example'
                       onClick={() => {
                         testParamsStoreActions.setRequestBody(bodyExample);
                       }}
-                      title='Reset to default example'
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: colors.feedback.warning,
-                        fontSize: '1.1rem',
-                      }}
-                    >
-                      <RotateCcw size={10} />
-                      Reset
-                    </button>
+                    />
                   </div>
                   <VariableAutocompleteInput
                     value={requestBody}
@@ -967,7 +911,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       >
                         Request Count
                       </label>
-                      <NumberInput
+                      <StepperInput
                         value={requestCount}
                         onChange={setRequestCount}
                         min={1}
@@ -985,7 +929,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                       >
                         Interval (ms)
                       </label>
-                      <NumberInput
+                      <StepperInput
                         value={requestInterval}
                         onChange={setRequestInterval}
                         min={0}
@@ -1201,29 +1145,6 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   );
 }
 
-function getInputStyle(colors: SemanticColors) {
-  return {
-    flex: 1,
-    width: '100%',
-    padding: '0.8rem 1.2rem',
-    backgroundColor: colors.bg.input,
-    border: `1px solid ${colors.border.default}`,
-    borderRadius: '0.6rem',
-    color: colors.text.primary,
-    fontSize: '1.3rem',
-    outline: 'none',
-  } as const;
-}
-
-function getAutoCompleteStyle(colors: SemanticColors) {
-  return {
-    ...getInputStyle(colors),
-    padding: 0,
-    border: 'none',
-    backgroundColor: colors.bg.autoComplete,
-  } as const;
-}
-
 function getIconButtonStyle(colors: SemanticColors) {
   return {
     display: 'flex',
@@ -1237,178 +1158,4 @@ function getIconButtonStyle(colors: SemanticColors) {
     color: colors.text.primary,
     cursor: 'pointer',
   } as const;
-}
-
-function ParameterInput({
-  param,
-  value,
-  onChange,
-}: {
-  param: ParameterObject;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const colors = useColors();
-  const inputStyle = getInputStyle(colors);
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ width: '120px', flexShrink: 0 }}>
-        <span style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}>
-          {param.name}
-        </span>
-        {param.required && (
-          <span style={{ color: colors.feedback.error, marginLeft: '0.2rem' }}>*</span>
-        )}
-      </div>
-      <VariableAutocompleteInput
-        value={value}
-        onChange={onChange}
-        placeholder={
-          param.description ||
-          (param.schema && !isReferenceObject(param.schema) ? String(param.schema.type || '') : '')
-        }
-        style={inputStyle}
-      />
-    </div>
-  );
-}
-
-function NumberInput({
-  value,
-  onChange,
-  min = 0,
-  max = Infinity,
-  step = 1,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-}) {
-  const colors = useColors();
-  const [inputValue, setInputValue] = useState(String(value));
-
-  // Sync with external value changes
-  useEffect(() => {
-    setInputValue(String(value));
-  }, [value]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-
-    // Allow empty input for editing
-    if (raw === '') {
-      setInputValue('');
-      return;
-    }
-
-    // Remove leading zeros (except for "0" itself)
-    const cleaned = raw.replace(/^0+(?=\d)/, '');
-
-    // Only allow digits
-    if (!/^\d*$/.test(cleaned)) {
-      return;
-    }
-
-    setInputValue(cleaned);
-
-    const num = parseInt(cleaned, 10);
-    if (!isNaN(num)) {
-      const clamped = Math.max(min, Math.min(max, num));
-      onChange(clamped);
-    }
-  };
-
-  const handleBlur = () => {
-    // On blur, ensure we have a valid number
-    const num = parseInt(inputValue, 10);
-    if (isNaN(num) || inputValue === '') {
-      setInputValue(String(min));
-      onChange(min);
-    } else {
-      const clamped = Math.max(min, Math.min(max, num));
-      setInputValue(String(clamped));
-      onChange(clamped);
-    }
-  };
-
-  const increment = () => {
-    const newValue = Math.min(max, value + step);
-    onChange(newValue);
-    setInputValue(String(newValue));
-  };
-
-  const decrement = () => {
-    const newValue = Math.max(min, value - step);
-    onChange(newValue);
-    setInputValue(String(newValue));
-  };
-
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'stretch',
-        border: `1px solid ${colors.border.default}`,
-        borderRadius: '0.6rem',
-        overflow: 'hidden',
-      }}
-    >
-      <button
-        type='button'
-        onClick={decrement}
-        disabled={value <= min}
-        style={{
-          padding: '0.6rem 1rem',
-          backgroundColor: colors.bg.overlay,
-          border: 'none',
-          borderRight: `1px solid ${colors.border.default}`,
-          color: value <= min ? colors.text.tertiary : colors.text.secondary,
-          fontSize: '1.4rem',
-          cursor: value <= min ? 'not-allowed' : 'pointer',
-          transition: 'background-color 0.15s',
-        }}
-      >
-        -
-      </button>
-      <input
-        type='text'
-        inputMode='numeric'
-        value={inputValue}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        style={{
-          flex: 1,
-          width: '100%',
-          minWidth: '60px',
-          padding: '0.8rem 1rem',
-          backgroundColor: colors.bg.base,
-          border: 'none',
-          color: colors.text.primary,
-          fontSize: '1.3rem',
-          textAlign: 'center',
-          outline: 'none',
-        }}
-      />
-      <button
-        type='button'
-        onClick={increment}
-        disabled={value >= max}
-        style={{
-          padding: '0.6rem 1rem',
-          backgroundColor: colors.bg.overlay,
-          border: 'none',
-          borderLeft: `1px solid ${colors.border.default}`,
-          color: value >= max ? colors.text.tertiary : colors.text.secondary,
-          fontSize: '1.4rem',
-          cursor: value >= max ? 'not-allowed' : 'pointer',
-          transition: 'background-color 0.15s',
-        }}
-      >
-        +
-      </button>
-    </div>
-  );
 }

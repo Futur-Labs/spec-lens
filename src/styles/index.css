@@ -126,8 +126,8 @@ textarea:-webkit-autofill:active {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 0.5rem;
+  height: 0.5rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -137,7 +137,7 @@ textarea:-webkit-autofill:active {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.2);
-  border-radius: 12px;
+  border-radius: 1rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {

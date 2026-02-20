@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { apiAuthStoreActions, useAuthConfig, type ApiAuthType } from '@/entities/api-auth';
+import { getMethodColor, useVariables, variableStoreActions } from '@/entities/api-spec';
 import {
   cookieStoreActions,
   getCookieExpirationInfo,
@@ -24,8 +25,6 @@ import {
   useSessionCookies,
 } from '@/entities/cookie';
 import { historyStoreActions, useHistory, type HistoryEntry } from '@/entities/history';
-import { getMethodColor } from '@/entities/api-spec';
-import { useVariables, variableStoreActions } from '@/entities/variable';
 import { type SemanticColors, useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';
 

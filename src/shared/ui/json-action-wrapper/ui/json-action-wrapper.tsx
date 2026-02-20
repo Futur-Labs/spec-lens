@@ -61,7 +61,7 @@ export function JsonActionWrapper({
               fontFamily: 'monospace',
               color: colors.text.secondary,
               lineHeight: 1.5,
-              maxHeight: '40rem',
+              maxHeight: '100rem',
             }}
           >
             {jsonString}
