@@ -48,7 +48,7 @@ export function GlobalAuthTrigger() {
             fill={hasActiveSession ? 'rgba(34, 197, 94, 0.2)' : 'transparent'}
           />
           <span style={{ color: colors.text.primary, fontSize: '1.3rem', fontWeight: 500 }}>
-            Global Auth & Cookies
+            API Settings
           </span>
 
           {/* Status badges */}

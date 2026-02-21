@@ -132,7 +132,7 @@ export function GlobalAuthModal() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <Shield size={18} color={colors.feedback.success} />
               <span style={{ color: colors.text.primary, fontSize: '1.5rem', fontWeight: 600 }}>
-                Global Auth & Cookies
+                API Settings
               </span>
             </div>
             <button

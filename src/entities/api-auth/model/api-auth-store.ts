@@ -27,7 +27,7 @@ const useApiAuthStore = create<ApiAuthStore>()(
       name: 'api-tester-auth',
       version: 1,
       partialize: (state) =>
-        state.apiAuthConfig.persistSession ? { authConfig: state.apiAuthConfig } : {},
+        state.apiAuthConfig.persistSession ? { apiAuthConfig: state.apiAuthConfig } : {},
     },
   ),
 );
