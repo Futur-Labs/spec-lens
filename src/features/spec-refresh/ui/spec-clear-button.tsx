@@ -12,9 +12,9 @@ export function SpecClearButton() {
 
   const colors = useColors();
 
-  const handleClearSpec = () => {
+  const handleClearSpec = async () => {
+    await navigate({ to: '/', replace: true });
     specStoreActions.clearSpec();
-    navigate({ to: '/', replace: true });
   };
 
   return (
