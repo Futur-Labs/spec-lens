@@ -2,7 +2,7 @@ import { FlexRow } from '@jigoooo/shared-ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
-import { ChevronUp, ChevronDown, Key, Trash2, Plus } from 'lucide-react';
+import { ChevronUp, ChevronDown, Key, Trash2 } from 'lucide-react';
 
 import { getIconButtonStyle } from '../lib/icon-button-style';
 import { useAuthConfig } from '@/entities/api-auth';
@@ -22,6 +22,26 @@ export function HeaderEditor() {
   const [showHeaders, setShowHeaders] = useState(true);
 
   const iconButtonStyle = getIconButtonStyle(colors);
+
+  const handleNewNameChange = (name: string) => {
+    if (name.trim() && newHeaderValue) {
+      testParamsStoreActions.setHeader(name.trim(), newHeaderValue);
+      setNewHeaderName('');
+      setNewHeaderValue('');
+    } else {
+      setNewHeaderName(name);
+    }
+  };
+
+  const handleNewValueChange = (val: string) => {
+    if (newHeaderName.trim()) {
+      testParamsStoreActions.setHeader(newHeaderName.trim(), val);
+      setNewHeaderName('');
+      setNewHeaderValue('');
+    } else {
+      setNewHeaderValue(val);
+    }
+  };
 
   return (
     <div>
@@ -149,46 +169,40 @@ export function HeaderEditor() {
               <div
                 style={{
                   display: 'flex',
-                  gap: '0.8rem',
-                  alignItems: 'center',
+                  flexDirection: 'column',
+                  gap: '0.6rem',
                   marginTop: '0.4rem',
+                  padding: '0.6rem',
+                  border: `1px dashed ${colors.border.subtle}`,
+                  borderRadius: '0.6rem',
                 }}
               >
-                <HeaderAutocompleteInput
-                  type='name'
-                  value={newHeaderName}
-                  onChange={setNewHeaderName}
-                  placeholder='Header name'
-                  style={{ flex: 1 }}
-                />
-                <HeaderAutocompleteInput
-                  type='value'
-                  headerName={newHeaderName}
-                  value={newHeaderValue}
-                  onChange={setNewHeaderValue}
-                  placeholder='Header value'
-                  style={{ flex: 2 }}
-                />
-                <button
-                  onClick={() => {
-                    if (newHeaderName.trim()) {
-                      testParamsStoreActions.setHeader(newHeaderName.trim(), newHeaderValue);
-                      setNewHeaderName('');
-                      setNewHeaderValue('');
-                    }
-                  }}
-                  disabled={!newHeaderName.trim()}
+                <span
                   style={{
-                    ...iconButtonStyle,
-                    backgroundColor: newHeaderName.trim()
-                      ? 'rgba(34, 197, 94, 0.2)'
-                      : 'rgba(255,255,255,0.05)',
-                    color: newHeaderName.trim() ? colors.feedback.success : colors.text.tertiary,
+                    fontSize: '1rem',
+                    color: colors.text.tertiary,
+                    fontWeight: 500,
                   }}
-                  title='Add header'
                 >
-                  <Plus size={14} />
-                </button>
+                  Add Header
+                </span>
+                <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                  <HeaderAutocompleteInput
+                    type='name'
+                    value={newHeaderName}
+                    onChange={handleNewNameChange}
+                    placeholder='Header name'
+                    style={{ flex: 1 }}
+                  />
+                  <HeaderAutocompleteInput
+                    type='value'
+                    headerName={newHeaderName}
+                    value={newHeaderValue}
+                    onChange={handleNewValueChange}
+                    placeholder='Header value'
+                    style={{ flex: 2 }}
+                  />
+                </div>
               </div>
             </div>
           </motion.div>
