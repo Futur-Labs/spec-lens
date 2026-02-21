@@ -34,6 +34,16 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
       testParamsStoreActions.resetParams();
       if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
 
+      // Set Content-Type from endpoint's requestBody content
+      const requestBody = endpoint.operation.requestBody;
+      if (requestBody && !isReferenceObject(requestBody) && requestBody.content) {
+        const contentTypes = Object.keys(requestBody.content);
+        if (contentTypes.length > 0) {
+          const ct = contentTypes.find((t) => t.includes('application/json')) || contentTypes[0];
+          testParamsStoreActions.setHeader('Content-Type', ct);
+        }
+      }
+
       const merged = getMergedParameters(endpoint);
       const params = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
       for (const param of params) {
@@ -57,7 +67,16 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
     const endpointKey = `${endpoint.method}:${endpoint.path}`;
     testParamsStoreActions.clearEndpointParams(specSourceId, endpointKey);
     if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
-  }, [endpoint.method, endpoint.path, specSourceId, bodyExample]);
+
+    const requestBody = endpoint.operation.requestBody;
+    if (requestBody && !isReferenceObject(requestBody) && requestBody.content) {
+      const contentTypes = Object.keys(requestBody.content);
+      if (contentTypes.length > 0) {
+        const ct = contentTypes.find((t) => t.includes('application/json')) || contentTypes[0];
+        testParamsStoreActions.setHeader('Content-Type', ct);
+      }
+    }
+  }, [endpoint.method, endpoint.path, specSourceId, bodyExample, endpoint.operation.requestBody]);
 
   return { handleClearCurrent };
 }
