@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import { Plus, Trash2 } from 'lucide-react';
 
+import { FileFieldInput } from './file-field-input';
 import { type FormField } from '../lib/content-type';
 import { getIconButtonStyle } from '../lib/icon-button-style';
 import { testParamsStoreActions, useRequestBody } from '@/entities/test-params';
@@ -118,13 +119,17 @@ export function FormDataEditor({
                 </div>
               )}
             </div>
-            <input
-              className='placeholder-md'
-              value={currentValues[field.name] || ''}
-              onChange={(e) => handleFieldChange(field.name, e.target.value)}
-              placeholder={field.example || field.type}
-              style={inputStyle}
-            />
+            {field.format === 'binary' ? (
+              <FileFieldInput fieldName={field.name} />
+            ) : (
+              <input
+                className='placeholder-md'
+                value={currentValues[field.name] || ''}
+                onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                placeholder={field.example || field.type}
+                style={inputStyle}
+              />
+            )}
           </div>
         ))}
 

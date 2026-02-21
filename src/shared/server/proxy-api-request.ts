@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import axios, { type AxiosInstance, AxiosError } from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
+import FormData from 'form-data';
 import { CookieJar } from 'tough-cookie';
 
 import { parseSetCookieHeader, type ParsedCookie } from './parse-set-cookie-header';
@@ -37,16 +38,58 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
     const cookieJar = new CookieJar();
     const axiosWithCookies: AxiosInstance = wrapper(axios.create({ jar: cookieJar }));
 
+    // __hasFiles: base64 파일 데이터 → FormData 재구성
+    let requestData: unknown = body;
+    const requestHeaders: Record<string, string> = { ...headers };
+
+    if (
+      body &&
+      typeof body === 'object' &&
+      !Array.isArray(body) &&
+      (body as Record<string, unknown>).__hasFiles === true
+    ) {
+      const formData = new FormData();
+      const entries = body as Record<string, unknown>;
+
+      for (const [key, value] of Object.entries(entries)) {
+        if (key === '__hasFiles') continue;
+
+        if (
+          value &&
+          typeof value === 'object' &&
+          (value as Record<string, unknown>).__file === true
+        ) {
+          const fileEntry = value as {
+            name: string;
+            type: string;
+            data: string;
+          };
+          const buffer = Buffer.from(fileEntry.data, 'base64');
+          formData.append(key, buffer, {
+            filename: fileEntry.name,
+            contentType: fileEntry.type,
+          });
+        } else {
+          formData.append(key, String(value ?? ''));
+        }
+      }
+
+      requestData = formData;
+      // Content-Type 제거 → form-data가 boundary 포함 헤더 자동 세팅
+      delete requestHeaders['Content-Type'];
+      Object.assign(requestHeaders, formData.getHeaders());
+    }
+
     try {
       const response = await axiosWithCookies({
         method,
         url: safeUrl.toString(),
         params: queryParams,
         headers: {
-          ...headers,
+          ...requestHeaders,
           'User-Agent': 'SpecLens/1.0',
         },
-        data: body,
+        data: requestData,
         validateStatus: () => true,
         timeout: 30000,
       });

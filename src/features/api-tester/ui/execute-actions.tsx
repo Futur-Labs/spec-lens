@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Loader2, Play } from 'lucide-react';
 
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
+import { useFileAttachments } from '../model/file-attachments-context';
 import { useAuthConfig } from '@/entities/api-auth';
 import type { ParsedEndpoint } from '@/entities/api-spec';
 import { cookieStoreActions, useCustomCookies } from '@/entities/cookie';
@@ -36,12 +37,27 @@ export function ExecuteActions({
   const authConfig = useAuthConfig();
   const customCookies = useCustomCookies();
   const isExecuting = useIsExecuting();
+  const { attachments, toBase64Map } = useFileAttachments();
 
   const [currentRequestIndex, setCurrentRequestIndex] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
 
   const executeSingleRequest = async () => {
     const startTime = Date.now();
+
+    // multipart + 파일 첨부 시 텍스트 필드와 파일 base64를 merge
+    let body = requestBody;
+    const isMultipart = headers['Content-Type']?.includes('multipart/form-data');
+    if (isMultipart && attachments.size > 0) {
+      const fileMap = await toBase64Map();
+      let textFields: Record<string, unknown> = {};
+      try {
+        textFields = JSON.parse(requestBody || '{}');
+      } catch {
+        // ignore
+      }
+      body = JSON.stringify({ ...textFields, ...fileMap, __hasFiles: true });
+    }
 
     const result = await executeApiTestRequest({
       baseUrl: selectedServer,
@@ -50,7 +66,7 @@ export function ExecuteActions({
       pathParams,
       queryParams,
       headers,
-      body: requestBody,
+      body,
       authConfig,
       customCookies,
     });

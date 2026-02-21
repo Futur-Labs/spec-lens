@@ -13,6 +13,7 @@ export type ContentTypeCategory = 'json' | 'form' | 'multipart' | 'other';
 export interface FormField {
   name: string;
   type: string;
+  format?: string;
   required: boolean;
   description: string;
   example: string;
@@ -89,6 +90,7 @@ export function getFormFields(endpoint: ParsedEndpoint, spec: ApiSpec): FormFiel
       return {
         name: key,
         type: propSchema?.type || typeof value,
+        format: propSchema?.format,
         required: required.includes(key),
         description: propSchema?.description || '',
         example: value != null ? String(value) : '',
@@ -110,6 +112,7 @@ export function getFormFields(endpoint: ParsedEndpoint, spec: ApiSpec): FormFiel
     return {
       name: key,
       type: propSchema?.type || 'string',
+      format: propSchema?.format,
       required: required.includes(key),
       description: propSchema?.description || '',
       example: example != null ? String(example) : '',

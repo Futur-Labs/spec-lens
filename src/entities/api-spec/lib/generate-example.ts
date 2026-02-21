@@ -49,6 +49,7 @@ export function generateExample(
 
     case 'string':
       if (schema.enum && schema.enum.length > 0) return schema.enum[0];
+      if (schema.format === 'binary' || schema.format === 'byte') return '';
       if (schema.format === 'date') return '2024-01-01';
       if (schema.format === 'date-time') return '2024-01-01T12:00:00Z';
       if (schema.format === 'email') return 'user@example.com';

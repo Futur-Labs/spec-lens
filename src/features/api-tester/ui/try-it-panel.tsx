@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
@@ -14,6 +14,7 @@ import { RequestBodyEditor } from './request-body-editor';
 import { ServerSelector } from './server-selector';
 import { getBodyExample } from '../lib/body-example';
 import { getContentTypeCategory, getFormFields } from '../lib/content-type';
+import { FileAttachmentsProvider, useFileAttachments } from '../model/file-attachments-context';
 import { useAutoSaveParams } from '../model/use-auto-save-params';
 import { useEndpointParameters } from '../model/use-endpoint-parameters';
 import { useEndpointParamsSync } from '../model/use-endpoint-params-sync';
@@ -28,9 +29,18 @@ import {
 import { useColors } from '@/shared/theme';
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
+  return (
+    <FileAttachmentsProvider>
+      <TryItPanelContent endpoint={endpoint} spec={spec} />
+    </FileAttachmentsProvider>
+  );
+}
+
+function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(true);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const { clearAll } = useFileAttachments();
 
   // Repeat request settings
   const [requestCount, setRequestCount] = useState(1);
@@ -47,6 +57,16 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const { handleClearCurrent } = useEndpointParamsSync(endpoint, bodyExample);
   useAutoSaveParams(endpoint);
   const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);
+
+  // endpoint 전환 시 파일 첨부 초기화
+  const endpointKey = `${endpoint.method}:${endpoint.path}`;
+  const prevKeyRef = useRef(endpointKey);
+  useEffect(() => {
+    if (prevKeyRef.current !== endpointKey) {
+      clearAll();
+      prevKeyRef.current = endpointKey;
+    }
+  }, [endpointKey, clearAll]);
 
   return (
     <div
@@ -99,6 +119,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
           onClick={(e) => {
             e.stopPropagation();
             handleClearCurrent();
+            clearAll();
           }}
           disabled={isExecuting}
           style={{
@@ -193,6 +214,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     }
                     onReset={() => {
                       testParamsStoreActions.setRequestBody(bodyExample);
+                      clearAll();
                     }}
                   />
                 ))}
