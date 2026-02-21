@@ -24,6 +24,7 @@ export function HeaderEditor({ onReset }: { onReset?: () => void }) {
   const iconButtonStyle = getIconButtonStyle(colors);
 
   const handleNewNameChange = (name: string) => {
+    if (name.trim().toLowerCase() === 'content-type') return;
     if (name.trim() && newHeaderValue) {
       testParamsStoreActions.setHeader(name.trim(), newHeaderValue);
       setNewHeaderName('');
@@ -137,36 +138,66 @@ export function HeaderEditor({ onReset }: { onReset?: () => void }) {
                 </div>
               )}
 
-              {/* Existing headers */}
-              {Object.entries(headers).map(([k, v]) => (
-                <div key={k} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-                  <HeaderAutocompleteInput
-                    type='name'
-                    value={k}
-                    onChange={(newKey) => {
-                      if (newKey !== k) {
-                        testParamsStoreActions.removeHeader(k);
-                        testParamsStoreActions.setHeader(newKey, v);
-                      }
+              {/* Content-Type read-only indicator */}
+              {headers['Content-Type'] && (
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.8rem',
+                    alignItems: 'center',
+                    padding: '0.6rem 1rem',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    borderRadius: '0.6rem',
+                  }}
+                >
+                  <span
+                    style={{
+                      color: 'rgba(59, 130, 246, 0.9)',
+                      fontSize: '1.1rem',
+                      fontWeight: 500,
                     }}
-                    style={{ flex: 1 }}
-                  />
-                  <HeaderAutocompleteInput
-                    type='value'
-                    headerName={k}
-                    value={v}
-                    onChange={(newValue) => testParamsStoreActions.setHeader(k, newValue)}
-                    style={{ flex: 2 }}
-                  />
-                  <button
-                    onClick={() => testParamsStoreActions.removeHeader(k)}
-                    style={iconButtonStyle}
-                    title='Remove header'
                   >
-                    <Trash2 size={14} />
-                  </button>
+                    Content-Type
+                  </span>
+                  <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}>
+                    {headers['Content-Type']}
+                  </span>
                 </div>
-              ))}
+              )}
+
+              {/* Existing headers */}
+              {Object.entries(headers)
+                .filter(([k]) => k !== 'Content-Type')
+                .map(([k, v]) => (
+                  <div key={k} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                    <HeaderAutocompleteInput
+                      type='name'
+                      value={k}
+                      onChange={(newKey) => {
+                        if (newKey !== k) {
+                          testParamsStoreActions.removeHeader(k);
+                          testParamsStoreActions.setHeader(newKey, v);
+                        }
+                      }}
+                      style={{ flex: 1 }}
+                    />
+                    <HeaderAutocompleteInput
+                      type='value'
+                      headerName={k}
+                      value={v}
+                      onChange={(newValue) => testParamsStoreActions.setHeader(k, newValue)}
+                      style={{ flex: 2 }}
+                    />
+                    <button
+                      onClick={() => testParamsStoreActions.removeHeader(k)}
+                      style={iconButtonStyle}
+                      title='Remove header'
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
 
               {/* Add new header form */}
               <div

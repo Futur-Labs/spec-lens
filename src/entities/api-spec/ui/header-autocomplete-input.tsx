@@ -32,8 +32,8 @@ const COMMON_HEADERS = [
   { name: 'X-Request-ID', values: [] },
 ];
 
-// Get header name options
-const HEADER_NAME_OPTIONS = COMMON_HEADERS.map((h) => ({
+// Get header name options (Content-Type is managed as read-only)
+const HEADER_NAME_OPTIONS = COMMON_HEADERS.filter((h) => h.name !== 'Content-Type').map((h) => ({
   label: h.name,
   value: h.name,
 }));

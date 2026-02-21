@@ -131,7 +131,7 @@ export function FormDataEditor({
         {/* 사용자가 추가한 커스텀 필드 */}
         {customFieldNames.map((name) => (
           <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '140px', flexShrink: 0 }}>
+            <div style={{ width: '14rem', flexShrink: 0 }}>
               <span
                 style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}
               >
