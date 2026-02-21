@@ -31,7 +31,6 @@ export function CollapsibleSection({
           padding: '0 0 0.8rem 0',
           cursor: 'pointer',
           borderBottom: `1px solid ${colors.border.subtle}`,
-          marginBottom: '1.2rem',
         }}
       >
         <motion.div
@@ -62,7 +61,7 @@ export function CollapsibleSection({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             style={{ overflow: 'hidden' }}
           >
-            {children}
+            <div style={{ paddingTop: '1.2rem' }}>{children}</div>
           </motion.div>
         )}
       </AnimatePresence>

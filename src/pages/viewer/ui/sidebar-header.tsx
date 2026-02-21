@@ -1,8 +1,15 @@
 import { FlexRow } from '@jigoooo/shared-ui';
+import { useState } from 'react';
 
-import { Search, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 
-import { endpointFilterStoreActions, useSearchQuery, useSpecStore } from '@/entities/api-spec';
+import {
+  endpointFilterStoreActions,
+  useSearchQuery,
+  useSelectedMethods,
+  useSelectedTags,
+  useSpecStore,
+} from '@/entities/api-spec';
 import { MethodFilterChips, TagFilterChips } from '@/features/endpoint-filter';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
@@ -11,7 +18,13 @@ export function SidebarHeader() {
   const colors = useColors();
   const spec = useSpecStore((s) => s.spec);
   const searchQuery = useSearchQuery();
+  const selectedMethods = useSelectedMethods();
+  const selectedTags = useSelectedTags();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   if (!spec) return null;
+
+  const activeFilterCount = selectedMethods.length + selectedTags.length;
 
   return (
     <div
@@ -87,11 +100,69 @@ export function SidebarHeader() {
         )}
       </div>
 
-      {/* Method Filter */}
-      <MethodFilterChips />
+      {/* Filters Toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}>
+        <button
+          onClick={() => setFiltersOpen((prev) => !prev)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.5rem 0.8rem',
+            backgroundColor: 'transparent',
+            border: `1px solid ${activeFilterCount > 0 ? colors.feedback.info : colors.border.subtle}`,
+            borderRadius: '0.4rem',
+            cursor: 'pointer',
+            color: activeFilterCount > 0 ? colors.feedback.info : colors.text.secondary,
+            fontSize: '1.1rem',
+            fontWeight: 500,
+          }}
+        >
+          {filtersOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          Filters
+          {activeFilterCount > 0 && (
+            <span
+              style={{
+                padding: '0.1rem 0.5rem',
+                backgroundColor: `${colors.feedback.info}20`,
+                borderRadius: '1rem',
+                fontSize: '1rem',
+                color: colors.feedback.info,
+              }}
+            >
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+        {activeFilterCount > 0 && (
+          <button
+            onClick={endpointFilterStoreActions.clearFilters}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              padding: '0.5rem 0.8rem',
+              backgroundColor: 'transparent',
+              border: `1px solid rgba(239, 68, 68, 0.3)`,
+              borderRadius: '0.4rem',
+              cursor: 'pointer',
+              color: colors.feedback.error,
+              fontSize: '1.1rem',
+              fontWeight: 500,
+            }}
+          >
+            <X size={12} />
+            Clear
+          </button>
+        )}
+      </div>
 
-      {/* Tag Filter */}
-      <TagFilterChips />
+      {filtersOpen && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <MethodFilterChips />
+          <TagFilterChips />
+        </div>
+      )}
     </div>
   );
 }
