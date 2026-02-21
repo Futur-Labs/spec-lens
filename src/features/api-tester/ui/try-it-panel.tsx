@@ -1,17 +1,19 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
 import { AuthCookieStatusBar } from './auth-cookie-status-bar';
 import { ExecuteActions } from './execute-actions';
 import { ExecuteResponseViewer } from './execute-response-viewer';
+import { FormDataEditor } from './form-data-editor';
 import { HeaderEditor } from './header-editor';
 import { ParameterEditSection } from './parameter-edit-section';
 import { RepeatSettings } from './repeat-settings';
 import { RequestBodyEditor } from './request-body-editor';
 import { ServerSelector } from './server-selector';
 import { getBodyExample } from '../lib/body-example';
+import { getContentTypeCategory, getFormFields } from '../lib/content-type';
 import { useAutoSaveParams } from '../model/use-auto-save-params';
 import { useEndpointParameters } from '../model/use-endpoint-parameters';
 import { useEndpointParamsSync } from '../model/use-endpoint-params-sync';
@@ -39,7 +41,9 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const pathParams = usePathParams();
   const queryParams = useQueryParams();
 
+  const contentTypeCategory = getContentTypeCategory(endpoint);
   const bodyExample = getBodyExample(endpoint, spec);
+  const formFields = useMemo(() => getFormFields(endpoint, spec), [endpoint, spec]);
   const { handleClearCurrent } = useEndpointParamsSync(endpoint, bodyExample);
   useAutoSaveParams(endpoint);
   const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);
@@ -172,13 +176,26 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 }}
               />
 
-              {hasRequestBody && (
-                <RequestBodyEditor
-                  bodyExample={bodyExample}
-                  jsonError={jsonError}
-                  setJsonError={setJsonError}
-                />
-              )}
+              {hasRequestBody &&
+                (contentTypeCategory === 'json' || contentTypeCategory === 'other' ? (
+                  <RequestBodyEditor
+                    bodyExample={bodyExample}
+                    jsonError={jsonError}
+                    setJsonError={setJsonError}
+                  />
+                ) : (
+                  <FormDataEditor
+                    fields={formFields}
+                    label={
+                      contentTypeCategory === 'multipart'
+                        ? 'Multipart Form Data'
+                        : 'Form Data (URL Encoded)'
+                    }
+                    onReset={() => {
+                      testParamsStoreActions.setRequestBody(bodyExample);
+                    }}
+                  />
+                ))}
 
               <RepeatSettings
                 requestCount={requestCount}
@@ -191,7 +208,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 requestCount={requestCount}
                 requestInterval={requestInterval}
                 endpoint={endpoint}
-                jsonError={jsonError}
+                jsonError={contentTypeCategory === 'json' ? jsonError : null}
               />
 
               <ExecuteResponseViewer isExecuting={isExecuting} executeError={executeError} />

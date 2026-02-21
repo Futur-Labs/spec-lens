@@ -26,7 +26,8 @@ export async function executeApiTestRequest(
 
   try {
     const url = buildExecuteUrl(baseUrl, path, pathParams);
-    const parsedBody = parseBody(body);
+    const contentType = headers?.['Content-Type'] || '';
+    const parsedBody = parseBody(body, contentType);
 
     // Filter out empty query params
     let filteredQueryParams = Object.fromEntries(
