@@ -13,6 +13,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ApiDocsRouteImport } from './routes/api-docs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiDocsIndexRouteImport } from './routes/api-docs.index'
+import { Route as ApiDocsSettingsRouteImport } from './routes/api-docs.settings'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -34,37 +36,65 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDocsIndexRoute = ApiDocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
+const ApiDocsSettingsRoute = ApiDocsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ApiDocsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api-docs': typeof ApiDocsRoute
+  '/api-docs': typeof ApiDocsRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api-docs/settings': typeof ApiDocsSettingsRoute
+  '/api-docs/': typeof ApiDocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api-docs': typeof ApiDocsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api-docs/settings': typeof ApiDocsSettingsRoute
+  '/api-docs': typeof ApiDocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api-docs': typeof ApiDocsRoute
+  '/api-docs': typeof ApiDocsRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api-docs/settings': typeof ApiDocsSettingsRoute
+  '/api-docs/': typeof ApiDocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api-docs' | '/robots.txt' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/api-docs'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/api-docs/settings'
+    | '/api-docs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api-docs' | '/robots.txt' | '/sitemap.xml'
-  id: '__root__' | '/' | '/api-docs' | '/robots.txt' | '/sitemap.xml'
+  to: '/' | '/robots.txt' | '/sitemap.xml' | '/api-docs/settings' | '/api-docs'
+  id:
+    | '__root__'
+    | '/'
+    | '/api-docs'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/api-docs/settings'
+    | '/api-docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiDocsRoute: typeof ApiDocsRoute
+  ApiDocsRoute: typeof ApiDocsRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
@@ -99,12 +129,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api-docs/': {
+      id: '/api-docs/'
+      path: '/'
+      fullPath: '/api-docs/'
+      preLoaderRoute: typeof ApiDocsIndexRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
+    '/api-docs/settings': {
+      id: '/api-docs/settings'
+      path: '/settings'
+      fullPath: '/api-docs/settings'
+      preLoaderRoute: typeof ApiDocsSettingsRouteImport
+      parentRoute: typeof ApiDocsRoute
+    }
   }
 }
 
+interface ApiDocsRouteChildren {
+  ApiDocsSettingsRoute: typeof ApiDocsSettingsRoute
+  ApiDocsIndexRoute: typeof ApiDocsIndexRoute
+}
+
+const ApiDocsRouteChildren: ApiDocsRouteChildren = {
+  ApiDocsSettingsRoute: ApiDocsSettingsRoute,
+  ApiDocsIndexRoute: ApiDocsIndexRoute,
+}
+
+const ApiDocsRouteWithChildren =
+  ApiDocsRoute._addFileChildren(ApiDocsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiDocsRoute: ApiDocsRoute,
+  ApiDocsRoute: ApiDocsRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }

@@ -1,7 +1,7 @@
 import { EndpointContent } from './endpoint-content.tsx';
 import { Sidebar } from './sidebar.tsx';
 import { ViewerToolbar } from './viewer-toolbar.tsx';
-import { GlobalAuthPanel } from '@/features/api-tester';
+import { GlobalAuthTrigger } from '@/features/api-tester';
 import { useColors } from '@/shared/theme';
 
 export function ViewerLayout() {
@@ -28,7 +28,7 @@ export function ViewerLayout() {
         }}
       >
         <ViewerToolbar />
-        <GlobalAuthPanel />
+        <GlobalAuthTrigger />
 
         <div
           style={{
