@@ -3,6 +3,7 @@ import { FlexRow } from '@jigoooo/shared-ui';
 import { Search, X } from 'lucide-react';
 
 import { endpointFilterStoreActions, useSearchQuery, useSpecStore } from '@/entities/api-spec';
+import { MethodFilterChips, TagFilterChips } from '@/features/endpoint-filter';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
 
@@ -10,7 +11,6 @@ export function SidebarHeader() {
   const colors = useColors();
   const spec = useSpecStore((s) => s.spec);
   const searchQuery = useSearchQuery();
-
   if (!spec) return null;
 
   return (
@@ -18,10 +18,13 @@ export function SidebarHeader() {
       style={{
         padding: '1.6rem',
         borderBottom: `1px solid ${colors.border.subtle}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
       }}
     >
       <FlexRow style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ marginBottom: '1.2rem' }}>
+        <div>
           <h2
             style={{
               color: colors.text.primary,
@@ -37,11 +40,10 @@ export function SidebarHeader() {
           </span>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <ThemeToggle />
-        </div>
+        <ThemeToggle />
       </FlexRow>
 
+      {/* Search */}
       <div
         style={{
           display: 'flex',
@@ -70,7 +72,7 @@ export function SidebarHeader() {
         />
         {searchQuery && (
           <button
-            onClick={endpointFilterStoreActions.clearFilters}
+            onClick={() => endpointFilterStoreActions.setSearchQuery('')}
             style={{
               paddingInline: '0.2rem',
               backgroundColor: 'transparent',
@@ -84,6 +86,12 @@ export function SidebarHeader() {
           </button>
         )}
       </div>
+
+      {/* Method Filter */}
+      <MethodFilterChips />
+
+      {/* Tag Filter */}
+      <TagFilterChips />
     </div>
   );
 }
