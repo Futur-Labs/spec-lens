@@ -32,7 +32,7 @@ export function ViewerToolbar() {
           onClick={sidebarStoreActions.toggleSidebar}
           whileHover={{
             backgroundColor: colors.bg.overlayHover,
-            borderColor: 'rgba(255,255,255,0.2)',
+            border: `1px solid ${colors.border.hover}`,
             scale: 1.02,
           }}
           whileTap={{ scale: 0.98 }}

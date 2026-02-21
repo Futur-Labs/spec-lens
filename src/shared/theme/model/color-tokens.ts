@@ -22,6 +22,7 @@ export type SemanticColors = {
     subtle: string;
     input: string;
     focus: string;
+    hover: string;
   };
   interactive: {
     primary: string;
@@ -58,6 +59,7 @@ export const darkColors: SemanticColors = {
     subtle: p.whiteAlpha[8],
     input: p.whiteAlpha[10],
     focus: p.brand[500],
+    hover: p.whiteAlpha[20],
   },
   interactive: {
     primary: p.brand[500],
@@ -94,6 +96,7 @@ export const lightColors: SemanticColors = {
     subtle: p.blackAlpha[8],
     input: p.neutral[900],
     focus: p.brand[500],
+    hover: p.blackAlpha[20],
   },
   interactive: {
     primary: p.brand[500],

@@ -47,6 +47,7 @@ export const colorPrimitives = {
     5: 'rgba(255,255,255,0.05)',
     8: 'rgba(255,255,255,0.08)',
     10: 'rgba(255,255,255,0.1)',
+    20: 'rgba(255,255,255,0.2)',
   },
 
   blackAlpha: {
@@ -54,5 +55,6 @@ export const colorPrimitives = {
     5: 'rgba(0,0,0,0.05)',
     8: 'rgba(0,0,0,0.08)',
     10: 'rgba(0,0,0,0.1)',
+    20: 'rgba(0,0,0,0.2)',
   },
 } as const;

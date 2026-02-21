@@ -24,7 +24,7 @@ export function SpecRefreshButton() {
             ? {}
             : {
                 backgroundColor: colors.bg.overlayHover,
-                borderColor: 'rgba(255,255,255,0.2)',
+                border: `1px solid ${colors.border.hover}`,
               }
         }
         whileTap={isRefreshing ? {} : { scale: 0.98 }}
