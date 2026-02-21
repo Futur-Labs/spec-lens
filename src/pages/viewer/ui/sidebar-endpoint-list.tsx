@@ -4,8 +4,10 @@ import { useRef } from 'react';
 import { SidebarEndpointGroupHeader } from './sidebar-endpoint-group-header';
 import { SidebarEndpointItem } from './sidebar-endpoint-item';
 import { useFlatEndpointItems } from '../model/use-flat-endpoint-items';
+import { useInitialScrollToEndpoint } from '../model/use-initial-scroll-to-endpoint';
 import { useRestoreEndpointFromHash } from '../model/use-restore-endpoint-from-hash';
 import { useScrollToSelectedEndpoint } from '../model/use-scroll-to-selected-endpoint';
+import { useVirtualSmoothScroll } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 
 const TAG_HEADER_HEIGHT = 40;
@@ -18,10 +20,9 @@ export function SidebarEndpointList() {
   const endpointRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const parentRef = useRef<HTMLDivElement>(null);
 
-  useRestoreEndpointFromHash();
-  useScrollToSelectedEndpoint(endpointRefs);
-
   const { flatItems } = useFlatEndpointItems();
+
+  const scrollToFn = useVirtualSmoothScroll(parentRef);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
@@ -31,7 +32,12 @@ export function SidebarEndpointList() {
       flatItems[index].type === 'header' ? TAG_HEADER_HEIGHT : ENDPOINT_ITEM_HEIGHT,
     overscan: 20,
     useFlushSync: false,
+    scrollToFn,
   });
+
+  useRestoreEndpointFromHash();
+  useScrollToSelectedEndpoint(endpointRefs);
+  useInitialScrollToEndpoint(virtualizer, flatItems);
 
   if (flatItems.length === 0) {
     return (

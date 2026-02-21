@@ -48,3 +48,4 @@ export { createValidator } from './validation/create-validator.ts';
 export { createSchema } from './validation/create-schema.ts';
 
 export { smoothScrollTo } from './interaction/scroll.ts';
+export { useVirtualSmoothScroll } from './interaction/virtual-smooth-scroll.ts';

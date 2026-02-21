@@ -62,7 +62,7 @@ export function RequestBodyEditor({
           fontFamily: 'monospace',
           resize: 'vertical',
           outline: 'none',
-          minHeight: '160px',
+          minHeight: '16rem',
         }}
       />
       {jsonError && (
