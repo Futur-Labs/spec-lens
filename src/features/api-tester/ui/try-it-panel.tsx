@@ -159,7 +159,18 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                 </div>
               )}
 
-              <HeaderEditor />
+              <HeaderEditor
+                onReset={() => {
+                  const rb = endpoint.operation.requestBody;
+                  if (rb && !('$ref' in rb) && rb.content) {
+                    const cts = Object.keys(rb.content);
+                    if (cts.length > 0) {
+                      const ct = cts.find((t) => t.includes('application/json')) || cts[0];
+                      testParamsStoreActions.setHeader('Content-Type', ct);
+                    }
+                  }
+                }}
+              />
 
               {hasRequestBody && (
                 <RequestBodyEditor

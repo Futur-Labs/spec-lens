@@ -11,7 +11,7 @@ import { testParamsStoreActions, useHeaders } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 import { ResetButton } from '@/shared/ui/button';
 
-export function HeaderEditor() {
+export function HeaderEditor({ onReset }: { onReset?: () => void }) {
   const colors = useColors();
 
   const headers = useHeaders();
@@ -79,7 +79,10 @@ export function HeaderEditor() {
 
         <ResetButton
           title='Reset headers to default'
-          onClick={() => testParamsStoreActions.resetHeaders()}
+          onClick={() => {
+            testParamsStoreActions.resetHeaders();
+            onReset?.();
+          }}
         />
       </FlexRow>
       <AnimatePresence initial={false}>
