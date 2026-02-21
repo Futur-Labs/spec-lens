@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { useVariables } from '../model/variable-store';
 import { useColors } from '@/shared/theme';
@@ -110,6 +110,14 @@ export function VariableAutocompleteInput({
     },
     [showDropdown, filteredVars, selectedIndex, handleSelect],
   );
+
+  // Auto-resize textarea to fit content
+  useLayoutEffect(() => {
+    if (!multiline || !inputRef.current) return;
+    const textarea = inputRef.current as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight + 2}px`;
+  }, [value, multiline]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

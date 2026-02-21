@@ -60,9 +60,10 @@ export function RequestBodyEditor({
           color: colors.text.primary,
           fontSize: '1.3rem',
           fontFamily: 'monospace',
-          resize: 'vertical',
+          resize: 'none',
           outline: 'none',
-          minHeight: '16rem',
+          maxHeight: '60rem',
+          overflow: 'auto',
         }}
       />
       {jsonError && (
