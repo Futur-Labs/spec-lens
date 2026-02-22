@@ -8,7 +8,7 @@ export function SpecLoaderContent({ inputMode }: { inputMode: SpecLoaderType }) 
   return (
     <div
       style={{
-        padding: '2.4rem',
+        padding: '1.8rem',
         backgroundColor: colors.bg.overlay,
         borderRadius: '1.2rem',
         border: `1px solid ${colors.border.default}`,

@@ -20,7 +20,7 @@ export function UrlInput({
         display: 'flex',
         alignItems: 'center',
         gap: '1.2rem',
-        padding: '0 1.6rem',
+        padding: '0 1.2rem',
         backgroundColor: colors.bg.overlay,
         borderRadius: '0.6rem',
         border: `1px solid ${colors.border.default}`,
@@ -37,7 +37,7 @@ export function UrlInput({
         placeholder='https://api.example.com/openapi.json'
         style={{
           flex: 1,
-          padding: '1.4rem 0',
+          padding: '1rem 0',
           backgroundColor: 'transparent',
           border: 'none',
           outline: 'none',
