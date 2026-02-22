@@ -73,7 +73,8 @@ export function useSchemaNodeRowStyles({
       fontSize: '1.1rem',
       fontWeight: 500,
       fontFamily: 'monospace',
-      backgroundColor: colors.border.subtle,
+      backgroundColor: `${typeColor}15`,
+      border: `1px solid ${typeColor}25`,
     },
     typeInfo: {
       display: 'flex',

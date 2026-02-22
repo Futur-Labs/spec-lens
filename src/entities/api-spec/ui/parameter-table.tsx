@@ -85,7 +85,8 @@ export function ParameterTable({ params }: { params: ParameterObject[] }) {
               <span
                 style={{
                   display: 'inline-block',
-                  backgroundColor: colors.border.subtle,
+                  backgroundColor: `${getTypeColor(param.schema.type, isDark)}15`,
+                  border: `1px solid ${getTypeColor(param.schema.type, isDark)}25`,
                   padding: '0.2rem 0.8rem',
                   borderRadius: '1rem',
                   color: getTypeColor(param.schema.type, isDark),

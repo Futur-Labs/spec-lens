@@ -21,14 +21,14 @@ export function getTypeColor(type?: string, isDark = true): string {
       return '#059669';
     case 'number':
     case 'integer':
-      return '#0891b2';
+      return '#1d4ed8';
     case 'boolean':
-      return '#d97706';
+      return '#c2410c';
     case 'array':
       return '#a16207';
     case 'object':
-      return '#db2777';
+      return '#a21caf';
     default:
-      return '#4b5563';
+      return '#6b7280';
   }
 }
