@@ -45,7 +45,7 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(true);
   const [jsonError, setJsonError] = useState<string | null>(null);
-  const { clearAll } = useFileAttachments();
+  const { clearAll, saveForEndpoint, loadForEndpoint, clearForEndpoint } = useFileAttachments();
 
   // Repeat request settings
   const [requestCount, setRequestCount] = useState(1);
@@ -66,15 +66,16 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   useAutoSaveParams(endpoint);
   const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);
 
-  // endpoint 전환 시 파일 첨부 초기화
+  // endpoint 전환 시 파일 첨부 save/load
   const endpointKey = `${endpoint.method}:${endpoint.path}`;
   const prevKeyRef = useRef(endpointKey);
   useEffect(() => {
     if (prevKeyRef.current !== endpointKey) {
-      clearAll();
+      saveForEndpoint(prevKeyRef.current);
+      loadForEndpoint(endpointKey);
       prevKeyRef.current = endpointKey;
     }
-  }, [endpointKey, clearAll]);
+  }, [endpointKey, saveForEndpoint, loadForEndpoint]);
 
   return (
     <div
@@ -128,6 +129,7 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
             e.stopPropagation();
             handleClearCurrent();
             clearAll();
+            clearForEndpoint(endpointKey);
           }}
           disabled={isExecuting}
           style={{

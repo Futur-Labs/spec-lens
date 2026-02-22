@@ -120,7 +120,7 @@ export function FormDataEditor({
               )}
             </div>
             {field.format === 'binary' ? (
-              <FileFieldInput fieldName={field.name} />
+              <FileFieldInput fieldName={field.name} multiple={field.multiple} />
             ) : (
               <input
                 className='placeholder-md'

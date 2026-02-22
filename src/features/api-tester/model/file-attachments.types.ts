@@ -17,5 +17,11 @@ export interface FileAttachmentsContextValue {
   setAttachment: (fieldName: string, file: File) => string | null;
   removeAttachment: (fieldName: string) => void;
   clearAll: () => void;
-  toBase64Map: () => Promise<Record<string, FileEntry>>;
+  toBase64Map: () => Promise<Record<string, FileEntry | FileEntry[]>>;
+  saveForEndpoint: (endpointKey: string) => void;
+  loadForEndpoint: (endpointKey: string) => void;
+  clearForEndpoint: (endpointKey: string) => void;
+  addMultipleFile: (fieldName: string, file: File) => string | null;
+  getMultipleAttachments: (fieldName: string) => FileAttachment[];
+  removeMultipleFile: (fieldName: string, index: number) => void;
 }

@@ -54,7 +54,23 @@ export const proxyApiRequest = createServerFn({ method: 'POST' })
       for (const [key, value] of Object.entries(entries)) {
         if (key === '__hasFiles') continue;
 
-        if (
+        // 다중 파일 배열 처리
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            if (
+              item &&
+              typeof item === 'object' &&
+              (item as Record<string, unknown>).__file === true
+            ) {
+              const fileEntry = item as { name: string; type: string; data: string };
+              const buffer = Buffer.from(fileEntry.data, 'base64');
+              formData.append(key, buffer, {
+                filename: fileEntry.name,
+                contentType: fileEntry.type,
+              });
+            }
+          }
+        } else if (
           value &&
           typeof value === 'object' &&
           (value as Record<string, unknown>).__file === true

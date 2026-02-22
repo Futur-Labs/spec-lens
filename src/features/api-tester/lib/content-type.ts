@@ -17,6 +17,7 @@ export interface FormField {
   required: boolean;
   description: string;
   example: string;
+  multiple?: boolean;
 }
 
 /** URL-encoded string (e.g. "key1=val1&key2=val2")을 Record로 파싱 */
@@ -127,13 +128,21 @@ export function getFormFields(
     const propSchema = resolveSchema(propSchemaOrRef, spec);
     const example = generateExample(propSchemaOrRef, spec);
 
+    // array of binary files 감지
+    const isArrayBinary =
+      propSchema?.type === 'array' &&
+      propSchema.items &&
+      !isReferenceObject(propSchema.items) &&
+      (propSchema.items as SchemaObject).format === 'binary';
+
     return {
       name: key,
       type: propSchema?.type || 'string',
-      format: propSchema?.format,
+      format: isArrayBinary ? 'binary' : propSchema?.format,
       required: required.includes(key),
       description: propSchema?.description || '',
       example: example != null ? String(example) : '',
+      multiple: isArrayBinary || undefined,
     };
   });
 }
