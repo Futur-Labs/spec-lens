@@ -1,4 +1,5 @@
 import type { ParsedEndpoint } from '@/entities/api-spec';
+import { createKoreanSearchRegex } from '@/shared/lib';
 import type { HttpMethod } from '@/shared/type';
 
 export function filterEndpoints(
@@ -13,6 +14,8 @@ export function filterEndpoints(
 
   const hasMethodFilter = selectedMethods != null && selectedMethods.length > 0;
   const hasTagFilter = selectedTags != null && selectedTags.length > 0;
+  const trimmedQuery = searchQuery?.trim() ?? '';
+  const searchRegex = trimmedQuery ? createKoreanSearchRegex(trimmedQuery) : null;
 
   return endpoints.filter((endpoint) => {
     if (hasMethodFilter && hasTagFilter) {
@@ -33,22 +36,17 @@ export function filterEndpoints(
       }
     }
 
-    if (searchQuery && searchQuery.trim()) {
-      const queryTerms = searchQuery
-        .toLowerCase()
-        .split(/\s+/)
-        .filter((term) => term.length > 0);
+    if (searchRegex) {
+      const path = endpoint.path;
+      const method = endpoint.method;
+      const summary = endpoint.operation.summary || '';
+      const description = endpoint.operation.description || '';
+      const operationId = endpoint.operation.operationId || '';
+      const tags = (endpoint.operation.tags || []).join(' ');
 
-      const path = endpoint.path.toLowerCase();
-      const summary = (endpoint.operation.summary || '').toLowerCase();
-      const description = (endpoint.operation.description || '').toLowerCase();
-      const operationId = (endpoint.operation.operationId || '').toLowerCase();
-      const tags = (endpoint.operation.tags || []).join(' ').toLowerCase();
+      const searchableText = `${path} ${method} ${summary} ${description} ${operationId} ${tags}`;
 
-      const searchableText = `${path} ${summary} ${description} ${operationId} ${tags}`;
-
-      const allTermsMatch = queryTerms.every((term) => searchableText.includes(term));
-      if (!allTermsMatch) {
+      if (!searchRegex.test(searchableText)) {
         return false;
       }
     }

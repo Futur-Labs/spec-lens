@@ -20,6 +20,8 @@ export function useFlatEndpointItems() {
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
+  const hasSearchQuery = deferredSearchQuery.trim().length > 0;
+
   const filteredEndpoints = filterEndpoints(endpoints, {
     searchQuery: deferredSearchQuery,
     selectedTags,
@@ -33,7 +35,7 @@ export function useFlatEndpointItems() {
     const items: EndpointFlatItem[] = [];
 
     for (const [tag, tagEndpoints] of tagEntries) {
-      const isExpanded = expandedTags.includes(tag);
+      const isExpanded = hasSearchQuery || expandedTags.includes(tag);
       items.push({ type: 'header', tag, count: tagEndpoints.length, isExpanded });
       if (isExpanded) {
         for (const endpoint of tagEndpoints) {
@@ -43,7 +45,7 @@ export function useFlatEndpointItems() {
     }
 
     return items;
-  }, [tagEntries, expandedTags]);
+  }, [tagEntries, expandedTags, hasSearchQuery]);
 
   return {
     flatItems,

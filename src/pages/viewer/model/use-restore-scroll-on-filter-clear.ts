@@ -18,7 +18,8 @@ export function useRestoreScrollOnFilterClear(
   const selectedTags = useSelectedTags();
   const searchQuery = useSearchQuery();
 
-  const hasActiveFilters = selectedMethods.length > 0 || selectedTags.length > 0 || searchQuery !== '';
+  const hasActiveFilters =
+    selectedMethods.length > 0 || selectedTags.length > 0 || searchQuery !== '';
   const prevHadFilters = useRef(hasActiveFilters);
 
   const scrollToSelected = useEffectEvent(() => {
