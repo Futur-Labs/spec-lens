@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 import { ChevronRight } from 'lucide-react';
 
-import type { EndpointFlatItem } from '@/entities/api-spec';
+import { type EndpointFlatItem, useEndpoints, useSelectedEndpoint } from '@/entities/api-spec';
 import { sidebarStoreActions } from '@/entities/sidebar';
 import { useColors } from '@/shared/theme';
 
@@ -12,10 +12,24 @@ export function SidebarEndpointGroupHeader({
   endpointHeaderItem: Extract<EndpointFlatItem, { type: 'header' }>;
 }) {
   const colors = useColors();
+  const selectedEndpoint = useSelectedEndpoint();
+  const endpoints = useEndpoints();
+
+  const hasSelectedInGroup =
+    selectedEndpoint &&
+    endpoints.some(
+      (e) =>
+        e.path === selectedEndpoint.path &&
+        e.method === selectedEndpoint.method &&
+        (e.operation.tags || []).includes(endpointHeaderItem.tag),
+    );
 
   return (
     <button
-      onClick={() => sidebarStoreActions.toggleTagExpanded(endpointHeaderItem.tag)}
+      onClick={() => {
+        if (hasSelectedInGroup) return;
+        sidebarStoreActions.toggleTagExpanded(endpointHeaderItem.tag);
+      }}
       style={{
         width: '100%',
         height: '100%',
@@ -25,7 +39,7 @@ export function SidebarEndpointGroupHeader({
         padding: '0 1.6rem',
         backgroundColor: 'transparent',
         border: 'none',
-        cursor: 'pointer',
+        cursor: hasSelectedInGroup ? 'default' : 'pointer',
         textAlign: 'left',
       }}
     >
