@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import {
   specStoreActions,
   useIsSpecRefreshing,
@@ -63,6 +65,8 @@ export function useRefreshSpec() {
       }
 
       specStoreActions.setRefreshing(false);
+
+      toast.success('Spec refreshed successfully');
     }
   };
 
