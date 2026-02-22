@@ -342,13 +342,7 @@ function MultipleFileInput({ fieldName }: { fieldName: string }) {
   );
 }
 
-export function FileFieldInput({
-  fieldName,
-  multiple,
-}: {
-  fieldName: string;
-  multiple?: boolean;
-}) {
+export function FileFieldInput({ fieldName, multiple }: { fieldName: string; multiple?: boolean }) {
   if (multiple) {
     return <MultipleFileInput fieldName={fieldName} />;
   }
