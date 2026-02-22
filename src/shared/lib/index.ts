@@ -51,3 +51,4 @@ export { smoothScrollTo } from './interaction/scroll.ts';
 export { useVirtualSmoothScroll } from './interaction/virtual-smooth-scroll.ts';
 
 export { koreanFuzzyMatch, createKoreanSearchRegex } from './search/korean-search.ts';
+export { highlightMatches } from './search/highlight-matches.tsx';

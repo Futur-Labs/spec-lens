@@ -4,10 +4,12 @@ import { useRef, useState, useEffect, type RefObject } from 'react';
 import { generateEndpointHash } from '../lib/generate-endpoint-hash';
 import {
   endpointSelectionStoreActions,
+  useSearchQuery,
   useSelectedEndpoint,
   MethodBadge,
   type ParsedEndpoint,
 } from '@/entities/api-spec';
+import { highlightMatches } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 import { Tooltip } from '@/shared/ui/tooltip';
 
@@ -20,6 +22,7 @@ export function SidebarEndpointItem({
 }) {
   const colors = useColors();
   const selectedEndpoint = useSelectedEndpoint();
+  const searchQuery = useSearchQuery();
   const textRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -119,7 +122,7 @@ export function SidebarEndpointItem({
             whiteSpace: 'nowrap',
           }}
         >
-          {endpoint.path}
+          {highlightMatches(endpoint.path, searchQuery)}
         </span>
       </motion.button>
     </Tooltip>

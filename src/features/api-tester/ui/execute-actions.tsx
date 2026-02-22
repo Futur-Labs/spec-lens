@@ -1,8 +1,9 @@
 import { useState } from 'react';
 
-import { Loader2, Play } from 'lucide-react';
+import { Check, Copy, Loader2, Play } from 'lucide-react';
 
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
+import { generateCurlCommand } from '../lib/generate-curl-command';
 import { useFileAttachments } from '../model/file-attachments-context';
 import { useAuthConfig } from '@/entities/api-auth';
 import type { ParsedEndpoint } from '@/entities/api-spec';
@@ -17,6 +18,7 @@ import {
   useRequestBody,
   useSelectedServer,
 } from '@/entities/test-params';
+import { copyToClipboard } from '@/shared/lib';
 
 export function ExecuteActions({
   requestCount,
@@ -41,6 +43,7 @@ export function ExecuteActions({
 
   const [currentRequestIndex, setCurrentRequestIndex] = useState(0);
   const [isRepeating, setIsRepeating] = useState(false);
+  const [copiedCurl, setCopiedCurl] = useState(false);
 
   const executeSingleRequest = async () => {
     const startTime = Date.now();
@@ -143,6 +146,25 @@ export function ExecuteActions({
     }
   };
 
+  const handleCopyCurl = () => {
+    if (!selectedServer) return;
+    const curl = generateCurlCommand({
+      baseUrl: selectedServer,
+      path: endpoint.path,
+      method: endpoint.method,
+      pathParams,
+      queryParams,
+      headers,
+      body: requestBody,
+      authConfig,
+      customCookies,
+    });
+    copyToClipboard(curl, () => {
+      setCopiedCurl(true);
+      setTimeout(() => setCopiedCurl(false), 2000);
+    });
+  };
+
   // Cancel repeating requests
   const handleCancelRepeat = () => {
     setIsRepeating(false);
@@ -161,6 +183,28 @@ export function ExecuteActions({
     >
       {/* Execute buttons */}
       <div style={{ display: 'flex', gap: '0.8rem' }}>
+        <button
+          onClick={handleCopyCurl}
+          disabled={!selectedServer}
+          title='Copy as cURL'
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            padding: '1rem 1.6rem',
+            backgroundColor: copiedCurl ? '#059669' : 'transparent',
+            color: copiedCurl ? '#ffffff' : '#9ca3af',
+            border: '1px solid #374151',
+            borderRadius: '0.6rem',
+            fontSize: '1.3rem',
+            fontWeight: 500,
+            cursor: !selectedServer ? 'not-allowed' : 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          {copiedCurl ? <Check size={14} /> : <Copy size={14} />}
+          {copiedCurl ? 'Copied!' : 'cURL'}
+        </button>
         {isRepeating && (
           <button
             onClick={handleCancelRepeat}

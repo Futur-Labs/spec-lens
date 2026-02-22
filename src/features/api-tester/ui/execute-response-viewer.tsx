@@ -21,17 +21,27 @@ export function ExecuteResponseViewer({
   const response = useResponse();
 
   const [copiedResponse, setCopiedResponse] = useState(false);
+  const [activeTab, setActiveTab] = useState<'body' | 'headers'>('body');
 
   const { showSkeleton } = useShowSkeleton(isExecuting, 300);
+
+  const headerCount = response?.headers ? Object.keys(response.headers).length : 0;
 
   if (!showSkeleton && !response) return null;
 
   function handleCopyResponse() {
-    if (response?.data) {
-      navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
-      setCopiedResponse(true);
-      setTimeout(() => setCopiedResponse(false), 2000);
-    }
+    if (!response) return;
+
+    const text =
+      activeTab === 'headers' && response.headers
+        ? Object.entries(response.headers)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('\n')
+        : JSON.stringify(response.data, null, 2);
+
+    navigator.clipboard.writeText(text);
+    setCopiedResponse(true);
+    setTimeout(() => setCopiedResponse(false), 2000);
   }
 
   return (
@@ -91,7 +101,47 @@ export function ExecuteResponseViewer({
             ) : null}
           </div>
           {response && (
-            <div style={{ display: 'flex', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.2rem',
+                  backgroundColor: colors.bg.base,
+                  borderRadius: '0.4rem',
+                  padding: '0.2rem',
+                }}
+              >
+                <button
+                  onClick={() => setActiveTab('body')}
+                  style={{
+                    padding: '0.3rem 0.8rem',
+                    fontSize: '1.1rem',
+                    fontWeight: activeTab === 'body' ? 600 : 400,
+                    backgroundColor: activeTab === 'body' ? colors.bg.overlay : 'transparent',
+                    color: activeTab === 'body' ? colors.text.primary : colors.text.tertiary,
+                    border: 'none',
+                    borderRadius: '0.3rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Body
+                </button>
+                <button
+                  onClick={() => setActiveTab('headers')}
+                  style={{
+                    padding: '0.3rem 0.8rem',
+                    fontSize: '1.1rem',
+                    fontWeight: activeTab === 'headers' ? 600 : 400,
+                    backgroundColor: activeTab === 'headers' ? colors.bg.overlay : 'transparent',
+                    color: activeTab === 'headers' ? colors.text.primary : colors.text.tertiary,
+                    border: 'none',
+                    borderRadius: '0.3rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Headers{headerCount > 0 ? ` (${headerCount})` : ''}
+                </button>
+              </div>
               <button onClick={handleCopyResponse} style={iconButtonStyle}>
                 {copiedResponse ? <Check size={14} /> : <Copy size={14} />}
               </button>
@@ -104,7 +154,7 @@ export function ExecuteResponseViewer({
         <div
           style={{
             padding: '1.2rem',
-            backgroundColor: 'rgba(0,0,0,0.3)',
+            backgroundColor: colors.bg.subtle,
             overflow: 'auto',
             height: '300px',
           }}
@@ -122,7 +172,7 @@ export function ExecuteResponseViewer({
             >
               Waiting for response...
             </div>
-          ) : response ? (
+          ) : activeTab === 'body' ? (
             <pre
               style={{
                 margin: 0,
@@ -135,7 +185,55 @@ export function ExecuteResponseViewer({
                 ? response.data
                 : JSON.stringify(response.data, null, 2)}
             </pre>
-          ) : null}
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+              {response.headers && Object.keys(response.headers).length > 0 ? (
+                Object.entries(response.headers).map(([key, value]) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: 'flex',
+                      gap: '0.8rem',
+                      padding: '0.4rem 0',
+                      borderBottom: `1px solid ${colors.border.subtle}`,
+                      fontSize: '1.2rem',
+                      fontFamily: 'monospace',
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: '#3b82f6',
+                        fontWeight: 600,
+                        minWidth: '18rem',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {key}
+                    </span>
+                    <span
+                      style={{
+                        color: colors.text.primary,
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      {value}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    color: colors.text.tertiary,
+                    fontSize: '1.3rem',
+                    textAlign: 'center',
+                    padding: '2rem',
+                  }}
+                >
+                  No response headers
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
