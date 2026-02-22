@@ -13,6 +13,7 @@ export function ThemeToggle() {
     <button
       onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
       style={{
+        userSelect: 'none',
         position: 'relative',
         width: '5.6rem',
         height: '2.8rem',

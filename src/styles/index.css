@@ -89,10 +89,15 @@ body {
 }
 
 input::placeholder, textarea::placeholder {
-  font-size: 1.4rem; /* Adjusted based on user feedback */
-  color: #888; /* Slightly lighter than #666 for better contrast on dark bg */
+  font-size: 1.4rem;
   font-weight: 500;
   opacity: 1;
+  color: #aaaaaa;
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+  color: #6b7280;
 }
 
 .placeholder::placeholder {
@@ -109,15 +114,26 @@ input::placeholder, textarea::placeholder {
 
 /* Remove autofill background */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus,
 textarea:-webkit-autofill:active {
-  -webkit-text-fill-color: #fff !important;
+  -webkit-text-fill-color: #111111 !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+:root[data-theme="dark"] input:-webkit-autofill,
+:root[data-theme="dark"] input:-webkit-autofill:hover,
+:root[data-theme="dark"] input:-webkit-autofill:focus,
+:root[data-theme="dark"] input:-webkit-autofill:active,
+:root[data-theme="dark"] textarea:-webkit-autofill,
+:root[data-theme="dark"] textarea:-webkit-autofill:hover,
+:root[data-theme="dark"] textarea:-webkit-autofill:focus,
+:root[data-theme="dark"] textarea:-webkit-autofill:active {
+  -webkit-text-fill-color: #e5e7eb !important;
 }
 
 .selection-none {
@@ -220,6 +236,10 @@ pre::-webkit-scrollbar {
 
 [contenteditable][data-placeholder]:empty::before {
     content: attr(data-placeholder);
-    color: #999;
+    color: #aaaaaa;
     pointer-events: none;
+}
+
+:root[data-theme="dark"] [contenteditable][data-placeholder]:empty::before {
+    color: #6b7280;
 }
