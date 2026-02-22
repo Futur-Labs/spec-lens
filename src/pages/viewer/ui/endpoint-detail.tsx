@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 
 import { EndpointDetailHeader } from './endpoint-detail-header';
 import { EndpointParametersSection } from './endpoint-parameters-section';
@@ -12,9 +12,15 @@ export function EndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
   const { operation, path, method } = endpoint;
   const spec = useSpec();
 
-  useEffect(() => {
+  const endpointKey = `${method}:${path}`;
+
+  const scrollToTop = useEffectEvent(() => {
     containerRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
-  }, [path, method]);
+  });
+
+  useEffect(() => {
+    scrollToTop();
+  }, [endpointKey]);
 
   if (!spec) return null;
 

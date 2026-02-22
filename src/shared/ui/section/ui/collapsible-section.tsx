@@ -19,38 +19,44 @@ export function CollapsibleSection({
 
   return (
     <div style={{ marginBottom: '2.4rem' }}>
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
+      <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          gap: '0.8rem',
           width: '100%',
-          backgroundColor: 'transparent',
-          border: 'none',
-          padding: '0 0 0.8rem 0',
-          cursor: 'pointer',
           borderBottom: `1px solid ${colors.border.subtle}`,
         }}
       >
-        <motion.div
-          animate={{ rotate: isExpanded ? 0 : -90 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
-          <ChevronDown size={20} color={colors.text.primary} />
-        </motion.div>
-        <h2
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
           style={{
-            color: colors.text.primary,
-            fontSize: '1.5rem',
-            fontWeight: 600,
-            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+            backgroundColor: 'transparent',
+            border: 'none',
+            padding: '0 0 0.8rem 0',
+            cursor: 'pointer',
           }}
         >
-          {title}
-        </h2>
-      </button>
+          <motion.div
+            animate={{ rotate: isExpanded ? 0 : -90 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <ChevronDown size={20} color={colors.text.primary} />
+          </motion.div>
+          <h2
+            style={{
+              color: colors.text.primary,
+              fontSize: '1.5rem',
+              fontWeight: 600,
+              margin: 0,
+            }}
+          >
+            {title}
+          </h2>
+        </button>
+      </div>
 
       <AnimatePresence initial={false}>
         {isExpanded && (
