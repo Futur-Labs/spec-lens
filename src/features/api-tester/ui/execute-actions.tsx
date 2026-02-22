@@ -19,6 +19,7 @@ import {
   useSelectedServer,
 } from '@/entities/test-params';
 import { copyToClipboard } from '@/shared/lib';
+import { useColors } from '@/shared/theme';
 
 export function ExecuteActions({
   requestCount,
@@ -31,6 +32,7 @@ export function ExecuteActions({
   endpoint: ParsedEndpoint;
   jsonError: string | null;
 }) {
+  const colors = useColors();
   const selectedServer = useSelectedServer();
   const pathParams = usePathParams();
   const queryParams = useQueryParams();
@@ -190,19 +192,27 @@ export function ExecuteActions({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.6rem',
-            padding: '1rem 1.6rem',
-            backgroundColor: copiedCurl ? '#059669' : 'transparent',
-            color: copiedCurl ? '#ffffff' : '#9ca3af',
-            border: '1px solid #374151',
+            gap: '0.8rem',
+            padding: '1rem 2rem',
+            backgroundColor: !selectedServer
+              ? colors.bg.subtle
+              : copiedCurl
+                ? colors.feedback.success
+                : colors.bg.overlay,
+            color: !selectedServer
+              ? colors.text.disabled
+              : copiedCurl
+                ? '#ffffff'
+                : colors.text.primary,
+            border: `1px solid ${copiedCurl ? colors.feedback.success : colors.border.default}`,
             borderRadius: '0.6rem',
-            fontSize: '1.3rem',
-            fontWeight: 500,
+            fontSize: '1.4rem',
+            fontWeight: 600,
             cursor: !selectedServer ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
           }}
         >
-          {copiedCurl ? <Check size={14} /> : <Copy size={14} />}
+          {copiedCurl ? <Check size={16} /> : <Copy size={16} />}
           {copiedCurl ? 'Copied!' : 'cURL'}
         </button>
         {isRepeating && (
