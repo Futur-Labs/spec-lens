@@ -3,6 +3,7 @@ import { useEffectEvent, useLayoutEffect, useRef } from 'react';
 
 import {
   type EndpointFlatItem,
+  useSearchQuery,
   useSelectedEndpoint,
   useSelectedMethods,
   useSelectedTags,
@@ -15,8 +16,9 @@ export function useRestoreScrollOnFilterClear(
   const selectedEndpoint = useSelectedEndpoint();
   const selectedMethods = useSelectedMethods();
   const selectedTags = useSelectedTags();
+  const searchQuery = useSearchQuery();
 
-  const hasActiveFilters = selectedMethods.length > 0 || selectedTags.length > 0;
+  const hasActiveFilters = selectedMethods.length > 0 || selectedTags.length > 0 || searchQuery !== '';
   const prevHadFilters = useRef(hasActiveFilters);
 
   const scrollToSelected = useEffectEvent(() => {
