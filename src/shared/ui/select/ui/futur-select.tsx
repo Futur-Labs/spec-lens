@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 
-import { ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 import type { Option } from '../model/types';
 import { useColors } from '@/shared/theme';
@@ -25,12 +26,37 @@ export function FuturSelect<Value extends string | number>({
   const colors = useColors();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
   const selectedOption = options.find((opt) => opt.value === value);
 
+  useLayoutEffect(() => {
+    if (!isOpen || !containerRef.current) return;
+
+    const updatePosition = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+    };
+
+    updatePosition();
+
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isInsideContainer = containerRef.current?.contains(target);
+      const isInsideDropdown = dropdownRef.current?.contains(target);
+      if (!isInsideContainer && !isInsideDropdown) {
         setIsOpen(false);
       }
     };
@@ -71,7 +97,6 @@ export function FuturSelect<Value extends string | number>({
           cursor: 'pointer',
           color: selectedOption ? colors.text.primary : colors.text.secondary,
           fontSize: '1.2rem',
-          // transition: 'all 0.1s ease',
         }}
       >
         <span
@@ -91,70 +116,73 @@ export function FuturSelect<Value extends string | number>({
         )}
       </div>
 
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 0.6rem)',
-            left: 0,
-            width: '100%',
-            maxHeight: '24rem',
-            overflowY: 'auto',
-            backgroundColor: colors.bg.elevated,
-            border: `1px solid ${colors.border.default}`,
-            borderRadius: '0.6rem',
-            padding: 0,
-            zIndex: 100,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-          }}
-        >
-          {options.length === 0 ? (
-            <div
-              style={{
-                padding: '1.2rem',
-                color: colors.text.tertiary,
-                fontSize: '1.2rem',
-                textAlign: 'center',
-              }}
-            >
-              No options
-            </div>
-          ) : (
-            options.map((option) => {
-              const isSelected = value === option.value;
-              return (
-                <div
-                  key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = colors.bg.overlayHover;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = isSelected
-                      ? colors.bg.overlay
-                      : 'transparent';
-                  }}
-                  style={{
-                    userSelect: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.7rem 1.2rem',
-                    cursor: 'pointer',
-                    color: isSelected ? colors.text.primary : colors.text.secondary,
-                    fontSize: '1.2rem',
-                    backgroundColor: isSelected ? colors.bg.overlay : 'transparent',
-                    transition: 'background-color 0.1s',
-                  }}
-                >
-                  <span style={{ flex: 1 }}>{option.label}</span>
-                  {isSelected && <Check size={14} color={colors.feedback.success} />}
-                </div>
-              );
-            })
-          )}
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            style={{
+              position: 'fixed',
+              top: dropdownPos.top,
+              left: dropdownPos.left,
+              width: dropdownPos.width,
+              maxHeight: '24rem',
+              overflowY: 'auto',
+              backgroundColor: colors.bg.elevated,
+              border: `1px solid ${colors.border.default}`,
+              borderRadius: '0.6rem',
+              padding: 0,
+              zIndex: 9999,
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            {options.length === 0 ? (
+              <div
+                style={{
+                  padding: '1.2rem',
+                  color: colors.text.tertiary,
+                  fontSize: '1.2rem',
+                  textAlign: 'center',
+                }}
+              >
+                No options
+              </div>
+            ) : (
+              options.map((option) => {
+                const isSelected = value === option.value;
+                return (
+                  <div
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = colors.bg.overlayHover;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = isSelected
+                        ? colors.bg.overlay
+                        : 'transparent';
+                    }}
+                    style={{
+                      userSelect: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.7rem 1.2rem',
+                      cursor: 'pointer',
+                      color: isSelected ? colors.text.primary : colors.text.secondary,
+                      fontSize: '1.2rem',
+                      backgroundColor: isSelected ? colors.bg.overlay : 'transparent',
+                      transition: 'background-color 0.1s',
+                    }}
+                  >
+                    <span style={{ flex: 1 }}>{option.label}</span>
+                    {isSelected && <Check size={14} color={colors.feedback.success} />}
+                  </div>
+                );
+              })
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

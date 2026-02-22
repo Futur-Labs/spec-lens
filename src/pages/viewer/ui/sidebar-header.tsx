@@ -1,5 +1,5 @@
 import { FlexRow } from '@jigoooo/shared-ui';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 
@@ -158,11 +158,67 @@ export function SidebarHeader() {
       </div>
 
       {filtersOpen && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-          <MethodFilterChips />
-          <TagFilterChips />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <FilterSection
+            label='Method'
+            count={selectedMethods.length}
+            onClear={endpointFilterStoreActions.clearMethods}
+          >
+            <MethodFilterChips />
+          </FilterSection>
+          <FilterSection
+            label='Tag'
+            count={selectedTags.length}
+            onClear={endpointFilterStoreActions.clearTags}
+          >
+            <TagFilterChips />
+          </FilterSection>
         </div>
       )}
+    </div>
+  );
+}
+
+function FilterSection({
+  label,
+  count,
+  onClear,
+  children,
+}: {
+  label: string;
+  count: number;
+  onClear: () => void;
+  children: ReactNode;
+}) {
+  const colors = useColors();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <span style={{ fontSize: '1rem', color: colors.text.tertiary, fontWeight: 500 }}>
+          {label}
+        </span>
+        {count > 0 && (
+          <button
+            onClick={onClear}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.2rem',
+              padding: '0.1rem 0.4rem',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: colors.text.tertiary,
+              fontSize: '1rem',
+            }}
+          >
+            <X size={10} />
+            {count}
+          </button>
+        )}
+      </div>
+      {children}
     </div>
   );
 }

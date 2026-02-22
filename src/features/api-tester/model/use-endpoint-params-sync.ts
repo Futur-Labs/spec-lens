@@ -16,6 +16,11 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
 
   const prevEndpointRef = useRef<string | null>(null);
   const isInitialMount = useRef(true);
+  const bodyExampleRef = useRef(bodyExample);
+
+  useEffect(() => {
+    bodyExampleRef.current = bodyExample;
+  }, [bodyExample]);
 
   useEffect(() => {
     const currentEndpointKey = `${endpoint.method}:${endpoint.path}`;
@@ -32,7 +37,7 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
 
     if (!hasData) {
       testParamsStoreActions.resetParams();
-      if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
+      if (bodyExampleRef.current) testParamsStoreActions.setRequestBody(bodyExampleRef.current);
 
       // Set Content-Type from endpoint's requestBody content
       const requestBody = endpoint.operation.requestBody;
@@ -61,7 +66,7 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
 
     prevEndpointRef.current = currentEndpointKey;
     isInitialMount.current = false;
-  }, [endpoint.path, endpoint.method, specSourceId, bodyExample, endpoint]);
+  }, [endpoint.path, endpoint.method, specSourceId, endpoint]);
 
   const handleClearCurrent = () => {
     const endpointKey = `${endpoint.method}:${endpoint.path}`;

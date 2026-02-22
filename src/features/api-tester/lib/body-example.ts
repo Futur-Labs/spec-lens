@@ -42,11 +42,7 @@ export function getBodyExample(
 }
 
 /** media type object에서 example 추출 */
-function extractExample(
-  mediaType: MediaTypeObject,
-  spec: ApiSpec,
-  contentType: string,
-): string {
+function extractExample(mediaType: MediaTypeObject, spec: ApiSpec, contentType: string): string {
   const mediaTypeExample = getExampleFromMediaType(mediaType);
 
   // JSON 계열

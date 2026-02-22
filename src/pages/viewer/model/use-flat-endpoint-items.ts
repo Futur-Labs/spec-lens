@@ -25,6 +25,7 @@ export function useFlatEndpointItems() {
     selectedTags,
     selectedMethods,
   });
+
   const endpointsByTag = groupEndpointsByTag(filteredEndpoints);
   const tagEntries = Object.entries(endpointsByTag);
 

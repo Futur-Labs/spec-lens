@@ -37,6 +37,14 @@ export const useEndpointFilterStore = create<EndpointFilterStore>()(
           }));
         },
 
+        clearMethods: () => {
+          set({ selectedMethods: [] });
+        },
+
+        clearTags: () => {
+          set({ selectedTags: [] });
+        },
+
         clearFilters: () => {
           set({
             searchQuery: '',

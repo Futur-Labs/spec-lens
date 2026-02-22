@@ -9898,6 +9898,74 @@
           }
         }
       }
+    },
+    "/products/import": {
+      "post": {
+        "tags": [
+          "상품"
+        ],
+        "summary": "상품 일괄 등록",
+        "description": "상품 데이터를 일괄 등록합니다.\n\n- JSON: 구조화된 상품 데이터 배열\n- multipart/form-data: CSV/Excel 파일 업로드\n- application/x-www-form-urlencoded: 단일 상품 간편 등록",
+        "operationId": "product-bulk-import",
+        "requestBody": {
+          "description": "상품 데이터. 형식에 따라 Content-Type을 선택합니다.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductBulkImportJsonRequest"
+              },
+              "examples": {
+                "bulk-import": {
+                  "summary": "JSON 일괄 등록",
+                  "value": {
+                    "products": [
+                      {
+                        "name": "아메리카노",
+                        "sku": "BEV-001",
+                        "price": 4500,
+                        "category": "음료"
+                      },
+                      {
+                        "name": "카페라떼",
+                        "sku": "BEV-002",
+                        "price": 5000,
+                        "category": "음료"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductBulkImportFileRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSimpleFormRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductBulkImportResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": "{\"is_success\":true,\"message\":\"상품이 성공적으로 등록되었습니다.\",\"data\":{\"imported_count\":2,\"failed_count\":0},\"data_type\":\"OBJECT\",\"error_code\":\"\",\"debug_message\":\"\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -20114,6 +20182,117 @@
               "file_size": {
                 "type": "integer",
                 "description": "파일 크기 (bytes)"
+              }
+            }
+          },
+          "data_type": {
+            "type": "string"
+          },
+          "error_code": {
+            "type": "string"
+          },
+          "debug_message": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductBulkImportJsonRequest": {
+        "type": "object",
+        "required": ["products"],
+        "properties": {
+          "products": {
+            "type": "array",
+            "description": "등록할 상품 목록",
+            "items": {
+              "type": "object",
+              "required": ["name", "sku", "price"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "상품명",
+                  "example": "아메리카노"
+                },
+                "sku": {
+                  "type": "string",
+                  "description": "상품 코드",
+                  "example": "BEV-001"
+                },
+                "price": {
+                  "type": "integer",
+                  "description": "가격",
+                  "example": 4500
+                },
+                "category": {
+                  "type": "string",
+                  "description": "카테고리",
+                  "example": "음료"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ProductBulkImportFileRequest": {
+        "type": "object",
+        "required": ["file"],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "CSV 또는 Excel 파일"
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "기존 상품 덮어쓰기 여부",
+            "example": false
+          }
+        }
+      },
+      "ProductSimpleFormRequest": {
+        "type": "object",
+        "required": ["name", "sku", "price"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "상품명",
+            "example": "아메리카노"
+          },
+          "sku": {
+            "type": "string",
+            "description": "상품 코드",
+            "example": "BEV-001"
+          },
+          "price": {
+            "type": "integer",
+            "description": "가격",
+            "example": 4500
+          },
+          "category": {
+            "type": "string",
+            "description": "카테고리",
+            "example": "음료"
+          }
+        }
+      },
+      "ProductBulkImportResponse": {
+        "type": "object",
+        "properties": {
+          "is_success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "imported_count": {
+                "type": "integer",
+                "description": "등록 성공 건수"
+              },
+              "failed_count": {
+                "type": "integer",
+                "description": "등록 실패 건수"
               }
             }
           },

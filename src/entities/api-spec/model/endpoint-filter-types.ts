@@ -10,6 +10,8 @@ export type EndpointFilterActions = {
   setSearchQuery: (query: string) => void;
   toggleTag: (tag: string) => void;
   toggleMethod: (method: HttpMethod) => void;
+  clearMethods: () => void;
+  clearTags: () => void;
   clearFilters: () => void;
 };
 

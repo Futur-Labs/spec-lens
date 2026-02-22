@@ -10,6 +10,7 @@ import { HeaderAutocompleteInput } from '@/entities/api-spec';
 import { testParamsStoreActions, useHeaders } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 import { ResetButton } from '@/shared/ui/button';
+import { FuturSelect } from '@/shared/ui/select';
 
 export function HeaderEditor({
   onReset,
@@ -170,30 +171,15 @@ export function HeaderEditor({
                     Content-Type
                   </span>
                   {availableContentTypes && availableContentTypes.length > 1 ? (
-                    <select
+                    <FuturSelect
+                      options={availableContentTypes.map((ct) => ({ label: ct, value: ct }))}
                       value={headers['Content-Type']}
-                      onChange={(e) => {
-                        testParamsStoreActions.setHeader('Content-Type', e.target.value);
-                        onContentTypeChange?.(e.target.value);
+                      onChange={(ct) => {
+                        testParamsStoreActions.setHeader('Content-Type', ct);
+                        onContentTypeChange?.(ct);
                       }}
-                      style={{
-                        flex: 1,
-                        backgroundColor: 'transparent',
-                        border: `1px solid rgba(59, 130, 246, 0.3)`,
-                        borderRadius: '0.4rem',
-                        color: colors.text.primary,
-                        fontSize: '1.1rem',
-                        padding: '0.3rem 0.6rem',
-                        cursor: 'pointer',
-                        outline: 'none',
-                      }}
-                    >
-                      {availableContentTypes.map((ct) => (
-                        <option key={ct} value={ct}>
-                          {ct}
-                        </option>
-                      ))}
-                    </select>
+                      style={{ flex: 1 }}
+                    />
                   ) : (
                     <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}>
                       {headers['Content-Type']}
