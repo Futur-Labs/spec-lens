@@ -68,10 +68,16 @@ export function SidebarEndpointGroupHeader({
       </span>
       <span
         style={{
-          color: colors.text.secondary,
-          fontSize: '1.2rem',
-          marginLeft: 'auto',
-          fontWeight: 500,
+          color: colors.text.tertiary,
+          fontSize: '1rem',
+          fontWeight: 600,
+          backgroundColor: colors.bg.overlay,
+          padding: '0.2rem 0.6rem',
+          borderRadius: '1rem',
+          lineHeight: 1,
+          minWidth: '2rem',
+          textAlign: 'center',
+          border: `1px solid ${colors.border.default}`,
         }}
       >
         {endpointHeaderItem.count}
