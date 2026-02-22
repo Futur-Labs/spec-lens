@@ -1,3 +1,5 @@
+import { ExternalLink } from 'lucide-react';
+
 import { MethodBadge, type OperationObject } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import type { HttpMethod } from '@/shared/type';
@@ -115,6 +117,26 @@ export function EndpointDetailHeader({
             Deprecated
           </span>
         </div>
+      )}
+
+      {operation.externalDocs && (
+        <a
+          href={operation.externalDocs.url}
+          target='_blank'
+          rel='noopener noreferrer'
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            marginTop: '1.2rem',
+            fontSize: '1.3rem',
+            color: colors.feedback.info,
+            textDecoration: 'none',
+          }}
+        >
+          <ExternalLink size={13} />
+          {operation.externalDocs.description || 'External Documentation'}
+        </a>
       )}
     </div>
   );

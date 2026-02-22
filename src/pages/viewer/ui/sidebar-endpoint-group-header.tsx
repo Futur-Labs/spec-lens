@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ExternalLink } from 'lucide-react';
 
-import { type EndpointFlatItem, useEndpoints, useSelectedEndpoint } from '@/entities/api-spec';
+import { type EndpointFlatItem, useEndpoints, useSelectedEndpoint, useSpec } from '@/entities/api-spec';
 import { sidebarStoreActions } from '@/entities/sidebar';
 import { useColors } from '@/shared/theme';
 
@@ -12,8 +12,11 @@ export function SidebarEndpointGroupHeader({
   endpointHeaderItem: Extract<EndpointFlatItem, { type: 'header' }>;
 }) {
   const colors = useColors();
+  const spec = useSpec();
   const selectedEndpoint = useSelectedEndpoint();
   const endpoints = useEndpoints();
+
+  const tagInfo = spec?.tags?.find((t) => t.name === endpointHeaderItem.tag);
 
   const hasSelectedInGroup =
     selectedEndpoint &&
@@ -82,6 +85,23 @@ export function SidebarEndpointGroupHeader({
       >
         {endpointHeaderItem.count}
       </span>
+      {tagInfo?.externalDocs && (
+        <a
+          href={tagInfo.externalDocs.url}
+          target='_blank'
+          rel='noopener noreferrer'
+          title={tagInfo.externalDocs.description || 'External Documentation'}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginLeft: 'auto',
+            color: colors.text.tertiary,
+          }}
+        >
+          <ExternalLink size={12} />
+        </a>
+      )}
     </button>
   );
 }

@@ -54,6 +54,7 @@ export { generateTypeSchema } from './lib/generate-type-schema.ts';
 export { validateOpenAPISpec } from './lib/validate-spec.ts';
 export { getMethodColor } from './lib/method-style.ts';
 export { getStatusCodeColor } from './lib/status-code-color.ts';
+export { getStatusText } from './lib/status-text.ts';
 
 export { variableStoreActions, useVariables } from './model/variable-store.ts';
 

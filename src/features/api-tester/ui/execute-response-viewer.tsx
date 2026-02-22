@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Check, Copy, Loader2, Trash2 } from 'lucide-react';
 
-import { getStatusCodeColor } from '@/entities/api-spec';
+import { getStatusCodeColor, getStatusText } from '@/entities/api-spec';
 import { getIconButtonStyle } from '../lib/icon-button-style';
 import { testParamsStoreActions, useResponse } from '@/entities/test-params';
 import { useShowSkeleton } from '@/shared/hooks';
@@ -99,6 +99,11 @@ export function ExecuteResponseViewer({
                   }}
                 >
                   {response.status}
+                  {getStatusText(response.status) && (
+                    <span style={{ fontWeight: 500, marginLeft: '0.4rem', fontSize: '1.1rem' }}>
+                      {getStatusText(response.status)}
+                    </span>
+                  )}
                 </span>
                 <span style={{ fontSize: '1.2rem', color: colors.text.secondary }}>
                   {response.duration}ms · {formatBytes(response.size)}

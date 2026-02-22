@@ -2,15 +2,54 @@
   "openapi": "3.0.1",
   "info": {
     "title": "core-center-api",
-    "description": "",
-    "version": "0.0.2"
+    "description": "core-center-api는 물류센터 운영 관리를 위한 RESTful API입니다.\n\n## 주요 기능\n\n| 기능 | 설명 | 상태 |\n|------|------|------|\n| 인증 관리 | 사용자 인증, 비밀번호 변경, 토큰 관리 | 운영 중 |\n| 재고 관리 | 재고 실사, 재고 이동, 소비기한 관리 | 운영 중 |\n| 입출고 관리 | 입고 적치, 피킹, 출고 처리 | 운영 중 |\n| CAPA 관리 | 조사 및 현황 추적 | 베타 |\n\n> 모든 API 요청에는 유효한 인증 토큰이 필요합니다.\n> 토큰은 `/auth/login` API를 통해 발급받을 수 있습니다.\n\n### 버전 이력\n\n- **v0.0.2**: ~~기존 세션 기반 인증 제거~~ → JWT 토큰 인증으로 전환\n- **v0.0.1**: 최초 릴리즈\n\n---\n\n자세한 사항은 [API 가이드 문서](https://docs.example.com/api-guide)를 참고하세요.",
+    "version": "0.0.2",
+    "contact": {
+      "name": "API Support Team",
+      "email": "api-support@example.com",
+      "url": "https://support.example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "termsOfService": "https://example.com/terms"
   },
   "servers": [
     {
       "url": "https://waylowmmodev.ifresh.co.kr:9443/api"
     }
   ],
-  "tags": [],
+  "tags": [
+    {
+      "name": "인증",
+      "description": "사용자 인증 및 토큰 관리 API",
+      "externalDocs": {
+        "description": "인증 가이드",
+        "url": "https://docs.example.com/auth-guide"
+      }
+    },
+    {
+      "name": "공통",
+      "description": "공통 코드, 메뉴, 즐겨찾기 등 공용 API"
+    },
+    {
+      "name": "재고 관리",
+      "description": "재고 조회, 조정, 이동 관련 API",
+      "externalDocs": {
+        "description": "재고 관리 매뉴얼",
+        "url": "https://docs.example.com/inventory"
+      }
+    },
+    {
+      "name": "상품",
+      "description": "상품 정보 조회 및 관리 API"
+    },
+    {
+      "name": "회원",
+      "description": "회원 정보 관리 API"
+    }
+  ],
   "paths": {
     "/auth/password": {
       "put": {
@@ -50,7 +89,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/common/bookmarks": {
@@ -138,6 +178,10 @@
               }
             }
           }
+        },
+        "externalDocs": {
+          "description": "센터 목록 가이드",
+          "url": "https://docs.example.com/centers"
         }
       }
     },
@@ -147,7 +191,7 @@
           "공통"
         ],
         "summary": "코드 조회",
-        "description": "시스템에서 사용하는 코드 목록을 조회합니다.\n\n- i_code_list\n\t- 일배품 입고 구분 코드: PUTWAYTYPE\n\t- 저장품 결품 사유 코드: REASONCODE_DP\n\t- 입고 적치 이력관리 유뮤 코드: SERIALYN\n-\n",
+        "description": "코드 체계를 조회하는 API입니다.\n\n## 요청 파라미터\n\n| 파라미터 | 타입 | 필수 | 설명 |\n|---------|------|------|------|\n| `code_group` | string | Y | 코드 그룹 ID |\n| `code_id` | string | N | 개별 코드 ID |\n| `use_yn` | string | N | 사용 여부 (Y/N) |\n\n## 응답 형식\n\n> **참고**: 응답 데이터는 항상 `data` 필드 안에 배열로 반환됩니다.\n> 빈 결과일 경우 빈 배열 `[]`이 반환됩니다.\n\n### 코드 상태\n\n- ~~더 이상 사용하지 않는 코드는 자동 필터링됩니다~~ (v0.0.2부터 `use_yn` 파라미터로 제어)\n- **활성 코드**: `use_yn = 'Y'`\n- *비활성 코드*: `use_yn = 'N'`\n\n---\n\n### 사용 예시\n\n```json\n{\n  \"code_group\": \"CENTER_TYPE\",\n  \"code_id\": \"\",\n  \"use_yn\": \"Y\"\n}\n```\n\n1. 먼저 코드 그룹 목록을 조회합니다\n2. 원하는 그룹의 `code_group` 값을 확인합니다\n3. 해당 그룹으로 상세 코드를 조회합니다",
         "operationId": "common-codes-read",
         "parameters": [
           {
@@ -194,6 +238,10 @@
               }
             }
           }
+        },
+        "externalDocs": {
+          "description": "코드 체계 문서",
+          "url": "https://docs.example.com/codes"
         }
       }
     },
@@ -20447,5 +20495,9 @@
         }
       }
     }
+  },
+  "externalDocs": {
+    "description": "API 가이드 문서",
+    "url": "https://docs.example.com/api-guide"
   }
 }

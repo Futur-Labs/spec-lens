@@ -6,6 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { SchemaViewer } from './schema-viewer.tsx';
 import { generateExample, getExampleFromMediaType } from '../lib/generate-example.ts';
 import { getStatusCodeColor } from '../lib/status-code-color';
+import { getStatusText } from '../lib/status-text';
 import { type ResponseObject, type ApiSpec } from '../model/api-types.ts';
 import { useColors } from '@/shared/theme';
 import { FormattedText } from '@/shared/ui/formatted-text';
@@ -63,6 +64,9 @@ export function ResponseItem({
 
         <span
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.6rem',
             backgroundColor: `${statusColor}20`,
             color: statusColor,
             fontSize: '1.3rem',
@@ -71,11 +75,14 @@ export function ResponseItem({
             padding: '0.3rem 0.8rem',
             borderRadius: '0.6rem',
             border: `1px solid ${statusColor}40`,
-            minWidth: '6rem',
-            textAlign: 'center',
           }}
         >
           {statusCode}
+          {getStatusText(statusCode) && (
+            <span style={{ fontWeight: 500, fontSize: '1.2rem' }}>
+              {getStatusText(statusCode)}
+            </span>
+          )}
         </span>
 
         <span style={{ color: colors.text.primary, fontSize: '1.3rem', flex: 1, fontWeight: 500 }}>

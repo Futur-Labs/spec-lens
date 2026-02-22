@@ -47,6 +47,7 @@ export function SidebarEndpointItem({
 
   const isSelected =
     selectedEndpoint?.path === endpoint.path && selectedEndpoint?.method === endpoint.method;
+  const isDeprecated = endpoint.operation.deprecated === true;
 
   const summary = endpoint.operation.summary;
   const tooltipContent = summary ? (
@@ -111,10 +112,16 @@ export function SidebarEndpointItem({
         <span
           ref={textRef}
           style={{
-            color: isSelected ? colors.text.primary : colors.text.secondary,
+            color: isDeprecated
+              ? colors.text.disabled
+              : isSelected
+                ? colors.text.primary
+                : colors.text.secondary,
             fontSize: '1.3rem',
             fontFamily: 'monospace',
             fontWeight: isSelected ? 600 : 400,
+            textDecoration: isDeprecated ? 'line-through' : 'none',
+            opacity: isDeprecated ? 0.7 : 1,
             flex: 1,
             minWidth: 0,
             overflow: 'hidden',
