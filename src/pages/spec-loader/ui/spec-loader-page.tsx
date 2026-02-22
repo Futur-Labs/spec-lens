@@ -1,6 +1,7 @@
 import { Navigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { SpecHistoryList } from './spec-history-list';
 import { SpecInputModeTabs } from './spec-input-mode-tabs';
 import { SpecLoaderContent } from './spec-loader-content';
 import { SpecLoaderHeader } from './spec-loader-header';
@@ -55,6 +56,8 @@ export function SpecLoaderPage() {
         <SpecInputModeTabs inputMode={inputMode} setInputMode={setInputMode} />
 
         <SpecLoaderContent inputMode={inputMode} />
+
+        <SpecHistoryList />
       </div>
     </div>
   );

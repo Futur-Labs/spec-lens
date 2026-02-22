@@ -56,6 +56,13 @@ export { getMethodColor } from './lib/method-style.ts';
 
 export { variableStoreActions, useVariables } from './model/variable-store.ts';
 
+export {
+  specHistoryActions,
+  useSpecHistoryEntries,
+  useSpecHistoryHydration,
+} from './model/spec-history-store.ts';
+export type { SpecHistoryEntry } from './model/spec-history-store.ts';
+
 export { VariableAutocompleteInput } from './ui/variable-autocomplete-input.tsx';
 export { HeaderAutocompleteInput } from './ui/header-autocomplete-input.tsx';
 export { ParameterInput } from './ui/parameter-input.tsx';
