@@ -1,5 +1,5 @@
-export function getStatusCodeColor(statusCode: string): string {
-  const code = parseInt(statusCode, 10);
+export function getStatusCodeColor(statusCode: string | number): string {
+  const code = typeof statusCode === 'number' ? statusCode : parseInt(statusCode, 10);
   if (code >= 200 && code < 300) return '#10b981';
   if (code >= 300 && code < 400) return '#3b82f6';
   if (code >= 400 && code < 500) return '#f59e0b';

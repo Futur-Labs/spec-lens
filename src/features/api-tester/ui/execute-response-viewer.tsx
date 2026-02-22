@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Check, Copy, Loader2, Trash2 } from 'lucide-react';
 
-import { getExecuteStatusColor } from '../config/execute-status-color';
+import { getStatusCodeColor } from '@/entities/api-spec';
 import { getIconButtonStyle } from '../lib/icon-button-style';
 import { testParamsStoreActions, useResponse } from '@/entities/test-params';
 import { useShowSkeleton } from '@/shared/hooks';
@@ -87,9 +87,15 @@ export function ExecuteResponseViewer({
               <>
                 <span
                   style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.2rem 0.8rem',
+                    borderRadius: '0.4rem',
+                    backgroundColor: `${getStatusCodeColor(response.status)}18`,
+                    border: `1px solid ${getStatusCodeColor(response.status)}30`,
                     fontWeight: 700,
-                    fontSize: '1.3rem',
-                    color: getExecuteStatusColor(response.status),
+                    fontSize: '1.2rem',
+                    color: getStatusCodeColor(response.status),
                   }}
                 >
                   {response.status}
