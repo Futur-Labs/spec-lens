@@ -1,5 +1,5 @@
 import type { Virtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import {
   type EndpointFlatItem,
@@ -19,7 +19,7 @@ export function useRestoreScrollOnFilterClear(
   const hasActiveFilters = selectedMethods.length > 0 || selectedTags.length > 0;
   const prevHadFilters = useRef(hasActiveFilters);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wasFiltered = prevHadFilters.current;
     prevHadFilters.current = hasActiveFilters;
 
@@ -35,10 +35,6 @@ export function useRestoreScrollOnFilterClear(
 
     if (index === -1) return;
 
-    const timeoutId = setTimeout(() => {
-      virtualizer.scrollToIndex(index, { align: 'center' });
-    }, 100);
-
-    return () => clearTimeout(timeoutId);
+    virtualizer.scrollToIndex(index, { align: 'center', behavior: 'auto' });
   }, [hasActiveFilters, flatItems, selectedEndpoint, virtualizer]);
 }
