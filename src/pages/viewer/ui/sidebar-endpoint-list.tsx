@@ -2,19 +2,25 @@ import { VirtualizedEndpointList } from './virtualized-endpoint-list.tsx';
 import { generateEndpointHash } from '../lib/generate-endpoint-hash.ts';
 import { useFlatEndpointItems } from '../model/use-flat-endpoint-items.ts';
 import { useRestoreEndpointFromHash } from '../model/use-restore-endpoint-from-hash.ts';
-import { useSelectedMethods, useSelectedTags, useSpecStore } from '@/entities/api-spec';
+import {
+  useSearchQuery,
+  useSelectedMethods,
+  useSelectedTags,
+  useSpecStore,
+} from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
 export function SidebarEndpointList() {
   const colors = useColors();
   const { flatItems } = useFlatEndpointItems();
   const endpoints = useSpecStore((s) => s.endpoints);
+  const searchQuery = useSearchQuery();
   const selectedMethods = useSelectedMethods();
   const selectedTags = useSelectedTags();
 
   useRestoreEndpointFromHash();
 
-  const hasActiveFilters = selectedMethods.length > 0 || selectedTags.length > 0;
+  const hasActiveFilters = searchQuery || selectedMethods.length > 0 || selectedTags.length > 0;
 
   if (flatItems.length === 0) {
     return (
