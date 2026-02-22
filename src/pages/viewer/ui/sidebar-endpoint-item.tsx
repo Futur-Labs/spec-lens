@@ -28,15 +28,18 @@ export function SidebarEndpointItem({
     if (!element) return;
 
     const checkTruncation = () => {
-      setIsTruncated(element.scrollWidth > element.clientWidth);
+      setIsTruncated(element.scrollWidth > element.clientWidth + 1);
     };
 
-    checkTruncation();
+    const rafId = requestAnimationFrame(checkTruncation);
 
     const resizeObserver = new ResizeObserver(checkTruncation);
     resizeObserver.observe(element);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+    };
   }, [endpoint.path]);
 
   const isSelected =
@@ -59,7 +62,7 @@ export function SidebarEndpointItem({
       placement='right'
       delay={0}
       fullWidth
-      disabled={!isTruncated && !summary}
+      disabled={!isTruncated}
     >
       <motion.button
         ref={(el) => {
@@ -109,6 +112,8 @@ export function SidebarEndpointItem({
             fontSize: '1.3rem',
             fontFamily: 'monospace',
             fontWeight: isSelected ? 600 : 400,
+            flex: 1,
+            minWidth: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
