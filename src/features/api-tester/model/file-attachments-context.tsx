@@ -1,36 +1,13 @@
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
+
+import type {
+  FileAttachment,
+  FileAttachmentsContextValue,
+  FileEntry,
+} from './file-attachments.types';
+import { fileToBase64 } from '../lib/file-helpers';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-export interface FileAttachment {
-  file: File;
-  fieldName: string;
-  preview?: string;
-}
-
-export interface FileEntry {
-  __file: true;
-  name: string;
-  type: string;
-  size: number;
-  data: string;
-}
-
-interface FileAttachmentsContextValue {
-  attachments: Map<string, FileAttachment>;
-  setAttachment: (fieldName: string, file: File) => string | null;
-  removeAttachment: (fieldName: string) => void;
-  clearAll: () => void;
-  toBase64Map: () => Promise<Record<string, FileEntry>>;
-}
 
 const FileAttachmentsContext = createContext<FileAttachmentsContextValue | null>(null);
 
@@ -38,55 +15,49 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
   const [attachments, setAttachments] = useState<Map<string, FileAttachment>>(new Map());
   const previewUrlsRef = useRef<Set<string>>(new Set());
 
-  const revokePreview = useCallback((url: string) => {
+  const revokePreview = (url: string) => {
     URL.revokeObjectURL(url);
     previewUrlsRef.current.delete(url);
-  }, []);
+  };
 
-  const setAttachment = useCallback(
-    (fieldName: string, file: File): string | null => {
-      if (file.size > MAX_FILE_SIZE) {
-        return `File size exceeds 10MB limit (${(file.size / 1024 / 1024).toFixed(1)}MB)`;
+  const setAttachment = (fieldName: string, file: File): string | null => {
+    if (file.size > MAX_FILE_SIZE) {
+      return `File size exceeds 10MB limit (${(file.size / 1024 / 1024).toFixed(1)}MB)`;
+    }
+
+    setAttachments((prev) => {
+      const next = new Map(prev);
+      const existing = prev.get(fieldName);
+      if (existing?.preview) {
+        revokePreview(existing.preview);
       }
 
-      setAttachments((prev) => {
-        const next = new Map(prev);
-        const existing = prev.get(fieldName);
-        if (existing?.preview) {
-          revokePreview(existing.preview);
-        }
+      let preview: string | undefined;
+      if (file.type.startsWith('image/')) {
+        preview = URL.createObjectURL(file);
+        previewUrlsRef.current.add(preview);
+      }
 
-        let preview: string | undefined;
-        if (file.type.startsWith('image/')) {
-          preview = URL.createObjectURL(file);
-          previewUrlsRef.current.add(preview);
-        }
+      next.set(fieldName, { file, fieldName, preview });
+      return next;
+    });
 
-        next.set(fieldName, { file, fieldName, preview });
-        return next;
-      });
+    return null;
+  };
 
-      return null;
-    },
-    [revokePreview],
-  );
+  const removeAttachment = (fieldName: string) => {
+    setAttachments((prev) => {
+      const next = new Map(prev);
+      const existing = prev.get(fieldName);
+      if (existing?.preview) {
+        revokePreview(existing.preview);
+      }
+      next.delete(fieldName);
+      return next;
+    });
+  };
 
-  const removeAttachment = useCallback(
-    (fieldName: string) => {
-      setAttachments((prev) => {
-        const next = new Map(prev);
-        const existing = prev.get(fieldName);
-        if (existing?.preview) {
-          revokePreview(existing.preview);
-        }
-        next.delete(fieldName);
-        return next;
-      });
-    },
-    [revokePreview],
-  );
-
-  const clearAll = useCallback(() => {
+  const clearAll = () => {
     setAttachments((prev) => {
       for (const attachment of prev.values()) {
         if (attachment.preview) {
@@ -95,19 +66,13 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
       }
       return new Map();
     });
-  }, [revokePreview]);
+  };
 
-  const toBase64Map = useCallback(async (): Promise<Record<string, FileEntry>> => {
+  const toBase64Map = async (): Promise<Record<string, FileEntry>> => {
     const result: Record<string, FileEntry> = {};
 
     for (const [fieldName, attachment] of attachments) {
-      const arrayBuffer = await attachment.file.arrayBuffer();
-      const bytes = new Uint8Array(arrayBuffer);
-      let binary = '';
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = btoa(binary);
+      const base64 = await fileToBase64(attachment.file);
 
       result[fieldName] = {
         __file: true,
@@ -119,7 +84,7 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
     }
 
     return result;
-  }, [attachments]);
+  };
 
   useEffect(() => {
     const urls = previewUrlsRef.current;
@@ -131,11 +96,11 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <FileAttachmentsContext.Provider
+    <FileAttachmentsContext
       value={{ attachments, setAttachment, removeAttachment, clearAll, toBase64Map }}
     >
       {children}
-    </FileAttachmentsContext.Provider>
+    </FileAttachmentsContext>
   );
 }
 

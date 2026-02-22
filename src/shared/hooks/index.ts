@@ -20,11 +20,3 @@ export type {
   FormChangeCallback,
 } from './form/use-form-state.ts';
 export { useDebounceDeferredValue } from './form/use-debounce-deferred-value.ts';
-
-export { useScannerFields } from './use-scanner-fields.ts';
-export type {
-  FieldConfig,
-  ScannerFieldsConfig,
-  UseScannerFieldsReturn,
-  InputProps,
-} from './use-scanner-fields.ts';

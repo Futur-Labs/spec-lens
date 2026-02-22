@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
@@ -53,7 +53,7 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 
   const contentTypeCategory = getContentTypeCategory(endpoint);
   const bodyExample = getBodyExample(endpoint, spec);
-  const formFields = useMemo(() => getFormFields(endpoint, spec), [endpoint, spec]);
+  const formFields = getFormFields(endpoint, spec);
   const { handleClearCurrent } = useEndpointParamsSync(endpoint, bodyExample);
   useAutoSaveParams(endpoint);
   const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);

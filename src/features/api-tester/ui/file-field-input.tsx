@@ -1,89 +1,24 @@
-import { useCallback, useRef, useState } from 'react';
-
 import { File as FileIcon, Image, X } from 'lucide-react';
 
-import { useFileAttachments } from '../model/file-attachments-context';
+import { formatFileSize } from '../lib/file-helpers';
+import { useFileField } from '../model/use-file-field';
 import { useColors } from '@/shared/theme';
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 export function FileFieldInput({ fieldName }: { fieldName: string }) {
   const colors = useColors();
-  const { attachments, setAttachment, removeAttachment } = useFileAttachments();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const attachment = attachments.get(fieldName);
-
-  const handleFile = useCallback(
-    (file: File) => {
-      setError(null);
-      const err = setAttachment(fieldName, file);
-      if (err) {
-        setError(err);
-      }
-    },
-    [fieldName, setAttachment],
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
-    },
-    [handleFile],
-  );
-
-  const handlePaste = useCallback(
-    (e: React.ClipboardEvent) => {
-      const file = e.clipboardData.files[0];
-      if (file) {
-        e.preventDefault();
-        handleFile(file);
-      }
-    },
-    [handleFile],
-  );
-
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) handleFile(file);
-    },
-    [handleFile],
-  );
-
-  const handleRemove = useCallback(() => {
-    removeAttachment(fieldName);
-    setError(null);
-    if (inputRef.current) inputRef.current.value = '';
-  }, [fieldName, removeAttachment]);
-
-  const handleClick = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
+  const {
+    attachment,
+    isDragging,
+    error,
+    inputRef,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handlePaste,
+    handleInputChange,
+    handleRemove,
+    handleClick,
+  } = useFileField(fieldName);
 
   // 파일 선택 완료 상태
   if (attachment) {

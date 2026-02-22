@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
   type ParameterObject,
@@ -63,7 +63,7 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
     isInitialMount.current = false;
   }, [endpoint.path, endpoint.method, specSourceId, bodyExample, endpoint]);
 
-  const handleClearCurrent = useCallback(() => {
+  const handleClearCurrent = () => {
     const endpointKey = `${endpoint.method}:${endpoint.path}`;
     testParamsStoreActions.clearEndpointParams(specSourceId, endpointKey);
     if (bodyExample) testParamsStoreActions.setRequestBody(bodyExample);
@@ -76,7 +76,7 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
         testParamsStoreActions.setHeader('Content-Type', ct);
       }
     }
-  }, [endpoint.method, endpoint.path, specSourceId, bodyExample, endpoint.operation.requestBody]);
+  };
 
   return { handleClearCurrent };
 }

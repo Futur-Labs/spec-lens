@@ -1,15 +1,7 @@
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
-import { useVariables } from '../model/variable-store';
+import { useVariableAutocomplete } from '../model/use-variable-autocomplete';
 import { useColors } from '@/shared/theme';
-
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  style?: React.CSSProperties;
-  multiline?: boolean;
-}
 
 export function VariableAutocompleteInput({
   value,
@@ -17,124 +9,32 @@ export function VariableAutocompleteInput({
   placeholder,
   style,
   multiline,
-}: Props) {
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
+  multiline?: boolean;
+}) {
   const colors = useColors();
-  const variables = useVariables();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [filteredVars, setFilteredVars] = useState(variables);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [atPosition, setAtPosition] = useState(0);
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const {
+    showDropdown,
+    filteredVars,
+    selectedIndex,
+    setSelectedIndex,
+    inputRef,
+    dropdownRef,
+    handleChange,
+    handleSelect,
+    handleKeyDown,
+  } = useVariableAutocomplete(value, onChange);
 
-  // Update filtered variables when variables change
-  useEffect(() => {
-    setFilteredVars(variables);
-  }, [variables]);
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-      onChange(newValue);
-
-      // @ 입력 감지
-      const cursorPos = e.target.selectionStart || 0;
-      const textBeforeCursor = newValue.slice(0, cursorPos);
-      const atMatch = textBeforeCursor.match(/@(\w*)$/);
-
-      if (atMatch && variables.length > 0) {
-        const searchTerm = atMatch[1].toLowerCase();
-        const filtered = variables.filter((v) => v.name.toLowerCase().includes(searchTerm));
-        setFilteredVars(filtered);
-        setSelectedIndex(0);
-        setAtPosition(cursorPos - atMatch[0].length);
-        setShowDropdown(filtered.length > 0);
-      } else {
-        setShowDropdown(false);
-      }
-    },
-    [onChange, variables],
-  );
-
-  const handleSelect = useCallback(
-    (varName: string) => {
-      const cursorPos = inputRef.current?.selectionStart || 0;
-      const textBeforeCursor = value.slice(0, cursorPos);
-      const textAfterCursor = value.slice(cursorPos);
-
-      // 변수의 실제 value 값을 찾기
-      const selectedVar = variables.find((v) => v.name === varName);
-      const varValue = selectedVar?.value || '';
-
-      // @xxx 를 실제 값으로 치환
-      const newText = textBeforeCursor.replace(/@\w*$/, varValue) + textAfterCursor;
-      onChange(newText);
-      setShowDropdown(false);
-
-      // Focus back to input and move cursor after the inserted value
-      setTimeout(() => {
-        if (inputRef.current) {
-          const newCursorPos = atPosition + varValue.length;
-          inputRef.current.focus();
-          inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
-        }
-      }, 0);
-    },
-    [value, onChange, atPosition, variables],
-  );
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (!showDropdown) return;
-
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex((prev) => (prev < filteredVars.length - 1 ? prev + 1 : prev));
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-          break;
-        case 'Enter':
-        case 'Tab':
-          if (filteredVars[selectedIndex]) {
-            e.preventDefault();
-            handleSelect(filteredVars[selectedIndex].name);
-          }
-          break;
-        case 'Escape':
-          setShowDropdown(false);
-          break;
-      }
-    },
-    [showDropdown, filteredVars, selectedIndex, handleSelect],
-  );
-
-  // Auto-resize textarea to fit content
   useLayoutEffect(() => {
     if (!multiline || !inputRef.current) return;
     const textarea = inputRef.current as HTMLTextAreaElement;
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight + 2}px`;
-  }, [value, multiline]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(e.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [value, multiline, inputRef]);
 
   const InputComponent = multiline ? 'textarea' : 'input';
 
