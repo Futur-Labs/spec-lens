@@ -1,5 +1,5 @@
-import { Navigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { Navigate, useRouter } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 
 import { SpecHistoryList } from './spec-history-list';
 import { SpecInputModeTabs } from './spec-input-mode-tabs';
@@ -12,20 +12,25 @@ import { ThemeToggle } from '@/shared/ui/theme-toggle';
 
 export function SpecLoaderPage() {
   const colors = useColors();
+  const router = useRouter();
   const hydrated = useSpecStoreHydration();
   const spec = useSpec();
   const [inputMode, setInputMode] = useState<SpecLoaderType>('file');
 
-  if (hydrated && spec) {
-    return <Navigate to='/api-docs' replace />;
-  }
+  useEffect(() => {
+    router.preloadRoute({ to: '/api-docs' });
+  }, [router]);
 
   if (!hydrated) {
-    return null;
+    return <div style={{ height: '100%', width: '100%', backgroundColor: colors.bg.base }} />;
   }
 
   if (spec) {
-    return null;
+    return (
+      <div style={{ height: '100%', width: '100%', backgroundColor: colors.bg.base }}>
+        <Navigate to='/api-docs' replace />
+      </div>
+    );
   }
 
   return (
