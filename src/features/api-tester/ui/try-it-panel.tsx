@@ -13,7 +13,11 @@ import { RepeatSettings } from './repeat-settings';
 import { RequestBodyEditor } from './request-body-editor';
 import { ServerSelector } from './server-selector';
 import { getBodyExample } from '../lib/body-example';
-import { getContentTypeCategory, getFormFields } from '../lib/content-type';
+import {
+  getAvailableContentTypes,
+  getCategoryFromContentType,
+  getFormFields,
+} from '../lib/content-type';
 import { FileAttachmentsProvider, useFileAttachments } from '../model/file-attachments-context';
 import { useAutoSaveParams } from '../model/use-auto-save-params';
 import { useEndpointParameters } from '../model/use-endpoint-parameters';
@@ -22,6 +26,7 @@ import { type ApiSpec, type ParsedEndpoint } from '@/entities/api-spec';
 import {
   testParamsStoreActions,
   useExecuteError,
+  useHeaders,
   useIsExecuting,
   usePathParams,
   useQueryParams,
@@ -51,9 +56,12 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
   const pathParams = usePathParams();
   const queryParams = useQueryParams();
 
-  const contentTypeCategory = getContentTypeCategory(endpoint);
-  const bodyExample = getBodyExample(endpoint, spec);
-  const formFields = getFormFields(endpoint, spec);
+  const headers = useHeaders();
+  const currentContentType = headers['Content-Type'] || '';
+  const availableContentTypes = getAvailableContentTypes(endpoint);
+  const contentTypeCategory = getCategoryFromContentType(currentContentType);
+  const bodyExample = getBodyExample(endpoint, spec, currentContentType);
+  const formFields = getFormFields(endpoint, spec, currentContentType);
   const { handleClearCurrent } = useEndpointParamsSync(endpoint, bodyExample);
   useAutoSaveParams(endpoint);
   const { pathParameters, queryParameters, hasRequestBody } = useEndpointParameters(endpoint);
@@ -185,6 +193,12 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
               )}
 
               <HeaderEditor
+                availableContentTypes={availableContentTypes}
+                onContentTypeChange={(ct) => {
+                  const newExample = getBodyExample(endpoint, spec, ct);
+                  testParamsStoreActions.setRequestBody(newExample);
+                  clearAll();
+                }}
                 onReset={() => {
                   const rb = endpoint.operation.requestBody;
                   if (rb && !('$ref' in rb) && rb.content) {

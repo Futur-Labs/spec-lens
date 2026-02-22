@@ -35,11 +35,24 @@ export function parseUrlEncodedString(str: string): Record<string, string> | nul
   return Object.keys(result).length > 0 ? result : null;
 }
 
-export function getContentTypeCategory(endpoint: ParsedEndpoint): ContentTypeCategory {
+/** endpoint에서 사용 가능한 content type 목록 반환 */
+export function getAvailableContentTypes(endpoint: ParsedEndpoint): string[] {
   const rb = endpoint.operation.requestBody;
-  if (!rb || isReferenceObject(rb) || !rb.content) return 'json';
+  if (!rb || isReferenceObject(rb) || !rb.content) return [];
+  return Object.keys(rb.content);
+}
 
-  const contentTypes = Object.keys(rb.content);
+/** content type 문자열로 카테고리 판별 */
+export function getCategoryFromContentType(contentType: string): ContentTypeCategory {
+  if (!contentType) return 'json';
+  if (contentType.includes('application/json')) return 'json';
+  if (contentType.includes('multipart/form-data')) return 'multipart';
+  if (contentType.includes('application/x-www-form-urlencoded')) return 'form';
+  return 'other';
+}
+
+export function getContentTypeCategory(endpoint: ParsedEndpoint): ContentTypeCategory {
+  const contentTypes = getAvailableContentTypes(endpoint);
   if (contentTypes.length === 0) return 'json';
 
   // json 우선 체크
@@ -50,17 +63,22 @@ export function getContentTypeCategory(endpoint: ParsedEndpoint): ContentTypeCat
   return 'other';
 }
 
-export function getFormFields(endpoint: ParsedEndpoint, spec: ApiSpec): FormField[] {
+export function getFormFields(
+  endpoint: ParsedEndpoint,
+  spec: ApiSpec,
+  contentType?: string,
+): FormField[] {
   const rb = endpoint.operation.requestBody;
   if (!rb || isReferenceObject(rb) || !rb.content) return [];
 
-  const contentTypes = Object.keys(rb.content);
-  const ct =
-    contentTypes.find((t) => t.includes('multipart/form-data')) ||
-    contentTypes.find((t) => t.includes('application/x-www-form-urlencoded')) ||
-    contentTypes[0];
+  // 선택된 content type이 있으면 해당 타입 사용, 없으면 기존 우선순위
+  const ct = contentType
+    ? contentType
+    : Object.keys(rb.content).find((t) => t.includes('multipart/form-data')) ||
+      Object.keys(rb.content).find((t) => t.includes('application/x-www-form-urlencoded')) ||
+      Object.keys(rb.content)[0];
 
-  if (!ct) return [];
+  if (!ct || !rb.content[ct]) return [];
 
   const mediaType = rb.content[ct];
 

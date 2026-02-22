@@ -11,7 +11,15 @@ import { testParamsStoreActions, useHeaders } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 import { ResetButton } from '@/shared/ui/button';
 
-export function HeaderEditor({ onReset }: { onReset?: () => void }) {
+export function HeaderEditor({
+  onReset,
+  availableContentTypes,
+  onContentTypeChange,
+}: {
+  onReset?: () => void;
+  availableContentTypes?: string[];
+  onContentTypeChange?: (ct: string) => void;
+}) {
   const colors = useColors();
 
   const headers = useHeaders();
@@ -138,7 +146,7 @@ export function HeaderEditor({ onReset }: { onReset?: () => void }) {
                 </div>
               )}
 
-              {/* Content-Type read-only indicator */}
+              {/* Content-Type 표시 (다중 선택 가능 시 드롭다운) */}
               {headers['Content-Type'] && (
                 <div
                   style={{
@@ -156,13 +164,41 @@ export function HeaderEditor({ onReset }: { onReset?: () => void }) {
                       color: 'rgba(59, 130, 246, 0.9)',
                       fontSize: '1.1rem',
                       fontWeight: 500,
+                      flexShrink: 0,
                     }}
                   >
                     Content-Type
                   </span>
-                  <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}>
-                    {headers['Content-Type']}
-                  </span>
+                  {availableContentTypes && availableContentTypes.length > 1 ? (
+                    <select
+                      value={headers['Content-Type']}
+                      onChange={(e) => {
+                        testParamsStoreActions.setHeader('Content-Type', e.target.value);
+                        onContentTypeChange?.(e.target.value);
+                      }}
+                      style={{
+                        flex: 1,
+                        backgroundColor: 'transparent',
+                        border: `1px solid rgba(59, 130, 246, 0.3)`,
+                        borderRadius: '0.4rem',
+                        color: colors.text.primary,
+                        fontSize: '1.1rem',
+                        padding: '0.3rem 0.6rem',
+                        cursor: 'pointer',
+                        outline: 'none',
+                      }}
+                    >
+                      {availableContentTypes.map((ct) => (
+                        <option key={ct} value={ct}>
+                          {ct}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span style={{ color: colors.text.tertiary, fontSize: '1.1rem', flex: 1 }}>
+                      {headers['Content-Type']}
+                    </span>
+                  )}
                 </div>
               )}
 
