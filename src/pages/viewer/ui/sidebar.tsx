@@ -25,7 +25,7 @@ export function Sidebar() {
           style={{
             display: 'flex',
             gap: '0.3rem',
-            margin: '0 1.6rem',
+            margin: '1rem 1.6rem',
             padding: '0.3rem',
             borderRadius: '0.8rem',
             backgroundColor: colors.bg.subtle,
@@ -70,13 +70,13 @@ function TabButton({
         flex: 1,
         padding: '0.6rem 0',
         fontSize: '1.2rem',
-        fontWeight: isActive ? 600 : 500,
+        fontWeight: 500,
         backgroundColor: isActive ? colors.bg.overlay : 'transparent',
         color: isActive ? colors.text.primary : colors.text.tertiary,
         border: 'none',
         borderRadius: '0.6rem',
         cursor: 'pointer',
-        transition: 'all 0.15s ease',
+        transition: 'background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
         boxShadow: isActive ? `0 1px 2px rgba(0, 0, 0, 0.06)` : 'none',
       }}
     >
