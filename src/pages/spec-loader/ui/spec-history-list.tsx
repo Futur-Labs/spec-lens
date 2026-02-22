@@ -27,6 +27,7 @@ function formatDate(timestamp: number) {
 
 function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
   const colors = useColors();
+  const iconColor = entry.type === 'url' ? colors.feedback.info : colors.interactive.primary;
 
   return (
     <div
@@ -49,7 +50,7 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
         }
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = colors.bg.overlay;
+        e.currentTarget.style.backgroundColor = colors.bg.overlayHover;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
@@ -60,17 +61,17 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '3.2rem',
-          height: '3.2rem',
-          borderRadius: '0.6rem',
-          backgroundColor: colors.bg.overlay,
+          width: '3.6rem',
+          height: '3.6rem',
+          borderRadius: '0.8rem',
+          backgroundColor: `${iconColor}15`,
           flexShrink: 0,
         }}
       >
         {entry.type === 'url' ? (
-          <Globe size={16} style={{ color: colors.text.tertiary }} />
+          <Globe size={18} style={{ color: iconColor }} />
         ) : (
-          <FileText size={16} style={{ color: colors.text.tertiary }} />
+          <FileText size={18} style={{ color: iconColor }} />
         )}
       </div>
 
@@ -79,7 +80,7 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.6rem',
+            gap: '0.8rem',
           }}
         >
           <span
@@ -98,10 +99,10 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
             <span
               style={{
                 fontSize: '1rem',
-                fontWeight: 500,
-                color: colors.text.tertiary,
-                backgroundColor: colors.bg.overlay,
-                padding: '0.1rem 0.5rem',
+                fontWeight: 600,
+                color: colors.interactive.primary,
+                backgroundColor: `${colors.interactive.primary}15`,
+                padding: '0.15rem 0.6rem',
                 borderRadius: '0.4rem',
                 flexShrink: 0,
               }}
@@ -115,7 +116,7 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
             display: 'flex',
             alignItems: 'center',
             gap: '0.6rem',
-            marginTop: '0.2rem',
+            marginTop: '0.4rem',
           }}
         >
           <span
@@ -134,7 +135,8 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
           <span
             style={{
               fontSize: '1.1rem',
-              color: colors.text.tertiary,
+              color: colors.feedback.info,
+              fontWeight: 500,
               flexShrink: 0,
             }}
           >
@@ -173,7 +175,7 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
             transition: 'color 0.15s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.text.secondary;
+            e.currentTarget.style.color = colors.feedback.error;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = colors.text.disabled;

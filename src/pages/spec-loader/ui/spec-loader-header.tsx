@@ -29,7 +29,7 @@ export function SpecLoaderHeader() {
         </h1>
       </div>
       <p style={{ color: colors.text.secondary, fontSize: '1.5rem' }}>
-        OpenAPI/Swagger 스펙을 시각화하고 API를 테스트하세요
+        Visualize OpenAPI/Swagger specs and test your APIs
       </p>
     </div>
   );

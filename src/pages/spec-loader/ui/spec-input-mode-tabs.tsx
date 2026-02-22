@@ -36,7 +36,7 @@ export function SpecInputModeTabs({
           transition: 'all 0.2s ease',
         }}
       >
-        파일 업로드
+        File Upload
       </button>
       <button
         onClick={() => setInputMode('url')}
@@ -53,7 +53,7 @@ export function SpecInputModeTabs({
           transition: 'all 0.2s ease',
         }}
       >
-        URL 입력
+        URL Input
       </button>
     </div>
   );
