@@ -39,6 +39,7 @@ export function HistoryTab() {
           transition={{ duration: 0.15 }}
         >
           <HistoryDetail
+            key={selectedEntry.id}
             entry={selectedEntry}
             onBack={() => setSelectedEntry(null)}
             onNavigateToEntry={setSelectedEntry}
