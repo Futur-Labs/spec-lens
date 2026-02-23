@@ -27,8 +27,13 @@ export function EnvironmentsTab() {
   const [newBaseUrl, setNewBaseUrl] = useState('');
   const [newColor, setNewColor] = useState(ENV_COLORS[0]);
 
+  const isDuplicateName =
+    newName.trim() !== '' && environments.some((e) => e.name === newName.trim());
+  const isDuplicateUrl =
+    newBaseUrl.trim() !== '' && environments.some((e) => e.baseUrl === newBaseUrl.trim());
+
   const handleAdd = () => {
-    if (!newName.trim()) return;
+    if (!newName.trim() || isDuplicateName || isDuplicateUrl) return;
 
     const env: Environment = {
       id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
@@ -158,21 +163,37 @@ export function EnvironmentsTab() {
             </button>
             <button
               onClick={handleAdd}
-              disabled={!newName.trim()}
+              disabled={!newName.trim() || isDuplicateName || isDuplicateUrl}
               style={{
                 padding: '0.6rem 1.2rem',
-                backgroundColor: newName.trim() ? colors.interactive.primary : colors.bg.overlayHover,
+                backgroundColor:
+                  newName.trim() && !isDuplicateName && !isDuplicateUrl
+                    ? colors.interactive.primary
+                    : colors.bg.overlayHover,
                 border: 'none',
                 borderRadius: '0.4rem',
                 color: colors.text.onBrand,
                 fontSize: '1.2rem',
                 fontWeight: 500,
-                cursor: newName.trim() ? 'pointer' : 'not-allowed',
+                cursor:
+                  newName.trim() && !isDuplicateName && !isDuplicateUrl
+                    ? 'pointer'
+                    : 'not-allowed',
               }}
             >
               Create
             </button>
           </div>
+          {isDuplicateName && (
+            <span style={{ color: colors.feedback.error, fontSize: '1.1rem' }}>
+              Environment &quot;{newName.trim()}&quot; already exists.
+            </span>
+          )}
+          {isDuplicateUrl && !isDuplicateName && (
+            <span style={{ color: colors.feedback.error, fontSize: '1.1rem' }}>
+              URL &quot;{newBaseUrl.trim()}&quot; is already used by another environment.
+            </span>
+          )}
         </div>
       ) : (
         <button
@@ -232,8 +253,11 @@ function EnvironmentCard({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const valueInputRef = useRef<HTMLInputElement>(null);
 
+  const isDuplicateVar =
+    newVarName.trim() !== '' && env.variables.some((v) => v.name === newVarName.trim());
+
   const handleAddVariable = () => {
-    if (!newVarName.trim() || !newVarValue.trim()) return;
+    if (!newVarName.trim() || !newVarValue.trim() || isDuplicateVar) return;
 
     const newVar: EnvironmentVariable = {
       name: newVarName.trim(),
@@ -487,6 +511,11 @@ function EnvironmentCard({
                 onBlur={handleAddVariable}
               />
             </div>
+            {isDuplicateVar && (
+              <span style={{ color: colors.feedback.error, fontSize: '1rem' }}>
+                Variable &quot;{newVarName.trim()}&quot; already exists.
+              </span>
+            )}
           </div>
 
           {/* Delete Environment */}

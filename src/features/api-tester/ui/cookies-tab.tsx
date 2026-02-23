@@ -35,8 +35,11 @@ export function CookiesTab() {
     return () => clearInterval(interval);
   }, []);
 
+  const isDuplicateCookie =
+    newCookieName.trim() !== '' && customCookies.some((c) => c.name === newCookieName.trim());
+
   const handleAddCookie = () => {
-    if (newCookieName.trim() && newCookieValue.trim()) {
+    if (newCookieName.trim() && newCookieValue.trim() && !isDuplicateCookie) {
       cookieStoreActions.addCustomCookie({
         name: newCookieName.trim(),
         value: newCookieValue.trim(),
@@ -93,27 +96,35 @@ export function CookiesTab() {
         />
         <button
           onClick={handleAddCookie}
-          disabled={!newCookieName.trim() || !newCookieValue.trim()}
+          disabled={!newCookieName.trim() || !newCookieValue.trim() || isDuplicateCookie}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
             backgroundColor:
-              newCookieName.trim() && newCookieValue.trim()
+              newCookieName.trim() && newCookieValue.trim() && !isDuplicateCookie
                 ? colors.feedback.success
                 : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
             color: colors.text.onBrand,
             fontSize: '1.2rem',
-            cursor: newCookieName.trim() && newCookieValue.trim() ? 'pointer' : 'not-allowed',
+            cursor:
+              newCookieName.trim() && newCookieValue.trim() && !isDuplicateCookie
+                ? 'pointer'
+                : 'not-allowed',
           }}
         >
           <Plus size={14} />
           Add
         </button>
       </div>
+      {isDuplicateCookie && (
+        <span style={{ color: colors.feedback.error, fontSize: '1.1rem' }}>
+          Cookie &quot;{newCookieName.trim()}&quot; already exists.
+        </span>
+      )}
 
       {/* Session Cookies from Backend */}
       {sessionCookies.length > 0 && (

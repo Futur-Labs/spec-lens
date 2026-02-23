@@ -13,8 +13,10 @@ export function VariablesTab() {
   const [newName, setNewName] = useState('');
   const [newValue, setNewValue] = useState('');
 
+  const isDuplicate = newName.trim() !== '' && variables.some((v) => v.name === newName.trim());
+
   const handleAdd = () => {
-    if (newName.trim()) {
+    if (newName.trim() && !isDuplicate) {
       variableStoreActions.addVariable({
         name: newName.trim(),
         value: newValue,
@@ -79,24 +81,30 @@ export function VariablesTab() {
         />
         <button
           onClick={handleAdd}
-          disabled={!newName.trim()}
+          disabled={!newName.trim() || isDuplicate}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
-            backgroundColor: newName.trim() ? colors.accent.purple : colors.bg.overlayHover,
+            backgroundColor:
+              newName.trim() && !isDuplicate ? colors.accent.purple : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
             color: colors.text.onBrand,
             fontSize: '1.2rem',
-            cursor: newName.trim() ? 'pointer' : 'not-allowed',
+            cursor: newName.trim() && !isDuplicate ? 'pointer' : 'not-allowed',
           }}
         >
           <Plus size={14} />
           Add
         </button>
       </div>
+      {isDuplicate && (
+        <span style={{ color: colors.feedback.error, fontSize: '1.1rem' }}>
+          Variable &quot;{newName.trim()}&quot; already exists.
+        </span>
+      )}
 
       {/* Variable List */}
       {variables.length > 0 ? (
