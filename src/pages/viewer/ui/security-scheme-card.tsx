@@ -42,7 +42,7 @@ export function SecuritySchemeCard({
         <span
           style={{
             padding: '0.2rem 0.6rem',
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            backgroundColor: `${colors.feedback.warning}18`,
             borderRadius: '0.3rem',
             fontSize: '1rem',
             color: colors.feedback.warning,
@@ -114,12 +114,12 @@ export function SecuritySchemeCard({
                         style={{
                           padding: '0.15rem 0.5rem',
                           backgroundColor: scopes.includes(scope)
-                            ? 'rgba(34, 197, 94, 0.15)'
+                            ? `${colors.feedback.success}25`
                             : colors.bg.overlay,
                           borderWidth: '1px',
                           borderStyle: 'solid',
                           borderColor: scopes.includes(scope)
-                            ? 'rgba(34, 197, 94, 0.3)'
+                            ? `${colors.feedback.success}40`
                             : colors.border.subtle,
                           borderRadius: '0.3rem',
                           fontSize: '1rem',

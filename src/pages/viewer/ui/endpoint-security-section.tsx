@@ -1,6 +1,5 @@
 import { SecuritySchemeCard } from './security-scheme-card';
-import type { ApiSpec, OperationObject } from '@/entities/api-spec';
-import { isReferenceObject } from '@/entities/api-spec';
+import { type ApiSpec, type OperationObject, isReferenceObject } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { CollapsibleSection } from '@/shared/ui/section';
 
@@ -27,18 +26,20 @@ export function EndpointSecuritySection({
         title='Security'
         defaultExpanded
         badge={
-          <span
-            style={{
-              padding: '0.2rem 0.6rem',
-              backgroundColor: 'rgba(34, 197, 94, 0.1)',
-              borderRadius: '0.3rem',
-              fontSize: '1rem',
-              color: colors.feedback.success,
-              fontWeight: 500,
-            }}
-          >
-            None (Public)
-          </span>
+          <div style={{ marginLeft: '0.6rem', marginBlock: 'auto', paddingBottom: '0.6rem' }}>
+            <span
+              style={{
+                padding: '0.2rem 0.6rem',
+                backgroundColor: `${colors.feedback.success}18`,
+                borderRadius: '0.3rem',
+                fontSize: '1rem',
+                color: colors.feedback.success,
+                fontWeight: 500,
+              }}
+            >
+              None (Public)
+            </span>
+          </div>
         }
       >
         <p
@@ -61,20 +62,20 @@ export function EndpointSecuritySection({
       title='Security'
       defaultExpanded
       badge={
-        <span
-          style={{
-            padding: '0.2rem 0.6rem',
-            backgroundColor: isGlobal
-              ? 'rgba(59, 130, 246, 0.1)'
-              : 'rgba(245, 158, 11, 0.1)',
-            borderRadius: '0.3rem',
-            fontSize: '1rem',
-            color: isGlobal ? colors.feedback.info : colors.feedback.warning,
-            fontWeight: 500,
-          }}
-        >
-          {isGlobal ? 'Global' : 'Custom'}
-        </span>
+        <div style={{ marginLeft: '0.6rem', marginBlock: 'auto', paddingBottom: '0.6rem' }}>
+          <span
+            style={{
+              padding: '0.2rem 0.6rem',
+              backgroundColor: isGlobal ? `${colors.feedback.info}18` : `${colors.feedback.warning}18`,
+              borderRadius: '0.3rem',
+              fontSize: '1rem',
+              color: isGlobal ? colors.feedback.info : colors.feedback.warning,
+              fontWeight: 500,
+            }}
+          >
+            {isGlobal ? 'Global' : 'Custom'}
+          </span>
+        </div>
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
