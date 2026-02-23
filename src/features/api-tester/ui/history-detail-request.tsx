@@ -1,3 +1,5 @@
+import { File as FileIcon } from 'lucide-react';
+
 import { FileFieldInput } from './file-field-input';
 import { HistoryKeyValueTable } from './history-key-value-table';
 import {
@@ -326,14 +328,92 @@ function HistoryFormBody({
   }
 
   if (!editable) {
-    // 읽기 모드: 텍스트 필드만 표시 (파일은 history에 저장되지 않으므로)
+    // 읽기 모드: 텍스트 필드 + 파일 필드 표시
+    const hasTextData = Object.keys(data).length > 0;
+    const hasContent = hasTextData || binaryFields.length > 0;
+
+    if (!hasContent) {
+      return (
+        <div style={{ color: colors.text.tertiary, fontSize: '1.2rem', padding: '1rem 0' }}>
+          No form fields
+        </div>
+      );
+    }
+
     return (
-      <HistoryKeyValueTable
-        data={data}
-        editable={false}
-        inputType='variable'
-        emptyMessage='No form fields'
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+        {/* 텍스트 필드 */}
+        {Object.entries(data).map(([key, value]) => (
+          <div
+            key={key}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+              padding: '0.7rem 1rem',
+              borderBottom: `1px solid ${colors.border.subtle}`,
+              fontSize: '1.2rem',
+              fontFamily: 'monospace',
+            }}
+          >
+            <span
+              style={{
+                color: colors.feedback.info,
+                fontWeight: 600,
+                minWidth: '14rem',
+                flexShrink: 0,
+              }}
+            >
+              {key}
+            </span>
+            <span style={{ color: colors.text.primary, wordBreak: 'break-all' }}>{value}</span>
+          </div>
+        ))}
+
+        {/* 파일 필드 — 히스토리에 파일 데이터 미저장, 스키마 기반 표시 */}
+        {binaryFields.map((field) => (
+          <div
+            key={field.name}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+              padding: '0.7rem 1rem',
+              borderBottom: `1px solid ${colors.border.subtle}`,
+              fontSize: '1.2rem',
+              fontFamily: 'monospace',
+            }}
+          >
+            <span
+              style={{
+                color: colors.feedback.info,
+                fontWeight: 600,
+                minWidth: '14rem',
+                flexShrink: 0,
+              }}
+            >
+              {field.name}
+            </span>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.3rem 0.8rem',
+                backgroundColor: `${colors.text.tertiary}12`,
+                border: `1px solid ${colors.border.subtle}`,
+                borderRadius: '0.4rem',
+                color: colors.text.tertiary,
+                fontSize: '1.1rem',
+                fontFamily: 'inherit',
+              }}
+            >
+              <FileIcon size={12} />
+              File{field.multiple ? ' (multiple)' : ''}
+            </span>
+          </div>
+        ))}
+      </div>
     );
   }
 

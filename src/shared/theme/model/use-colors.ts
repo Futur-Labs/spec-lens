@@ -1,5 +1,5 @@
 import type { SemanticColors } from './color-tokens';
-import { useThemeStore } from '@/shared/theme';
+import { useThemeStore } from './theme-store';
 
 export function useColors(): SemanticColors {
   return useThemeStore((state) => state.colors);
