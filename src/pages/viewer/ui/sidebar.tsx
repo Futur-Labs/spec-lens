@@ -30,7 +30,7 @@ export function Sidebar() {
             gap: '0.3rem',
             margin: '1rem 1.6rem',
             padding: '0.4rem',
-            borderRadius: '0.8rem',
+            borderRadius: '0.4rem',
             backgroundColor: colors.bg.subtle,
             marginBottom: '0.8rem',
           }}

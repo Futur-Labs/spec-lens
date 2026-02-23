@@ -4,7 +4,12 @@ import { ArrowRight, GitCompare, Minus, Pencil, Plus } from 'lucide-react';
 
 import { diffSpecs } from '../lib/diff-specs';
 import type { DiffResult, EndpointChange, EndpointModification } from '../model/spec-diff-types';
-import { MethodBadge, type SpecHistoryEntry, useSpec, useSpecHistoryEntries } from '@/entities/api-spec';
+import {
+  MethodBadge,
+  type SpecHistoryEntry,
+  useSpec,
+  useSpecHistoryEntries,
+} from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 import { FuturSelect, type Option } from '@/shared/ui/select';
 
@@ -49,7 +54,13 @@ function DiffSummaryBadge({
   );
 }
 
-function EndpointChangeItem({ change, type }: { change: EndpointChange; type: 'added' | 'removed' }) {
+function EndpointChangeItem({
+  change,
+  type,
+}: {
+  change: EndpointChange;
+  type: 'added' | 'removed';
+}) {
   const colors = useColors();
   const colorMap = {
     added: { bg: 'rgba(34, 197, 94, 0.05)', border: 'rgba(34, 197, 94, 0.2)' },
@@ -258,10 +269,7 @@ function DiffResults({ result }: { result: DiffResult }) {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
             {modified.map((mod) => (
-              <EndpointModificationItem
-                key={`${mod.method}:${mod.path}`}
-                modification={mod}
-              />
+              <EndpointModificationItem key={`${mod.method}:${mod.path}`} modification={mod} />
             ))}
           </div>
         </div>
@@ -394,9 +402,8 @@ export function SpecDiffPanel() {
                 : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.4rem',
-            color: oldSpecId && newSpecId && oldSpecId !== newSpecId
-              ? '#ffffff'
-              : colors.text.tertiary,
+            color:
+              oldSpecId && newSpecId && oldSpecId !== newSpecId ? '#ffffff' : colors.text.tertiary,
             fontSize: '1.2rem',
             fontWeight: 500,
             cursor: oldSpecId && newSpecId && oldSpecId !== newSpecId ? 'pointer' : 'not-allowed',
