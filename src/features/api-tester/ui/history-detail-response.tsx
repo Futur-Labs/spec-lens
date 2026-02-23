@@ -47,6 +47,7 @@ export function HistoryDetailResponse({ entry }: { entry: HistoryEntry }) {
             {copiedResponse ? <Check size={12} /> : <Copy size={12} />}
           </button>
         }
+        childrenContainerStyle={{ paddingBottom: 0 }}
       >
         <pre
           style={{
@@ -77,6 +78,7 @@ export function HistoryDetailResponse({ entry }: { entry: HistoryEntry }) {
               ({Object.keys(entry.response.headers).length})
             </span>
           }
+          childrenContainerStyle={{ paddingTop: 0 }}
         >
           <HistoryKeyValueTable data={entry.response.headers} emptyMessage='No response headers' />
         </CollapsibleSection>

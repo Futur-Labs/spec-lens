@@ -73,7 +73,7 @@ export function HistoryKeyValueTable({
             display: 'flex',
             alignItems: 'center',
             gap: '0.8rem',
-            padding: '0.4rem 0',
+            padding: '0.4rem 1rem',
             borderBottom: `1px solid ${colors.border.subtle}`,
             fontSize: '1.2rem',
             fontFamily: 'monospace',

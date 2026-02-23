@@ -45,6 +45,7 @@ export function HistoryDetailRequest({
             </span>
           }
           defaultExpanded={hasPathParams}
+          childrenContainerStyle={{ paddingTop: 0 }}
         >
           <HistoryKeyValueTable
             data={isEditMode ? editedPathParams : entry.request.pathParams}
@@ -64,6 +65,7 @@ export function HistoryDetailRequest({
             </span>
           }
           defaultExpanded={hasQueryParams}
+          childrenContainerStyle={{ paddingTop: 0 }}
         >
           <HistoryKeyValueTable
             data={isEditMode ? editedQueryParams : entry.request.queryParams}
@@ -82,6 +84,7 @@ export function HistoryDetailRequest({
               ({Object.keys(isEditMode ? editedHeaders : entry.request.headers).length})
             </span>
           }
+          childrenContainerStyle={{ paddingTop: 0 }}
         >
           <HistoryKeyValueTable
             data={isEditMode ? editedHeaders : entry.request.headers}

@@ -10,11 +10,13 @@ export function CollapsibleSection({
   badge,
   children,
   defaultExpanded = true,
+  childrenContainerStyle,
 }: {
   title: string;
   badge?: React.ReactNode;
   children: React.ReactNode;
   defaultExpanded?: boolean;
+  childrenContainerStyle?: React.CSSProperties;
 }) {
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
@@ -70,7 +72,7 @@ export function CollapsibleSection({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             style={{ overflow: 'hidden' }}
           >
-            <div style={{ paddingTop: '1.2rem' }}>{children}</div>
+            <div style={{ paddingTop: '1.2rem', ...childrenContainerStyle }}>{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
