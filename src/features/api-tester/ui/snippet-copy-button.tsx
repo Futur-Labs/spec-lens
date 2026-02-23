@@ -4,14 +4,13 @@ import type { SnippetParams } from '../lib/snippet-types';
 import { type SnippetLang, SNIPPET_LABELS } from '../model/execute-actions.types';
 import { useSnippetCopy } from '../model/use-snippet-copy';
 import type { SemanticColors } from '@/shared/theme';
+import { SegmentedControl, type SegmentItem } from '@/shared/ui/segmented-control';
 
-const SNIPPET_SHORT_LABELS: Record<SnippetLang, string> = {
-  curl: 'cURL',
-  javascript: 'JS',
-  python: 'Python',
-};
-
-const LANGS: SnippetLang[] = ['curl', 'javascript', 'python'];
+const SNIPPET_ITEMS: SegmentItem<SnippetLang>[] = [
+  { label: 'cURL', value: 'curl' },
+  { label: 'JS', value: 'javascript' },
+  { label: 'Python', value: 'python' },
+];
 
 export function SnippetCopyButton({
   colors,
@@ -26,10 +25,12 @@ export function SnippetCopyButton({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-      {/* Segmented Control */}
-      <div
+      <SegmentedControl<SnippetLang>
+        items={SNIPPET_ITEMS}
+        value={snippetLang}
+        onChange={handleSelectLang}
+        disabled={disabled}
         style={{
-          display: 'flex',
           padding: '0.4rem',
           backgroundColor: colors.bg.subtle,
           borderRadius: '0.6rem',
@@ -37,39 +38,23 @@ export function SnippetCopyButton({
           borderStyle: 'solid',
           borderColor: colors.border.default,
         }}
-      >
-        {LANGS.map((lang) => {
-          const isSelected = lang === snippetLang;
-          return (
-            <button
-              key={lang}
-              onClick={() => handleSelectLang(lang)}
-              disabled={disabled}
-              title={SNIPPET_LABELS[lang]}
-              style={{
-                padding: '0.5rem 1rem',
-                minWidth: '5rem',
-                backgroundColor: isSelected ? colors.bg.overlay : 'transparent',
-                border: 'none',
-                borderRadius: '0.2rem',
-                color: disabled
-                  ? colors.text.disabled
-                  : isSelected
-                    ? colors.text.primary
-                    : colors.text.tertiary,
-                fontSize: '1.2rem',
-                fontWeight: 500,
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.15s ease, color 0.15s ease',
-                whiteSpace: 'nowrap',
-                boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-              }}
-            >
-              {SNIPPET_SHORT_LABELS[lang]}
-            </button>
-          );
+        itemStyle={({ isSelected, disabled: isDisabled }) => ({
+          padding: '0.5rem 1rem',
+          minWidth: '5rem',
+          backgroundColor: isSelected ? colors.bg.overlay : 'transparent',
+          borderRadius: '0.2rem',
+          color: isDisabled
+            ? colors.text.disabled
+            : isSelected
+              ? colors.text.primary
+              : colors.text.tertiary,
+          fontSize: '1.2rem',
+          fontWeight: 500,
+          transition: 'background-color 0.15s ease, color 0.15s ease',
+          whiteSpace: 'nowrap' as const,
+          boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
         })}
-      </div>
+      />
 
       {/* Copy Button */}
       <button
