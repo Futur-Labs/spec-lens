@@ -41,10 +41,11 @@ export function TabButton({
         <span
           style={{
             padding: '0.1rem 0.5rem',
-            backgroundColor: `${colors.feedback.warning}40`,
+            backgroundColor: colors.accent.badgeBg,
             borderRadius: '1rem',
             fontSize: '1rem',
-            color: colors.feedback.warning,
+            color: colors.accent.badge,
+            fontWeight: 600,
           }}
         >
           {count}

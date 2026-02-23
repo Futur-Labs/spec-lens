@@ -37,6 +37,8 @@ export type SemanticColors = {
   };
   accent: {
     purple: string;
+    badge: string;
+    badgeBg: string;
   };
 };
 
@@ -77,6 +79,8 @@ export const darkColors: SemanticColors = {
   },
   accent: {
     purple: p.purple[600],
+    badge: p.blue[400],
+    badgeBg: '#60a5fa30',
   },
 };
 
@@ -117,5 +121,7 @@ export const lightColors: SemanticColors = {
   },
   accent: {
     purple: p.purple[500],
+    badge: p.blue[600],
+    badgeBg: '#2563eb18',
   },
 };

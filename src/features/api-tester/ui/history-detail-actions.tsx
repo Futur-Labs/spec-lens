@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Check, Copy, Loader2, Pencil, Play, X } from 'lucide-react';
 
 import { generateCurlCommand } from '../lib/generate-curl-command';
-import { getIconButtonStyle } from '../lib/icon-button-style';
 import { useReplayRequest } from '../model/use-replay-request';
 import type { HistoryEntry } from '@/entities/history';
 import { copyToClipboard } from '@/shared/lib';
@@ -28,7 +27,6 @@ export function HistoryDetailActions({
   onNavigateToEntry: (entry: HistoryEntry) => void;
 }) {
   const colors = useColors();
-  const iconButtonStyle = getIconButtonStyle(colors);
   const { replay, isReplaying } = useReplayRequest();
   const [copiedCurl, setCopiedCurl] = useState(false);
 
@@ -75,33 +73,43 @@ export function HistoryDetailActions({
       <button
         onClick={onToggleEdit}
         style={{
-          ...iconButtonStyle,
-          backgroundColor: isEditMode
-            ? colors.interactive.primary
-            : iconButtonStyle.backgroundColor,
-          color: isEditMode ? colors.text.onBrand : iconButtonStyle.color,
-          width: 'auto',
-          padding: '0.4rem 1rem',
-          gap: '0.4rem',
-          fontSize: '1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          padding: '0.6rem 1.2rem',
+          backgroundColor: isEditMode ? colors.interactive.primary : colors.bg.overlay,
+          color: isEditMode ? colors.text.onBrand : colors.text.secondary,
+          border: `1px solid ${isEditMode ? colors.interactive.primary : colors.border.default}`,
+          borderRadius: '0.6rem',
+          fontSize: '1.2rem',
+          fontWeight: 500,
+          cursor: 'pointer',
         }}
         title={isEditMode ? 'Cancel Edit' : 'Edit & Replay'}
       >
-        {isEditMode ? <X size={14} /> : <Pencil size={14} />}
+        {isEditMode ? <X size={13} /> : <Pencil size={13} />}
         {isEditMode ? 'Cancel' : 'Edit'}
       </button>
       <button
         onClick={handleCopyCurl}
         style={{
-          ...iconButtonStyle,
-          width: 'auto',
-          padding: '0.4rem 1rem',
-          gap: '0.4rem',
-          fontSize: '1.1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          padding: '0.6rem 1.2rem',
+          backgroundColor: colors.bg.overlay,
+          color: colors.text.secondary,
+          border: `1px solid ${colors.border.default}`,
+          borderRadius: '0.6rem',
+          fontSize: '1.2rem',
+          fontWeight: 500,
+          cursor: 'pointer',
         }}
         title='Copy as cURL'
       >
-        {copiedCurl ? <Check size={14} /> : <Copy size={14} />}
+        {copiedCurl ? <Check size={13} /> : <Copy size={13} />}
         {copiedCurl ? 'Copied' : 'cURL'}
       </button>
       <button
@@ -110,18 +118,19 @@ export function HistoryDetailActions({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.6rem',
-          padding: '0.4rem 1.4rem',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          padding: '0.6rem 1.6rem',
           backgroundColor: isReplaying ? colors.bg.overlayHover : colors.interactive.primary,
           color: colors.text.onBrand,
           border: 'none',
-          borderRadius: '0.4rem',
+          borderRadius: '0.6rem',
           fontSize: '1.2rem',
           fontWeight: 600,
           cursor: isReplaying ? 'not-allowed' : 'pointer',
         }}
       >
-        {isReplaying ? <Loader2 size={14} className='animate-spin' /> : <Play size={14} />}
+        {isReplaying ? <Loader2 size={13} className='animate-spin' /> : <Play size={13} />}
         {isEditMode ? 'Execute' : 'Replay'}
       </button>
     </div>
