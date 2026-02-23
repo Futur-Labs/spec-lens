@@ -1,39 +1,13 @@
 import { Webhook } from 'lucide-react';
 
+import { parseWebhooks } from '../lib/parse-webhooks';
 import {
   endpointSelectionStoreActions,
-  type PathItemObject,
   useSelectedWebhook,
   useSpec,
   MethodBadge,
 } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
-import { type HttpMethod, HTTP_METHODS } from '@/shared/type';
-
-type WebhookEntry = {
-  name: string;
-  method: HttpMethod;
-  summary?: string;
-};
-
-function parseWebhooks(webhooks: Record<string, PathItemObject>): WebhookEntry[] {
-  const entries: WebhookEntry[] = [];
-
-  for (const [name, pathItem] of Object.entries(webhooks)) {
-    for (const method of HTTP_METHODS) {
-      const operation = pathItem[method];
-      if (operation) {
-        entries.push({
-          name,
-          method,
-          summary: operation.summary,
-        });
-      }
-    }
-  }
-
-  return entries;
-}
 
 export function SidebarWebhookList() {
   const colors = useColors();
