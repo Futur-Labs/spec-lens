@@ -57,8 +57,8 @@ export function CollapsibleSection({
           >
             {title}
           </h2>
-          {badge}
         </button>
+        {badge}
       </div>
 
       <AnimatePresence initial={false}>
