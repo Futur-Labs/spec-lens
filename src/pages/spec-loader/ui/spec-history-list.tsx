@@ -43,10 +43,10 @@ function HistoryItem({ entry }: { entry: SpecHistoryEntry }) {
       }}
       role='button'
       tabIndex={0}
-      onClick={() => setSpecWithExpanded(entry.spec, entry.specSource)}
+      onClick={() => setSpecWithExpanded(entry.spec, entry.specSource, { skipHistory: true })}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          setSpecWithExpanded(entry.spec, entry.specSource);
+          setSpecWithExpanded(entry.spec, entry.specSource, { skipHistory: true });
         }
       }}
       onMouseEnter={(e) => {

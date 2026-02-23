@@ -52,8 +52,12 @@ const useSpecHistoryStore = create<SpecHistoryStore>()(
           };
 
           set((state) => {
-            // 동일 name 중복 제거
-            const filtered = state.entries.filter((e) => e.name !== source.name);
+            // URL: 동일 URL은 항상 같은 콘텐츠이므로 중복 제거
+            // File: 같은 이름이라도 내용이 다를 수 있으므로 중복 제거하지 않음
+            const filtered =
+              source.type === 'url'
+                ? state.entries.filter((e) => !(e.type === 'url' && e.name === source.name))
+                : state.entries;
             const updated = [entry, ...filtered];
             return { entries: updated.slice(0, MAX_HISTORY_ENTRIES) };
           });

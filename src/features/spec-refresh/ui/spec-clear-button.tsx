@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FolderOpen } from 'lucide-react';
 
 import { specStoreActions } from '@/entities/api-spec';
+import { diffModeActions } from '@/features/spec-diff';
 import { useColors } from '@/shared/theme';
 import { Tooltip } from '@/shared/ui/tooltip';
 
@@ -14,6 +15,7 @@ export function SpecClearButton() {
 
   const handleClearSpec = async () => {
     await navigate({ to: '/', replace: true });
+    diffModeActions.closeDiffMode();
     specStoreActions.clearSpec();
   };
 
