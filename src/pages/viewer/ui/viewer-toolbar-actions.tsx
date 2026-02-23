@@ -22,7 +22,7 @@ export function ViewerToolbarActions() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0.6rem',
+            padding: '0.7rem 0.8rem',
             backgroundColor: isDiffMode ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
             borderWidth: '1px',
             borderStyle: 'solid',

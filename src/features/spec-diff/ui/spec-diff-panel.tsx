@@ -6,6 +6,7 @@ import { diffSpecs } from '../lib/diff-specs';
 import type { DiffResult, EndpointChange, EndpointModification } from '../model/spec-diff-types';
 import { MethodBadge, type SpecHistoryEntry, useSpec, useSpecHistoryEntries } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
+import { FuturSelect, type Option } from '@/shared/ui/select';
 
 function DiffSummaryBadge({
   count,
@@ -284,6 +285,14 @@ function SpecSelector({
 }) {
   const colors = useColors();
 
+  const options: Option<string>[] = [
+    ...(currentSpecLabel ? [{ label: currentSpecLabel, value: '__current__' }] : []),
+    ...entries.map((entry) => ({
+      label: `${entry.title} v${entry.version} (${entry.endpointCount} endpoints) — ${new Date(entry.timestamp).toLocaleDateString()}`,
+      value: entry.id,
+    })),
+  ];
+
   return (
     <div style={{ flex: 1 }}>
       <span
@@ -297,34 +306,12 @@ function SpecSelector({
       >
         {label}
       </span>
-      <select
+      <FuturSelect<string>
+        options={options}
         value={selectedId ?? ''}
-        onChange={(e) => onSelect(e.target.value)}
-        style={{
-          width: '100%',
-          padding: '0.6rem 0.8rem',
-          backgroundColor: colors.bg.overlay,
-          color: colors.text.primary,
-          borderWidth: '1px',
-          borderStyle: 'solid',
-          borderColor: colors.border.default,
-          borderRadius: '0.4rem',
-          fontSize: '1.2rem',
-          cursor: 'pointer',
-          outline: 'none',
-        }}
-      >
-        <option value='' disabled>
-          Select spec...
-        </option>
-        {currentSpecLabel && <option value='__current__'>{currentSpecLabel}</option>}
-        {entries.map((entry) => (
-          <option key={entry.id} value={entry.id}>
-            {entry.title} v{entry.version} ({entry.endpointCount} endpoints) —{' '}
-            {new Date(entry.timestamp).toLocaleDateString()}
-          </option>
-        ))}
-      </select>
+        onChange={onSelect}
+        placeholder='Select spec...'
+      />
     </div>
   );
 }
