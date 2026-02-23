@@ -66,7 +66,9 @@ export function EndpointSecuritySection({
           <span
             style={{
               padding: '0.2rem 0.6rem',
-              backgroundColor: isGlobal ? `${colors.feedback.info}18` : `${colors.feedback.warning}18`,
+              backgroundColor: isGlobal
+                ? `${colors.feedback.info}18`
+                : `${colors.feedback.warning}18`,
               borderRadius: '0.3rem',
               fontSize: '1rem',
               color: isGlobal ? colors.feedback.info : colors.feedback.warning,

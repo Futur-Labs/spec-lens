@@ -1,25 +1,30 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-import { Code, Cookie, History, Key, Shield, X } from 'lucide-react';
+import { Code, Cookie, Globe, History, Key, Shield, X } from 'lucide-react';
 
 import { AuthTab } from './auth-tab';
 import { CookiesTab } from './cookies-tab';
+import { EnvironmentsTab } from './environments-tab';
 import { HistoryTab } from './history-tab';
 import { TabButton } from './tab-button';
 import { VariablesTab } from './variables-tab';
 import { useSpecSource, useVariables } from '@/entities/api-spec';
 import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
+import { useEnvironments } from '@/entities/environment';
 import { useHistoryBySpec } from '@/entities/history';
 import { useColors } from '@/shared/theme';
 
 export function ApiSettingsModal() {
   const colors = useColors();
-  const [activeTab, setActiveTab] = useState<'auth' | 'cookies' | 'variables' | 'history'>('auth');
+  const [activeTab, setActiveTab] = useState<
+    'auth' | 'cookies' | 'variables' | 'environments' | 'history'
+  >('auth');
 
   const customCookies = useCustomCookies();
   const sessionCookies = useSessionCookies();
   const variables = useVariables();
+  const environments = useEnvironments();
   const specSource = useSpecSource();
   const specId = specSource?.name ?? null;
   const history = useHistoryBySpec(specId);
@@ -147,6 +152,13 @@ export function ApiSettingsModal() {
               count={variables.length}
             />
             <TabButton
+              active={activeTab === 'environments'}
+              onClick={() => setActiveTab('environments')}
+              icon={<Globe size={12} />}
+              label='Environments'
+              count={environments.length}
+            />
+            <TabButton
               active={activeTab === 'history'}
               onClick={() => setActiveTab('history')}
               icon={<History size={12} />}
@@ -169,6 +181,8 @@ export function ApiSettingsModal() {
               <CookiesTab />
             ) : activeTab === 'variables' ? (
               <VariablesTab />
+            ) : activeTab === 'environments' ? (
+              <EnvironmentsTab />
             ) : (
               <HistoryTab />
             )}

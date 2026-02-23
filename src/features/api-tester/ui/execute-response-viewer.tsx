@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Check, Copy, Loader2, Trash2 } from 'lucide-react';
 
+import { JsonSyntaxViewer } from './json-syntax-viewer';
 import { getStatusCodeColor, getStatusText } from '@/entities/api-spec';
 import { getIconButtonStyle } from '../lib/icon-button-style';
 import { testParamsStoreActions, useResponse } from '@/entities/test-params';
@@ -184,18 +185,7 @@ export function ExecuteResponseViewer({
               Waiting for response...
             </div>
           ) : activeTab === 'body' ? (
-            <pre
-              style={{
-                margin: 0,
-                fontSize: '1.2rem',
-                fontFamily: 'monospace',
-                color: colors.text.primary,
-              }}
-            >
-              {typeof response.data === 'string'
-                ? response.data
-                : JSON.stringify(response.data, null, 2)}
-            </pre>
+            <JsonSyntaxViewer data={response.data} />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
               {response.headers && Object.keys(response.headers).length > 0 ? (

@@ -1,10 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 
 import { useVariables } from './variable-store.ts';
+import { useActiveEnvironment } from '@/entities/environment';
 import { parseAtMention, filterVariables, replaceAtMention } from '../lib/variable-autocomplete.ts';
 
 export function useVariableAutocomplete(value: string, onChange: (v: string) => void) {
-  const variables = useVariables();
+  const globalVariables = useVariables();
+  const activeEnv = useActiveEnvironment();
+
+  // 환경 변수와 글로벌 변수 병합 (환경 변수가 동일 이름일 때 우선)
+  const variables = (() => {
+    const envVars = activeEnv?.variables ?? [];
+    const envVarNames = new Set(envVars.map((v) => v.name));
+    return [...envVars, ...globalVariables.filter((v) => !envVarNames.has(v.name))];
+  })();
   const [showDropdown, setShowDropdown] = useState(false);
   const [filteredVars, setFilteredVars] = useState(variables);
   const [selectedIndex, setSelectedIndex] = useState(0);

@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
-import { Trash2 } from 'lucide-react';
+import { Download, Trash2 } from 'lucide-react';
 
 import { HistoryDetail } from './history-detail';
 import { HistoryItem } from './history-item';
+import { exportHistory } from '../lib/export-history';
 import { useSpecSource } from '@/entities/api-spec';
 import { historyStoreActions, useHistoryBySpec, type HistoryEntry } from '@/entities/history';
 import { useColors } from '@/shared/theme';
@@ -68,28 +69,48 @@ export function HistoryTab() {
               <span style={{ color: colors.text.secondary, fontSize: '1.2rem' }}>
                 Recent Requests ({history.length})
               </span>
-              <button
-                onClick={() =>
-                  specId
-                    ? historyStoreActions.clearHistoryBySpec(specId)
-                    : historyStoreActions.clearHistory()
-                }
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.4rem 0.8rem',
-                  backgroundColor: 'transparent',
-                  border: `1px solid ${colors.feedback.error}40`,
-                  borderRadius: '0.4rem',
-                  color: colors.feedback.error,
-                  fontSize: '1.1rem',
-                  cursor: 'pointer',
-                }}
-              >
-                <Trash2 size={12} />
-                Clear All
-              </button>
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <button
+                  onClick={() => exportHistory(history, 'json')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.4rem 0.8rem',
+                    backgroundColor: 'transparent',
+                    border: `1px solid ${colors.border.default}`,
+                    borderRadius: '0.4rem',
+                    color: colors.text.secondary,
+                    fontSize: '1.1rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Download size={12} />
+                  Export
+                </button>
+                <button
+                  onClick={() =>
+                    specId
+                      ? historyStoreActions.clearHistoryBySpec(specId)
+                      : historyStoreActions.clearHistory()
+                  }
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.4rem 0.8rem',
+                    backgroundColor: 'transparent',
+                    border: `1px solid ${colors.feedback.error}40`,
+                    borderRadius: '0.4rem',
+                    color: colors.feedback.error,
+                    fontSize: '1.1rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Trash2 size={12} />
+                  Clear All
+                </button>
+              </div>
             </div>
 
             {/* History List */}
