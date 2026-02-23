@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -101,9 +101,12 @@ export function useSpecHistoryHydration() {
     () => false,
   );
 
-  if (!hydrated && typeof window !== 'undefined' && useSpecHistoryStore.persist) {
-    useSpecHistoryStore.persist.rehydrate();
-  }
+  // 비동기 스토리지(IndexedDB)에서는 rehydrate()를 useEffect에서 호출해야 무한 루프 방지
+  useEffect(() => {
+    if (useSpecHistoryStore.persist && !useSpecHistoryStore.persist.hasHydrated()) {
+      useSpecHistoryStore.persist.rehydrate();
+    }
+  }, []);
 
   return hydrated;
 }

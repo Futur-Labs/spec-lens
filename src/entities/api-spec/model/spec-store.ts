@@ -114,10 +114,12 @@ export function useSpecStoreHydration(onHydrated?: () => void) {
     }
   }, [hydrated, onHydrated]);
 
-  // Trigger rehydration on client mount
-  if (!hydrated && typeof window !== 'undefined' && useSpecStore.persist) {
-    useSpecStore.persist.rehydrate();
-  }
+  // 비동기 스토리지(IndexedDB)에서는 rehydrate()를 useEffect에서 호출해야 무한 루프 방지
+  useEffect(() => {
+    if (useSpecStore.persist && !useSpecStore.persist.hasHydrated()) {
+      useSpecStore.persist.rehydrate();
+    }
+  }, []);
 
   return hydrated;
 }
