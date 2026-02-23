@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { getIconButtonStyle } from '../lib/icon-button-style';
-import { HeaderAutocompleteInput } from '@/entities/api-spec/ui/header-autocomplete-input';
-import { VariableAutocompleteInput } from '@/entities/api-spec/ui/variable-autocomplete-input';
+import { VariableAutocompleteInput, HeaderAutocompleteInput } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
 type InputType = 'default' | 'variable' | 'header';

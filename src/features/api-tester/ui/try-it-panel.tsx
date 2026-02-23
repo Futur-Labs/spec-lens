@@ -44,7 +44,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(true);
-  const { jsonError, fixSuggestion, validate: validateJson } = useJsonValidation();
+  const { jsonError, fixSuggestion, formattedJson, validate: validateJson } = useJsonValidation();
   const { clearAll, saveForEndpoint, loadForEndpoint, clearForEndpoint } = useFileAttachments();
 
   // Repeat request settings
@@ -219,6 +219,7 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                     bodyExample={bodyExample}
                     jsonError={jsonError}
                     fixSuggestion={fixSuggestion}
+                    formattedJson={formattedJson}
                     validate={validateJson}
                   />
                 ) : (

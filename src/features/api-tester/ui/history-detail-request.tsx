@@ -1,6 +1,6 @@
 import { HistoryKeyValueTable } from './history-key-value-table';
 import { formatBody } from '../lib/format-body';
-import { VariableAutocompleteInput } from '@/entities/api-spec/ui/variable-autocomplete-input';
+import { VariableAutocompleteInput } from '@/entities/api-spec';
 import type { HistoryEntry } from '@/entities/history';
 import { useJsonValidation } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
@@ -30,7 +30,7 @@ export function HistoryDetailRequest({
   onChangeBody: (v: string) => void;
 }) {
   const colors = useColors();
-  const { jsonError, fixSuggestion, validate } = useJsonValidation();
+  const { jsonError, fixSuggestion, formattedJson, validate } = useJsonValidation();
 
   const hasPathParams = Object.keys(entry.request.pathParams).length > 0;
   const hasQueryParams = Object.keys(entry.request.queryParams).length > 0;
@@ -46,6 +46,12 @@ export function HistoryDetailRequest({
     if (!fixSuggestion) return;
     onChangeBody(fixSuggestion);
     validate(fixSuggestion);
+  };
+
+  const handleFormat = () => {
+    if (!formattedJson) return;
+    onChangeBody(formattedJson);
+    validate(formattedJson);
   };
 
   return (
@@ -165,6 +171,31 @@ export function HistoryDetailRequest({
                       Auto Fix
                     </button>
                   )}
+                </div>
+              )}
+              {!jsonError && formattedJson && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    marginTop: '0.4rem',
+                  }}
+                >
+                  <button
+                    onClick={handleFormat}
+                    style={{
+                      padding: '0.2rem 0.6rem',
+                      backgroundColor: 'transparent',
+                      border: `1px solid ${colors.text.tertiary}`,
+                      borderRadius: '0.3rem',
+                      color: colors.text.tertiary,
+                      fontSize: '1.1rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Format JSON
+                  </button>
                 </div>
               )}
             </div>

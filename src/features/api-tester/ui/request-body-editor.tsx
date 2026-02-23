@@ -7,11 +7,13 @@ export function RequestBodyEditor({
   bodyExample,
   jsonError,
   fixSuggestion,
+  formattedJson,
   validate,
 }: {
   bodyExample: string;
   jsonError: string | null;
   fixSuggestion: string | null;
+  formattedJson: string | null;
   validate: (value: string) => void;
 }) {
   const colors = useColors();
@@ -21,6 +23,12 @@ export function RequestBodyEditor({
     if (!fixSuggestion) return;
     testParamsStoreActions.setRequestBody(fixSuggestion);
     validate(fixSuggestion);
+  };
+
+  const handleFormat = () => {
+    if (!formattedJson) return;
+    testParamsStoreActions.setRequestBody(formattedJson);
+    validate(formattedJson);
   };
 
   return (
@@ -98,6 +106,31 @@ export function RequestBodyEditor({
               Auto Fix
             </button>
           )}
+        </div>
+      )}
+      {!jsonError && formattedJson && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            marginTop: '0.4rem',
+          }}
+        >
+          <button
+            onClick={handleFormat}
+            style={{
+              padding: '0.2rem 0.6rem',
+              backgroundColor: 'transparent',
+              border: `1px solid ${colors.text.tertiary}`,
+              borderRadius: '0.3rem',
+              color: colors.text.tertiary,
+              fontSize: '1.1rem',
+              cursor: 'pointer',
+            }}
+          >
+            Format JSON
+          </button>
         </div>
       )}
     </div>
