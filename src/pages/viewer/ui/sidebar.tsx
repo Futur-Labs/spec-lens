@@ -47,14 +47,16 @@ export function Sidebar() {
           }}
           itemStyle={({ isSelected }) => ({
             flex: 1,
-            padding: '0.6rem 0',
+            padding: '0.5rem 0',
             fontSize: '1.2rem',
             fontWeight: 500,
-            backgroundColor: isSelected ? colors.bg.overlay : 'transparent',
+            backgroundColor: isSelected ? colors.bg.base : 'transparent',
             color: isSelected ? colors.text.primary : colors.text.tertiary,
             borderRadius: '0.6rem',
-            transition: 'background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
-            boxShadow: isSelected ? '0 1px 2px rgba(0, 0, 0, 0.06)' : 'none',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: isSelected ? colors.border.subtle : 'transparent',
+            boxShadow: isSelected ? '0 1px 3px rgba(0, 0, 0, 0.15)' : 'none',
           })}
         />
       )}

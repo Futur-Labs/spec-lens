@@ -48,7 +48,7 @@ export function ExecuteActions({
         paddingTop: '0.8rem',
       }}
     >
-      <div style={{ display: 'flex', gap: '0.8rem' }}>
+      <div style={{ display: 'flex', gap: '1.6rem', alignItems: 'center' }}>
         <SnippetCopyButton
           colors={colors}
           disabled={!selectedServer}
