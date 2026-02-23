@@ -1,3 +1,4 @@
+import { del, get, set } from 'idb-keyval';
 import { create } from 'zustand';
 
 import type {
@@ -7,7 +8,7 @@ import type {
   TestParamsStore,
 } from './test-params-types.ts';
 
-// ========== Storage Helpers ==========
+// ========== Storage Helpers (IndexedDB) ==========
 
 // Storage version - increment when data format changes to invalidate old data
 const STORAGE_VERSION = 2; // v2: Added OpenAPI example support
@@ -18,11 +19,11 @@ function getTestParamsStorageKey(specSourceId: string): string {
 }
 
 // Load all persisted test params for a spec
-function loadPersistedTestParams(specSourceId: string): PersistedTestParams {
+async function loadPersistedTestParams(specSourceId: string): Promise<PersistedTestParams> {
   if (typeof window === 'undefined') return {};
 
   try {
-    const stored = localStorage.getItem(getTestParamsStorageKey(specSourceId));
+    const stored = await get<string>(getTestParamsStorageKey(specSourceId));
     if (stored) {
       return JSON.parse(stored) as PersistedTestParams;
     }
@@ -33,58 +34,46 @@ function loadPersistedTestParams(specSourceId: string): PersistedTestParams {
 }
 
 // Save all test params for a spec
-function savePersistedTestParams(specSourceId: string, params: PersistedTestParams): void {
+async function savePersistedTestParams(
+  specSourceId: string,
+  params: PersistedTestParams,
+): Promise<void> {
   if (typeof window === 'undefined') return;
 
-  try {
-    localStorage.setItem(getTestParamsStorageKey(specSourceId), JSON.stringify(params));
-  } catch (error) {
-    // localStorage might be full - try saving without response data
-    console.warn('Failed to save test params, trying without response data:', error);
-    try {
-      const paramsWithoutResponse: PersistedTestParams = {};
-      for (const [key, value] of Object.entries(params)) {
-        paramsWithoutResponse[key] = { ...value, response: null };
-      }
-      localStorage.setItem(
-        getTestParamsStorageKey(specSourceId),
-        JSON.stringify(paramsWithoutResponse),
-      );
-    } catch {
-      // If still fails, ignore
-      console.warn('Failed to save test params even without response data');
-    }
-  }
+  await set(getTestParamsStorageKey(specSourceId), JSON.stringify(params));
 }
 
 // Load test data for a specific endpoint
-function loadEndpointTestData(specSourceId: string, endpointKey: string): EndpointTestData | null {
-  const allParams = loadPersistedTestParams(specSourceId);
+async function loadEndpointTestData(
+  specSourceId: string,
+  endpointKey: string,
+): Promise<EndpointTestData | null> {
+  const allParams = await loadPersistedTestParams(specSourceId);
   return allParams[endpointKey] || null;
 }
 
 // Save test data for a specific endpoint
-function saveEndpointTestData(
+async function saveEndpointTestData(
   specSourceId: string,
   endpointKey: string,
   data: EndpointTestData,
-): void {
-  const allParams = loadPersistedTestParams(specSourceId);
+): Promise<void> {
+  const allParams = await loadPersistedTestParams(specSourceId);
   allParams[endpointKey] = data;
-  savePersistedTestParams(specSourceId, allParams);
+  await savePersistedTestParams(specSourceId, allParams);
 }
 
 // Clear test data for a specific endpoint
-function clearEndpointTestData(specSourceId: string, endpointKey: string): void {
-  const allParams = loadPersistedTestParams(specSourceId);
+async function clearEndpointTestData(specSourceId: string, endpointKey: string): Promise<void> {
+  const allParams = await loadPersistedTestParams(specSourceId);
   delete allParams[endpointKey];
-  savePersistedTestParams(specSourceId, allParams);
+  await savePersistedTestParams(specSourceId, allParams);
 }
 
 // Clear all test data for a spec
-function clearAllTestData(specSourceId: string): void {
+async function clearAllTestData(specSourceId: string): Promise<void> {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(getTestParamsStorageKey(specSourceId));
+  await del(getTestParamsStorageKey(specSourceId));
 }
 
 // ========== State & Store ==========
@@ -155,8 +144,8 @@ export const useTestParamsStore = create<TestParamsStore>((set) => ({
 
     resetHeaders: () => set({ headers: DEFAULT_HEADERS }),
 
-    // Endpoint test data persistence
-    saveCurrentParams: (specSourceId, endpointKey) => {
+    // Endpoint test data persistence (IndexedDB)
+    saveCurrentParams: async (specSourceId, endpointKey) => {
       const state = useTestParamsStore.getState();
       const data: EndpointTestData = {
         pathParams: state.pathParams,
@@ -166,11 +155,11 @@ export const useTestParamsStore = create<TestParamsStore>((set) => ({
         selectedServer: state.selectedServer,
         response: state.response,
       };
-      saveEndpointTestData(specSourceId, endpointKey, data);
+      await saveEndpointTestData(specSourceId, endpointKey, data);
     },
 
-    loadSavedParams: (specSourceId, endpointKey) => {
-      const data = loadEndpointTestData(specSourceId, endpointKey);
+    loadSavedParams: async (specSourceId, endpointKey) => {
+      const data = await loadEndpointTestData(specSourceId, endpointKey);
       if (data) {
         set({
           pathParams: data.pathParams,
@@ -186,8 +175,8 @@ export const useTestParamsStore = create<TestParamsStore>((set) => ({
       return false;
     },
 
-    clearEndpointParams: (specSourceId, endpointKey) => {
-      clearEndpointTestData(specSourceId, endpointKey);
+    clearEndpointParams: async (specSourceId, endpointKey) => {
+      await clearEndpointTestData(specSourceId, endpointKey);
       set({
         pathParams: {},
         queryParams: {},
@@ -198,8 +187,8 @@ export const useTestParamsStore = create<TestParamsStore>((set) => ({
       });
     },
 
-    clearAllParams: (specSourceId) => {
-      clearAllTestData(specSourceId);
+    clearAllParams: async (specSourceId) => {
+      await clearAllTestData(specSourceId);
       set({
         pathParams: {},
         queryParams: {},

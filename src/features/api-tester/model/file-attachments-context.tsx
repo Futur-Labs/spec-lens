@@ -20,7 +20,7 @@ const MULTI_FILE_SEPARATOR = '__';
 
 // 엔드포인트별 첨부파일 비활성 후 자동 정리 설정
 const CLEANUP_INTERVAL_MS = 60_000; // 1분마다 정리 체크
-const STALE_THRESHOLD_MS = 15 * 60_000; // 15분 비활성 시 정리
+const STALE_THRESHOLD_MS = 30 * 60_000; // 30분 비활성 시 정리
 
 const FileAttachmentsContext = createContext<FileAttachmentsContextValue | null>(null);
 

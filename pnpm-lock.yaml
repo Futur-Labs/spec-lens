@@ -65,12 +65,15 @@ importers:
       framer-motion:
         specifier: ^12.34.0
         version: 12.34.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      idb-keyval:
+        specifier: ^6.2.2
+        version: 6.2.2
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@19.2.4)
       nitro:
         specifier: 3.0.1-alpha.2
-        version: 3.0.1-alpha.2(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(chokidar@4.0.3)(lru-cache@11.2.4)(mysql2@3.15.3)(rollup@4.46.1)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
+        version: 3.0.1-alpha.2(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(chokidar@4.0.3)(idb-keyval@6.2.2)(lru-cache@11.2.4)(mysql2@3.15.3)(rollup@4.46.1)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
       polished:
         specifier: ^4.3.1
         version: 4.3.1
@@ -2909,6 +2912,9 @@ packages:
   iconv-lite@0.7.1:
     resolution: {integrity: sha512-2Tth85cXwGFHfvRgZWszZSvdo+0Xsqmw8k8ZwxScfcBneNUraK+dxRxRm24nszx80Y0TVio8kKLt5sLE7ZCLlw==}
     engines: {node: '>=0.10.0'}
+
+  idb-keyval@6.2.2:
+    resolution: {integrity: sha512-yjD9nARJ/jb1g+CvD0tlhUHOrJ9Sy0P8T9MF3YaLlHnSRpwPfpTX0XIvpmw3gAJUmEu3FiICLBDPXVwyEvrleg==}
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -7080,6 +7086,8 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
+  idb-keyval@6.2.2: {}
+
   ignore@5.3.2: {}
 
   ignore@7.0.5: {}
@@ -7458,7 +7466,7 @@ snapshots:
 
   nf3@0.3.10: {}
 
-  nitro@3.0.1-alpha.2(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(chokidar@4.0.3)(lru-cache@11.2.4)(mysql2@3.15.3)(rollup@4.46.1)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)):
+  nitro@3.0.1-alpha.2(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(chokidar@4.0.3)(idb-keyval@6.2.2)(lru-cache@11.2.4)(mysql2@3.15.3)(rollup@4.46.1)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.4(srvx@0.10.1)
@@ -7473,7 +7481,7 @@ snapshots:
       srvx: 0.10.1
       undici: 7.21.0
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(mysql2@3.15.3))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(mysql2@3.15.3))(idb-keyval@6.2.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       rollup: 4.46.1
       vite: 7.3.1(@types/node@25.2.3)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
@@ -8293,10 +8301,11 @@ snapshots:
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
-  unstorage@2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(mysql2@3.15.3))(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(mysql2@3.15.3))(idb-keyval@6.2.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
     optionalDependencies:
       chokidar: 4.0.3
       db0: 0.3.4(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(mysql2@3.15.3)
+      idb-keyval: 6.2.2
       lru-cache: 11.2.4
       ofetch: 2.0.0-alpha.3
 

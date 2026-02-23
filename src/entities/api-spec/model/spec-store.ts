@@ -1,10 +1,11 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
-import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 
 import type { ApiSpec } from './api-types.ts';
 import type { SpecState, SpecStore, SpecSource } from './spec-types.ts';
 import { parseEndpoints, getAllTags } from '../lib/parse-endpoints.ts';
+import { indexedDBStorage } from '@/shared/lib';
 
 const initialState: SpecState = {
   spec: null,
@@ -62,6 +63,7 @@ export const useSpecStore = create<SpecStore>()(
       {
         name: 'openapi-spec-store',
         version: 1,
+        storage: createJSONStorage(() => indexedDBStorage),
         partialize: (state) => ({
           spec: state.spec,
           specSource: state.specSource,

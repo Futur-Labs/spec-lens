@@ -25,47 +25,54 @@ export function useEndpointParamsSync(endpoint: ParsedEndpoint, bodyExample: str
   useEffect(() => {
     const currentEndpointKey = `${endpoint.method}:${endpoint.path}`;
 
-    if (
-      !isInitialMount.current &&
-      prevEndpointRef.current &&
-      prevEndpointRef.current !== currentEndpointKey
-    ) {
-      testParamsStoreActions.saveCurrentParams(specSourceId, prevEndpointRef.current);
-    }
-
-    const hasData = testParamsStoreActions.loadSavedParams(specSourceId, currentEndpointKey);
-
-    if (!hasData) {
-      testParamsStoreActions.resetParams();
-      if (bodyExampleRef.current) testParamsStoreActions.setRequestBody(bodyExampleRef.current);
-
-      // Set Content-Type from endpoint's requestBody content
-      const requestBody = endpoint.operation.requestBody;
-      if (requestBody && !isReferenceObject(requestBody) && requestBody.content) {
-        const contentTypes = Object.keys(requestBody.content);
-        if (contentTypes.length > 0) {
-          const ct = contentTypes.find((t) => t.includes('application/json')) || contentTypes[0];
-          testParamsStoreActions.setHeader('Content-Type', ct);
-        }
+    const syncParams = async () => {
+      if (
+        !isInitialMount.current &&
+        prevEndpointRef.current &&
+        prevEndpointRef.current !== currentEndpointKey
+      ) {
+        testParamsStoreActions.saveCurrentParams(specSourceId, prevEndpointRef.current);
       }
 
-      const merged = getMergedParameters(endpoint);
-      const params = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
-      for (const param of params) {
-        const example = getExampleFromParameter(param);
-        if (example !== null) {
-          const exampleStr = typeof example === 'string' ? example : String(example);
-          if (param.in === 'path') {
-            testParamsStoreActions.setPathParam(param.name, exampleStr);
-          } else if (param.in === 'query') {
-            testParamsStoreActions.setQueryParam(param.name, exampleStr);
+      const hasData = await testParamsStoreActions.loadSavedParams(
+        specSourceId,
+        currentEndpointKey,
+      );
+
+      if (!hasData) {
+        testParamsStoreActions.resetParams();
+        if (bodyExampleRef.current) testParamsStoreActions.setRequestBody(bodyExampleRef.current);
+
+        // Set Content-Type from endpoint's requestBody content
+        const requestBody = endpoint.operation.requestBody;
+        if (requestBody && !isReferenceObject(requestBody) && requestBody.content) {
+          const contentTypes = Object.keys(requestBody.content);
+          if (contentTypes.length > 0) {
+            const ct = contentTypes.find((t) => t.includes('application/json')) || contentTypes[0];
+            testParamsStoreActions.setHeader('Content-Type', ct);
+          }
+        }
+
+        const merged = getMergedParameters(endpoint);
+        const params = merged.filter((p): p is ParameterObject => !isReferenceObject(p));
+        for (const param of params) {
+          const example = getExampleFromParameter(param);
+          if (example !== null) {
+            const exampleStr = typeof example === 'string' ? example : String(example);
+            if (param.in === 'path') {
+              testParamsStoreActions.setPathParam(param.name, exampleStr);
+            } else if (param.in === 'query') {
+              testParamsStoreActions.setQueryParam(param.name, exampleStr);
+            }
           }
         }
       }
-    }
 
-    prevEndpointRef.current = currentEndpointKey;
-    isInitialMount.current = false;
+      prevEndpointRef.current = currentEndpointKey;
+      isInitialMount.current = false;
+    };
+
+    syncParams();
   }, [endpoint.path, endpoint.method, specSourceId, endpoint]);
 
   const handleClearCurrent = () => {

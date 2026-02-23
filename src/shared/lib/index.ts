@@ -55,3 +55,6 @@ export { highlightMatches } from './search/highlight-matches.tsx';
 
 export { formatJson, validateJson, tryFixJson } from './json/json-utils.ts';
 export { useJsonValidation } from './json/use-json-validation.ts';
+
+export { indexedDBStorage } from './storage/indexed-db-storage.ts';
+export { migrateLocalStorageToIndexedDB } from './storage/migrate-to-indexed-db.ts';

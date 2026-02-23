@@ -39,11 +39,11 @@ type TestParamsActions = {
   resetPathParams: () => void;
   resetQueryParams: () => void;
   resetHeaders: () => void;
-  // Endpoint test data persistence
-  saveCurrentParams: (specSourceId: string, endpointKey: string) => void;
-  loadSavedParams: (specSourceId: string, endpointKey: string) => boolean;
-  clearEndpointParams: (specSourceId: string, endpointKey: string) => void;
-  clearAllParams: (specSourceId: string) => void;
+  // Endpoint test data persistence (IndexedDB)
+  saveCurrentParams: (specSourceId: string, endpointKey: string) => Promise<void>;
+  loadSavedParams: (specSourceId: string, endpointKey: string) => Promise<boolean>;
+  clearEndpointParams: (specSourceId: string, endpointKey: string) => Promise<void>;
+  clearAllParams: (specSourceId: string) => Promise<void>;
 };
 
 export type TestParamsStore = TestParamsState & { actions: TestParamsActions };

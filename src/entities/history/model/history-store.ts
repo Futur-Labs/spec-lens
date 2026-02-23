@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/shallow';
 
 import type { HistoryStore } from './history-types.ts';
+import { indexedDBStorage } from '@/shared/lib';
 
-const MAX_HISTORY_ENTRIES = 100;
+const MAX_HISTORY_ENTRIES = 200;
 
 export const useHistoryStore = create<HistoryStore>()(
   persist(
@@ -33,12 +34,13 @@ export const useHistoryStore = create<HistoryStore>()(
     {
       name: 'api-tester-history',
       version: 1,
+      storage: createJSONStorage(() => indexedDBStorage),
       partialize: (state) => ({
         history: state.history.map((entry) => {
           if (!entry.response) return entry;
 
           const dataStr = JSON.stringify(entry.response.data);
-          const isTooLarge = dataStr.length > 10000;
+          const isTooLarge = dataStr.length > 100000;
 
           return {
             ...entry,

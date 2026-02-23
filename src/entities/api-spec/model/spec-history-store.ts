@@ -1,12 +1,13 @@
 import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type { ApiSpec } from './api-types.ts';
 import type { SpecSource } from './spec-types.ts';
 import { parseEndpoints } from '../lib/parse-endpoints.ts';
+import { indexedDBStorage } from '@/shared/lib';
 
-const MAX_HISTORY_ENTRIES = 5;
+const MAX_HISTORY_ENTRIES = 15;
 
 export type SpecHistoryEntry = {
   id: string;
@@ -77,6 +78,7 @@ const useSpecHistoryStore = create<SpecHistoryStore>()(
     {
       name: 'spec-history-storage',
       version: 1,
+      storage: createJSONStorage(() => indexedDBStorage),
       partialize: (state) => ({
         entries: state.entries,
       }),
