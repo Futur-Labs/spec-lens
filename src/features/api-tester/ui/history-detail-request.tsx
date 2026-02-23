@@ -328,9 +328,13 @@ function HistoryFormBody({
   }
 
   if (!editable) {
-    // 읽기 모드: 텍스트 필드 + 파일 필드 표시
-    const hasTextData = Object.keys(data).length > 0;
-    const hasContent = hasTextData || binaryFields.length > 0;
+    // 읽기 모드: binary 필드 이름 → 스키마 정보 매핑
+    const binaryFieldMap = new Map(binaryFields.map((f) => [f.name, f]));
+    const dataEntries = Object.entries(data);
+
+    // data에 없는 binary 필드 (body에 키 자체가 없는 경우)
+    const missingBinaryFields = binaryFields.filter((f) => !(f.name in data));
+    const hasContent = dataEntries.length > 0 || missingBinaryFields.length > 0;
 
     if (!hasContent) {
       return (
@@ -342,36 +346,59 @@ function HistoryFormBody({
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-        {/* 텍스트 필드 */}
-        {Object.entries(data).map(([key, value]) => (
-          <div
-            key={key}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.8rem',
-              padding: '0.7rem 1rem',
-              borderBottom: `1px solid ${colors.border.subtle}`,
-              fontSize: '1.2rem',
-              fontFamily: 'monospace',
-            }}
-          >
-            <span
+        {dataEntries.map(([key, value]) => {
+          const binaryField = binaryFieldMap.get(key);
+
+          return (
+            <div
+              key={key}
               style={{
-                color: colors.feedback.info,
-                fontWeight: 600,
-                minWidth: '14rem',
-                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.8rem',
+                padding: '0.7rem 1rem',
+                borderBottom: `1px solid ${colors.border.subtle}`,
+                fontSize: '1.2rem',
+                fontFamily: 'monospace',
               }}
             >
-              {key}
-            </span>
-            <span style={{ color: colors.text.primary, wordBreak: 'break-all' }}>{value}</span>
-          </div>
-        ))}
+              <span
+                style={{
+                  color: colors.feedback.info,
+                  fontWeight: 600,
+                  minWidth: '14rem',
+                  flexShrink: 0,
+                }}
+              >
+                {key}
+              </span>
+              {binaryField ? (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.3rem 0.8rem',
+                    backgroundColor: `${colors.text.tertiary}12`,
+                    border: `1px solid ${colors.border.subtle}`,
+                    borderRadius: '0.4rem',
+                    color: colors.text.tertiary,
+                    fontSize: '1.1rem',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <FileIcon size={12} />
+                  File{binaryField.multiple ? ' (multiple)' : ''}
+                </span>
+              ) : (
+                <span style={{ color: colors.text.primary, wordBreak: 'break-all' }}>{value}</span>
+              )}
+            </div>
+          );
+        })}
 
-        {/* 파일 필드 — 히스토리에 파일 데이터 미저장, 스키마 기반 표시 */}
-        {binaryFields.map((field) => (
+        {/* data에 키가 없는 binary 필드 (스키마에만 존재) */}
+        {missingBinaryFields.map((field) => (
           <div
             key={field.name}
             style={{
