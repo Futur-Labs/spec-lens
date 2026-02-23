@@ -39,6 +39,7 @@ export function AutocompleteDropdown() {
           {...getFloatingProps()}
         >
           <input
+            className='placeholder-sm'
             ref={inputRef}
             value={searchTerm}
             onChange={handleInputChange}

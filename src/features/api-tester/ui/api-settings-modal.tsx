@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Code, Cookie, History, Key, Shield, X } from 'lucide-react';
 
@@ -27,17 +27,6 @@ export function ApiSettingsModal() {
   const handleClose = () => {
     window.history.back();
   };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   return (
     <>

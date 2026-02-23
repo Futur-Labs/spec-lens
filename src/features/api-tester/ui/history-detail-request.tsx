@@ -1,6 +1,13 @@
+import { FileFieldInput } from './file-field-input';
 import { HistoryKeyValueTable } from './history-key-value-table';
+import {
+  type FormField,
+  getAvailableContentTypes,
+  getCategoryFromContentType,
+  getFormFields,
+} from '../lib/content-type';
 import { formatBody } from '../lib/format-body';
-import { VariableAutocompleteInput } from '@/entities/api-spec';
+import { useEndpoints, useSpec, VariableAutocompleteInput } from '@/entities/api-spec';
 import type { HistoryEntry } from '@/entities/history';
 import { useJsonValidation } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
@@ -30,7 +37,38 @@ export function HistoryDetailRequest({
   onChangeBody: (v: string) => void;
 }) {
   const colors = useColors();
+  const spec = useSpec();
+  const endpoints = useEndpoints();
   const { jsonError, fixSuggestion, formattedJson, validate } = useJsonValidation();
+
+  // 현재 spec에서 매칭되는 endpoint의 available content types 조회
+  const matchedEndpoint = endpoints.find(
+    (ep) => ep.path === entry.path && ep.method === entry.method,
+  );
+  const availableContentTypes = matchedEndpoint ? getAvailableContentTypes(matchedEndpoint) : [];
+
+  // Content-Type 기반 body 에디터 전환
+  const currentHeaders = isEditMode ? editedHeaders : entry.request.headers;
+  const contentType = currentHeaders['Content-Type'] || '';
+  const contentTypeCategory = getCategoryFromContentType(contentType);
+  const isFormBody = contentTypeCategory === 'form' || contentTypeCategory === 'multipart';
+
+  // multipart일 때 스키마 기반 form fields (파일 필드 포함)
+  const formFields =
+    matchedEndpoint && spec ? getFormFields(matchedEndpoint, spec, contentType) : [];
+
+  // form body를 Record로 파싱 (파일 필드는 history에 저장되지 않으므로 자연스럽게 제외)
+  const parseBodyAsRecord = (body: string): Record<string, string> => {
+    try {
+      const parsed = JSON.parse(body || '{}');
+      if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return {};
+  };
 
   const hasPathParams = Object.keys(entry.request.pathParams).length > 0;
   const hasQueryParams = Object.keys(entry.request.queryParams).length > 0;
@@ -114,13 +152,29 @@ export function HistoryDetailRequest({
             inputType='header'
             onChange={onChangeHeaders}
             emptyMessage='No headers'
+            availableContentTypes={availableContentTypes}
           />
         </CollapsibleSection>
       )}
 
       {hasBody && (
-        <CollapsibleSection title='Request Body' defaultExpanded={hasBody}>
-          {isEditMode ? (
+        <CollapsibleSection
+          title={
+            isFormBody
+              ? `Request Body (${contentTypeCategory === 'multipart' ? 'Multipart Form' : 'Form Data'})`
+              : 'Request Body'
+          }
+          defaultExpanded={hasBody}
+        >
+          {isFormBody ? (
+            <HistoryFormBody
+              data={parseBodyAsRecord(isEditMode ? editedBody : entry.request.body)}
+              editable={isEditMode}
+              formFields={formFields}
+              colors={colors}
+              onChange={(updated: Record<string, string>) => onChangeBody(JSON.stringify(updated, null, 2))}
+            />
+          ) : isEditMode ? (
             <div>
               <VariableAutocompleteInput
                 value={editedBody}
@@ -221,5 +275,159 @@ export function HistoryDetailRequest({
         </CollapsibleSection>
       )}
     </>
+  );
+}
+
+/** multipart/form body 에디터 - 스키마 기반 필드(파일 포함) + 텍스트 key-value */
+function HistoryFormBody({
+  data,
+  editable,
+  formFields,
+  colors,
+  onChange,
+}: {
+  data: Record<string, string>;
+  editable: boolean;
+  formFields: FormField[];
+  colors: ReturnType<typeof useColors>;
+  onChange: (updated: Record<string, string>) => void;
+}) {
+  // 스키마에 binary 필드가 있는 경우 파일 입력 포함 렌더링
+  const binaryFields = formFields.filter((f) => f.format === 'binary');
+  const textFields = formFields.filter((f) => f.format !== 'binary');
+  const schemaFieldNames = new Set(formFields.map((f) => f.name));
+
+  // 스키마에 정의되지 않은 커스텀 필드
+  const customEntries = Object.entries(data).filter(([k]) => !schemaFieldNames.has(k));
+
+  const inputStyle = {
+    flex: 1,
+    width: '100%',
+    padding: '0.8rem 1.2rem',
+    backgroundColor: colors.bg.input,
+    border: `1px solid ${colors.border.default}`,
+    borderRadius: '0.6rem',
+    color: colors.text.primary,
+    fontSize: '1.3rem',
+    outline: 'none',
+  } as const;
+
+  if (binaryFields.length === 0) {
+    // 파일 필드가 없으면 기존 HistoryKeyValueTable로 렌더링
+    return (
+      <HistoryKeyValueTable
+        data={data}
+        editable={editable}
+        inputType='variable'
+        onChange={onChange}
+        emptyMessage='No form fields'
+      />
+    );
+  }
+
+  if (!editable) {
+    // 읽기 모드: 텍스트 필드만 표시 (파일은 history에 저장되지 않으므로)
+    return (
+      <HistoryKeyValueTable
+        data={data}
+        editable={false}
+        inputType='variable'
+        emptyMessage='No form fields'
+      />
+    );
+  }
+
+  // 편집 모드: 스키마 기반 필드 (파일 + 텍스트) 렌더링
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+      {/* 스키마에 정의된 텍스트 필드 */}
+      {textFields.map((field) => (
+        <div key={field.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '140px', flexShrink: 0 }}>
+            <span
+              style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}
+            >
+              {field.name}
+            </span>
+            {field.required && (
+              <span style={{ color: colors.feedback.error, marginLeft: '0.2rem' }}>*</span>
+            )}
+            {field.description && (
+              <div
+                style={{
+                  fontSize: '1rem',
+                  color: colors.text.tertiary,
+                  marginTop: '0.2rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                title={field.description}
+              >
+                {field.description}
+              </div>
+            )}
+          </div>
+          <input
+            className='placeholder-md'
+            value={data[field.name] || ''}
+            onChange={(e) => onChange({ ...data, [field.name]: e.target.value })}
+            placeholder={field.example || field.type}
+            style={inputStyle}
+          />
+        </div>
+      ))}
+
+      {/* 스키마에 정의된 파일 필드 */}
+      {binaryFields.map((field) => (
+        <div key={field.name} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '140px', flexShrink: 0 }}>
+            <span
+              style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}
+            >
+              {field.name}
+            </span>
+            {field.required && (
+              <span style={{ color: colors.feedback.error, marginLeft: '0.2rem' }}>*</span>
+            )}
+            {field.description && (
+              <div
+                style={{
+                  fontSize: '1rem',
+                  color: colors.text.tertiary,
+                  marginTop: '0.2rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                title={field.description}
+              >
+                {field.description}
+              </div>
+            )}
+          </div>
+          <FileFieldInput fieldName={field.name} multiple={field.multiple} />
+        </div>
+      ))}
+
+      {/* 커스텀 필드 */}
+      {customEntries.map(([key, value]) => (
+        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '140px', flexShrink: 0 }}>
+            <span
+              style={{ fontSize: '1.2rem', fontFamily: 'monospace', color: colors.text.primary }}
+            >
+              {key}
+            </span>
+          </div>
+          <input
+            className='placeholder-md'
+            value={value}
+            onChange={(e) => onChange({ ...data, [key]: e.target.value })}
+            style={inputStyle}
+          />
+        </div>
+      ))}
+    </div>
   );
 }
