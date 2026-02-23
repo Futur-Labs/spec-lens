@@ -62,8 +62,8 @@ export function ExecuteActions({
               alignItems: 'center',
               gap: '0.8rem',
               padding: '1rem 2rem',
-              backgroundColor: '#dc2626',
-              color: '#ffffff',
+              backgroundColor: colors.feedback.error,
+              color: colors.text.onBrand,
               border: 'none',
               borderRadius: '0.6rem',
               fontSize: '1.4rem',
@@ -82,8 +82,8 @@ export function ExecuteActions({
             alignItems: 'center',
             gap: '0.8rem',
             padding: '1rem 2.4rem',
-            backgroundColor: isExecuting || jsonError ? '#374151' : '#2563eb',
-            color: '#ffffff',
+            backgroundColor: isExecuting || jsonError ? colors.bg.overlayHover : colors.interactive.primary,
+            color: colors.text.onBrand,
             border: 'none',
             borderRadius: '0.6rem',
             fontSize: '1.4rem',
@@ -94,7 +94,7 @@ export function ExecuteActions({
           {isExecuting ? (
             <Loader2 size={16} className='animate-spin' />
           ) : (
-            <Play size={16} fill='white' />
+            <Play size={16} fill={colors.text.onBrand} />
           )}
           {isRepeating
             ? `Sending ${currentRequestIndex}/${requestCount}...`

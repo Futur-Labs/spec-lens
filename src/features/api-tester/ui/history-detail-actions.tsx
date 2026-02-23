@@ -79,7 +79,7 @@ export function HistoryDetailActions({
           backgroundColor: isEditMode
             ? colors.interactive.primary
             : iconButtonStyle.backgroundColor,
-          color: isEditMode ? '#ffffff' : iconButtonStyle.color,
+          color: isEditMode ? colors.text.onBrand : iconButtonStyle.color,
           width: 'auto',
           padding: '0.4rem 1rem',
           gap: '0.4rem',
@@ -112,8 +112,8 @@ export function HistoryDetailActions({
           alignItems: 'center',
           gap: '0.6rem',
           padding: '0.4rem 1.4rem',
-          backgroundColor: isReplaying ? '#374151' : colors.interactive.primary,
-          color: '#ffffff',
+          backgroundColor: isReplaying ? colors.bg.overlayHover : colors.interactive.primary,
+          color: colors.text.onBrand,
           border: 'none',
           borderRadius: '0.4rem',
           fontSize: '1.2rem',

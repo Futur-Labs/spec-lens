@@ -35,6 +35,9 @@ export type SemanticColors = {
     warning: string;
     info: string;
   };
+  accent: {
+    purple: string;
+  };
 };
 
 export const darkColors: SemanticColors = {
@@ -72,6 +75,9 @@ export const darkColors: SemanticColors = {
     warning: p.amber[500],
     info: p.blue[500],
   },
+  accent: {
+    purple: p.purple[600],
+  },
 };
 
 export const lightColors: SemanticColors = {
@@ -108,5 +114,8 @@ export const lightColors: SemanticColors = {
     error: p.red[500],
     warning: p.amber[500],
     info: p.blue[500],
+  },
+  accent: {
+    purple: p.purple[500],
   },
 };

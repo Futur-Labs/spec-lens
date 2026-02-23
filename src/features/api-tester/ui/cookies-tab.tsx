@@ -53,11 +53,11 @@ export function CookiesTab() {
       <div
         style={{
           padding: '0.8rem 1rem',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          border: '1px solid rgba(59, 130, 246, 0.2)',
+          backgroundColor: `${colors.feedback.success}15`,
+          border: `1px solid ${colors.feedback.success}25`,
           borderRadius: '0.6rem',
           fontSize: '1.1rem',
-          color: '#93c5fd',
+          color: colors.feedback.success,
         }}
       >
         💡 Custom cookies will be sent with every API request. Session cookies from login responses
@@ -100,7 +100,9 @@ export function CookiesTab() {
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
             backgroundColor:
-              newCookieName.trim() && newCookieValue.trim() ? '#2563eb' : colors.bg.overlayHover,
+              newCookieName.trim() && newCookieValue.trim()
+                ? colors.feedback.success
+                : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
             color: colors.text.onBrand,
@@ -125,8 +127,8 @@ export function CookiesTab() {
               flexDirection: 'column',
               gap: '0.4rem',
               padding: '1rem',
-              backgroundColor: 'rgba(34, 197, 94, 0.05)',
-              border: '1px solid rgba(34, 197, 94, 0.2)',
+              backgroundColor: `${colors.feedback.success}0d`,
+              border: `1px solid ${colors.feedback.success}25`,
               borderRadius: '0.6rem',
             }}
           >
@@ -141,11 +143,11 @@ export function CookiesTab() {
                     gap: '0.8rem',
                     padding: '0.6rem 0.8rem',
                     backgroundColor: expirationInfo.isExpiringSoon
-                      ? 'rgba(245, 158, 11, 0.1)'
+                      ? `${colors.feedback.warning}15`
                       : colors.bg.overlay,
                     borderRadius: '0.4rem',
                     border: expirationInfo.isExpiringSoon
-                      ? '1px solid rgba(245, 158, 11, 0.3)'
+                      ? `1px solid ${colors.feedback.warning}40`
                       : 'none',
                   }}
                 >
@@ -184,8 +186,8 @@ export function CookiesTab() {
                           gap: '0.3rem',
                           padding: '0.2rem 0.4rem',
                           backgroundColor: expirationInfo.isExpiringSoon
-                            ? 'rgba(245, 158, 11, 0.2)'
-                            : 'rgba(34, 197, 94, 0.2)',
+                            ? `${colors.feedback.warning}25`
+                            : `${colors.feedback.success}25`,
                           borderRadius: '0.3rem',
                           fontSize: '0.9rem',
                           color: expirationInfo.isExpiringSoon
@@ -206,10 +208,10 @@ export function CookiesTab() {
                       <span
                         style={{
                           padding: '0.2rem 0.4rem',
-                          backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                          backgroundColor: `${colors.feedback.error}25`,
                           borderRadius: '0.3rem',
                           fontSize: '0.9rem',
-                          color: '#f87171',
+                          color: colors.feedback.error,
                         }}
                       >
                         HttpOnly
@@ -219,10 +221,10 @@ export function CookiesTab() {
                       <span
                         style={{
                           padding: '0.2rem 0.4rem',
-                          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                          backgroundColor: `${colors.feedback.info}25`,
                           borderRadius: '0.3rem',
                           fontSize: '0.9rem',
-                          color: '#60a5fa',
+                          color: colors.feedback.info,
                         }}
                       >
                         Secure
@@ -264,9 +266,9 @@ export function CookiesTab() {
                 gap: '0.8rem',
                 padding: '0.8rem 1rem',
                 backgroundColor: cookie.enabled
-                  ? 'rgba(34, 197, 94, 0.05)'
-                  : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${cookie.enabled ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255,255,255,0.08)'}`,
+                  ? `${colors.feedback.success}0d`
+                  : colors.bg.overlay,
+                border: `1px solid ${cookie.enabled ? `${colors.feedback.success}25` : colors.border.subtle}`,
                 borderRadius: '0.6rem',
               }}
             >
@@ -292,7 +294,7 @@ export function CookiesTab() {
                       flexShrink: 0,
                     }}
                   >
-                    {checked && <Check size={11} color='#ffffff' strokeWidth={3} />}
+                    {checked && <Check size={11} color={colors.text.onBrand} strokeWidth={3} />}
                   </div>
                 )}
               </HeadlessCheckbox>
@@ -335,7 +337,7 @@ export function CookiesTab() {
                   width: '2rem',
                   height: '2rem',
                   backgroundColor: 'transparent',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  border: `1px solid ${colors.feedback.error}40`,
                   borderRadius: '0.4rem',
                   cursor: 'pointer',
                   color: colors.feedback.error,
@@ -356,7 +358,7 @@ export function CookiesTab() {
               gap: '0.4rem',
               padding: '0.6rem 1rem',
               backgroundColor: 'transparent',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              border: `1px solid ${colors.feedback.error}40`,
               borderRadius: '0.4rem',
               color: colors.feedback.error,
               fontSize: '1.2rem',

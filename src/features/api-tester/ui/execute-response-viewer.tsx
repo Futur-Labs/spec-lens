@@ -50,8 +50,8 @@ export function ExecuteResponseViewer({
         <div
           style={{
             padding: '1.2rem',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
+            backgroundColor: `${colors.feedback.error}15`,
+            border: `1px solid ${colors.feedback.error}25`,
             borderRadius: '0.6rem',
             color: colors.feedback.error,
             fontSize: '1.3rem',
@@ -213,7 +213,7 @@ export function ExecuteResponseViewer({
                   >
                     <span
                       style={{
-                        color: '#3b82f6',
+                        color: colors.feedback.info,
                         fontWeight: 600,
                         minWidth: '18rem',
                         flexShrink: 0,

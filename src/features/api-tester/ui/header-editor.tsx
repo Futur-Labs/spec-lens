@@ -114,11 +114,11 @@ export function HeaderEditor({
                     alignItems: 'center',
                     padding: '0.6rem 1rem',
                     backgroundColor: headers['Authorization']
-                      ? 'rgba(245, 158, 11, 0.1)'
-                      : 'rgba(34, 197, 94, 0.1)',
+                      ? `${colors.feedback.warning}15`
+                      : `${colors.feedback.success}15`,
                     border: headers['Authorization']
-                      ? '1px solid rgba(245, 158, 11, 0.2)'
-                      : '1px solid rgba(34, 197, 94, 0.2)',
+                      ? `1px solid ${colors.feedback.warning}25`
+                      : `1px solid ${colors.feedback.success}25`,
                     borderRadius: '0.6rem',
                   }}
                 >
@@ -155,14 +155,14 @@ export function HeaderEditor({
                     gap: '0.8rem',
                     alignItems: 'center',
                     padding: '0.6rem 1rem',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    backgroundColor: `${colors.feedback.info}15`,
+                    border: `1px solid ${colors.feedback.info}25`,
                     borderRadius: '0.6rem',
                   }}
                 >
                   <span
                     style={{
-                      color: 'rgba(59, 130, 246, 0.9)',
+                      color: colors.feedback.info,
                       fontSize: '1.1rem',
                       fontWeight: 500,
                       flexShrink: 0,

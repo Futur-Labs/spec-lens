@@ -30,11 +30,11 @@ export function VariablesTab() {
       <div
         style={{
           padding: '0.8rem 1rem',
-          backgroundColor: 'rgba(168, 85, 247, 0.1)',
-          border: '1px solid rgba(168, 85, 247, 0.2)',
+          backgroundColor: `${colors.accent.purple}15`,
+          border: `1px solid ${colors.accent.purple}25`,
           borderRadius: '0.6rem',
           fontSize: '1.1rem',
-          color: '#c4b5fd',
+          color: colors.accent.purple,
         }}
       >
         💡 Type{' '}
@@ -85,7 +85,7 @@ export function VariablesTab() {
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.8rem 1.2rem',
-            backgroundColor: newName.trim() ? '#a855f7' : colors.bg.overlayHover,
+            backgroundColor: newName.trim() ? colors.accent.purple : colors.bg.overlayHover,
             border: 'none',
             borderRadius: '0.6rem',
             color: colors.text.onBrand,
@@ -109,14 +109,14 @@ export function VariablesTab() {
                 alignItems: 'center',
                 gap: '0.8rem',
                 padding: '0.8rem 1rem',
-                backgroundColor: 'rgba(168, 85, 247, 0.05)',
-                border: '1px solid rgba(168, 85, 247, 0.2)',
+                backgroundColor: `${colors.accent.purple}0d`,
+                border: `1px solid ${colors.accent.purple}25`,
                 borderRadius: '0.6rem',
               }}
             >
               {/* Name */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flex: 1 }}>
-                <span style={{ color: '#a855f7', fontSize: '1.2rem' }}>@</span>
+                <span style={{ color: colors.accent.purple, fontSize: '1.2rem' }}>@</span>
                 <input
                   value={variable.name}
                   onChange={(e) =>
@@ -125,7 +125,6 @@ export function VariablesTab() {
                   style={{
                     ...inputStyle,
                     fontFamily: 'monospace',
-                    backgroundColor: colors.bg.overlay,
                   }}
                 />
               </div>
@@ -141,7 +140,6 @@ export function VariablesTab() {
                 style={{
                   ...inputStyle,
                   flex: 2,
-                  backgroundColor: colors.bg.overlay,
                 }}
               />
 
@@ -155,7 +153,7 @@ export function VariablesTab() {
                   width: '2rem',
                   height: '2rem',
                   backgroundColor: 'transparent',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  border: `1px solid ${colors.feedback.error}40`,
                   borderRadius: '0.4rem',
                   cursor: 'pointer',
                   color: colors.feedback.error,
@@ -176,7 +174,7 @@ export function VariablesTab() {
               gap: '0.4rem',
               padding: '0.6rem 1rem',
               backgroundColor: 'transparent',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              border: `1px solid ${colors.feedback.error}40`,
               borderRadius: '0.4rem',
               color: colors.feedback.error,
               fontSize: '1.2rem',

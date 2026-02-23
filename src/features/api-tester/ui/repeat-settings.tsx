@@ -43,9 +43,9 @@ export function RepeatSettings({
           <span style={{ color: colors.text.tertiary }}>({requestInterval}ms interval)</span>
         )}
         {showRepeatSettings ? (
-          <ChevronUp size={12} color='#9ca3af' />
+          <ChevronUp size={12} color={colors.text.tertiary} />
         ) : (
-          <ChevronDown size={12} color='#9ca3af' />
+          <ChevronDown size={12} color={colors.text.tertiary} />
         )}
       </button>
 

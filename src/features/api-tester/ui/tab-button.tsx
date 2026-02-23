@@ -41,7 +41,7 @@ export function TabButton({
         <span
           style={{
             padding: '0.1rem 0.5rem',
-            backgroundColor: 'rgba(245, 158, 11, 0.3)',
+            backgroundColor: `${colors.feedback.warning}40`,
             borderRadius: '1rem',
             fontSize: '1rem',
             color: colors.feedback.warning,

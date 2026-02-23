@@ -78,7 +78,7 @@ export function SnippetCopyButton({
           borderStyle: 'solid',
           borderColor: copiedSnippet ? colors.feedback.success : colors.border.subtle,
           borderRadius: '0.6rem',
-          color: disabled ? colors.text.disabled : copiedSnippet ? '#ffffff' : colors.text.primary,
+          color: disabled ? colors.text.disabled : copiedSnippet ? colors.text.onBrand : colors.text.primary,
           cursor: disabled ? 'not-allowed' : 'pointer',
 
           flexShrink: 0,

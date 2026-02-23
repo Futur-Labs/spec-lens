@@ -80,7 +80,7 @@ export function HistoryTab() {
                   gap: '0.4rem',
                   padding: '0.4rem 0.8rem',
                   backgroundColor: 'transparent',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  border: `1px solid ${colors.feedback.error}40`,
                   borderRadius: '0.4rem',
                   color: colors.feedback.error,
                   fontSize: '1.1rem',

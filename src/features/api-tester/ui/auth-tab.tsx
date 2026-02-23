@@ -223,7 +223,7 @@ export function AuthTab() {
               gap: '0.4rem',
               padding: '0.6rem 1rem',
               backgroundColor: 'transparent',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              border: `1px solid ${colors.feedback.error}40`,
               borderRadius: '0.4rem',
               color: colors.feedback.error,
               fontSize: '1.2rem',

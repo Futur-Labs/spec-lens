@@ -85,6 +85,11 @@ export function HistoryKeyValueTable({
     boxSizing: 'border-box' as const,
   };
 
+  const headerAutocompleteInputStyle = {
+    ...autocompleteInputStyle,
+    border: 'none',
+  };
+
   const renderValueInput = (value: string, onChangeValue: (v: string) => void, key?: string) => {
     if (inputType === 'variable') {
       return (
@@ -105,7 +110,7 @@ export function HistoryKeyValueTable({
             value={value}
             onChange={onChangeValue}
             placeholder='Value'
-            style={autocompleteInputStyle}
+            style={headerAutocompleteInputStyle}
             type='value'
             headerName={key}
           />
@@ -125,7 +130,7 @@ export function HistoryKeyValueTable({
             value={key}
             onChange={onChangeKey}
             placeholder='Header name'
-            style={autocompleteInputStyle}
+            style={headerAutocompleteInputStyle}
             type='name'
           />
         </div>
@@ -134,7 +139,7 @@ export function HistoryKeyValueTable({
     return (
       <span
         style={{
-          color: '#3b82f6',
+          color: colors.feedback.info,
           fontWeight: 600,
           minWidth: '14rem',
           flexShrink: 0,
@@ -154,7 +159,7 @@ export function HistoryKeyValueTable({
             display: 'flex',
             alignItems: 'center',
             gap: '0.8rem',
-            padding: '0.4rem 1rem',
+            padding: '0.7rem 1rem',
             borderBottom: `1px solid ${colors.border.subtle}`,
             fontSize: '1.2rem',
             fontFamily: 'monospace',
@@ -181,7 +186,7 @@ export function HistoryKeyValueTable({
             <>
               <span
                 style={{
-                  color: '#3b82f6',
+                  color: colors.feedback.info,
                   fontWeight: 600,
                   minWidth: '14rem',
                   flexShrink: 0,
@@ -211,7 +216,7 @@ export function HistoryKeyValueTable({
                 value={newKey}
                 onChange={setNewKey}
                 placeholder='Header name'
-                style={autocompleteInputStyle}
+                style={headerAutocompleteInputStyle}
                 type='name'
               />
             </div>

@@ -8,9 +8,9 @@ import { CookiesTab } from './cookies-tab';
 import { HistoryTab } from './history-tab';
 import { TabButton } from './tab-button';
 import { VariablesTab } from './variables-tab';
-import { useVariables } from '@/entities/api-spec';
+import { useSpecSource, useVariables } from '@/entities/api-spec';
 import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
-import { useHistory } from '@/entities/history';
+import { useHistoryBySpec } from '@/entities/history';
 import { useColors } from '@/shared/theme';
 
 export function ApiSettingsModal() {
@@ -20,7 +20,9 @@ export function ApiSettingsModal() {
   const customCookies = useCustomCookies();
   const sessionCookies = useSessionCookies();
   const variables = useVariables();
-  const history = useHistory();
+  const specSource = useSpecSource();
+  const specId = specSource?.name ?? null;
+  const history = useHistoryBySpec(specId);
 
   const handleClose = () => {
     window.history.back();

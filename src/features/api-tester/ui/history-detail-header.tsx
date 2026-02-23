@@ -58,7 +58,7 @@ export function HistoryDetailHeader({
             borderRadius: '0.3rem',
             fontSize: '1.1rem',
             fontWeight: 600,
-            color: '#ffffff',
+            color: colors.text.onBrand,
             textTransform: 'uppercase',
           }}
         >

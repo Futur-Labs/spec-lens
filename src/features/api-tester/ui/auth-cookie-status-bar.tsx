@@ -33,7 +33,7 @@ export function AuthCookieStatusBar() {
         <span
           style={{
             backgroundColor:
-              authConfig.type !== 'none' ? 'rgba(34, 197, 94, 0.2)' : colors.bg.overlayHover,
+              authConfig.type !== 'none' ? `${colors.feedback.success}25` : colors.bg.overlayHover,
             padding: '0.2rem 0.8rem',
             borderRadius: '1rem',
             fontSize: '1.1rem',
@@ -69,7 +69,7 @@ export function AuthCookieStatusBar() {
           style={{
             backgroundColor:
               customCookies.length + sessionCookies.length > 0
-                ? 'rgba(245, 158, 11, 0.2)'
+                ? `${colors.feedback.warning}25`
                 : colors.bg.overlayHover,
             padding: '0.2rem 0.8rem',
             borderRadius: '1rem',

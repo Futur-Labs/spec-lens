@@ -45,7 +45,7 @@ export function ApiSettingsModalTrigger() {
           <Shield
             size={16}
             color={hasActiveSession ? colors.feedback.success : colors.text.tertiary}
-            fill={hasActiveSession ? 'rgba(34, 197, 94, 0.2)' : 'transparent'}
+            fill={hasActiveSession ? `${colors.feedback.success}25` : 'transparent'}
           />
           <span style={{ color: colors.text.primary, fontSize: '1.3rem', fontWeight: 500 }}>
             API Settings
@@ -60,10 +60,10 @@ export function ApiSettingsModalTrigger() {
                   alignItems: 'center',
                   gap: '0.4rem',
                   padding: '0.2rem 0.6rem',
-                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  backgroundColor: `${colors.feedback.info}25`,
                   borderRadius: '1rem',
                   fontSize: '1rem',
-                  color: '#3b82f6',
+                  color: colors.feedback.info,
                 }}
               >
                 <Key size={10} />
@@ -77,10 +77,10 @@ export function ApiSettingsModalTrigger() {
                   alignItems: 'center',
                   gap: '0.4rem',
                   padding: '0.2rem 0.6rem',
-                  backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                  backgroundColor: `${colors.feedback.warning}25`,
                   borderRadius: '1rem',
                   fontSize: '1rem',
-                  color: '#f59e0b',
+                  color: colors.feedback.warning,
                 }}
               >
                 <Cookie size={10} />
@@ -94,10 +94,10 @@ export function ApiSettingsModalTrigger() {
                   alignItems: 'center',
                   gap: '0.4rem',
                   padding: '0.2rem 0.6rem',
-                  backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                  backgroundColor: `${colors.accent.purple}25`,
                   borderRadius: '1rem',
                   fontSize: '1rem',
-                  color: '#a855f7',
+                  color: colors.accent.purple,
                 }}
               >
                 <Code size={10} />
