@@ -16,19 +16,6 @@ export default [
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { languageOptions: { globals: globals.browser } },
   {
-    files: ['**/sw.js', '**/service-worker.js', '**/serviceworker.js', 'public/sw.js'],
-    languageOptions: {
-      globals: {
-        ...globals.serviceworker,
-        self: 'readonly',
-        clients: 'readonly',
-        caches: 'readonly',
-        skipWaiting: 'readonly',
-        registration: 'readonly',
-      },
-    },
-  },
-  {
     files: ['./server/server.js'],
     languageOptions: {
       globals: {
@@ -71,10 +58,6 @@ export default [
         {
           groups: [['builtin', 'external'], 'unknown', ['internal', 'parent', 'sibling', 'index']],
           pathGroups: [
-            {
-              pattern: 'react-icons/**',
-              group: 'unknown',
-            },
             {
               pattern: 'lucide-react',
               group: 'unknown',

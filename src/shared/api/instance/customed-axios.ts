@@ -23,7 +23,7 @@ export const customedAxios = interceptors(
     responseType: 'json',
     paramsSerializer: customParamsSerializer,
     timeoutErrorMessage: '요청시간이 초과되었습니다.',
-    timeout: 6000 * 60 * 3,
+    timeout: 1000 * 60 * 2,
   }),
 );
 

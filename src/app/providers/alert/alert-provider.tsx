@@ -1,9 +1,7 @@
 import { AlertDialog } from '@jigoooo/shared-ui';
 import { Toaster } from 'sonner';
 
-import { FaCircleCheck } from 'react-icons/fa6';
-import { IoIosWarning } from 'react-icons/io';
-import { MdError } from 'react-icons/md';
+import { AlertTriangle, CircleCheck, CircleX } from 'lucide-react';
 
 import { useColors } from '@/shared/theme';
 
@@ -25,9 +23,9 @@ export function AlertProvider() {
           duration: 1800,
         }}
         icons={{
-          success: <FaCircleCheck style={{ color: colors.feedback.success, fontSize: '1.6rem' }} />,
-          warning: <IoIosWarning style={{ color: colors.feedback.warning, fontSize: '1.6rem' }} />,
-          error: <MdError style={{ color: colors.feedback.error, fontSize: '1.6rem' }} />,
+          success: <CircleCheck size={16} style={{ color: colors.feedback.success }} />,
+          warning: <AlertTriangle size={16} style={{ color: colors.feedback.warning }} />,
+          error: <CircleX size={16} style={{ color: colors.feedback.error }} />,
         }}
         expand={true}
       />

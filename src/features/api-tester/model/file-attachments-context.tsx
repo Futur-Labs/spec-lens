@@ -18,12 +18,17 @@ import { fileToBase64 } from '../lib/file-helpers';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MULTI_FILE_SEPARATOR = '__';
 
+// 엔드포인트별 첨부파일 비활성 후 자동 정리 설정
+const CLEANUP_INTERVAL_MS = 60_000; // 1분마다 정리 체크
+const STALE_THRESHOLD_MS = 15 * 60_000; // 15분 비활성 시 정리
+
 const FileAttachmentsContext = createContext<FileAttachmentsContextValue | null>(null);
 
 export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
   const [attachments, setAttachments] = useState<Map<string, FileAttachment>>(new Map());
   const previewUrlsRef = useRef<Set<string>>(new Set());
   const savedAttachmentsRef = useRef<Map<string, Map<string, FileAttachment>>>(new Map());
+  const lastAccessTimeRef = useRef<Map<string, number>>(new Map());
 
   const revokePreview = (url: string) => {
     URL.revokeObjectURL(url);
@@ -144,6 +149,7 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
     setAttachments((current) => {
       if (current.size > 0) {
         savedAttachmentsRef.current.set(endpointKey, new Map(current));
+        lastAccessTimeRef.current.set(endpointKey, Date.now());
       }
       return current;
     });
@@ -151,6 +157,9 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
 
   const loadForEndpoint = useCallback((endpointKey: string) => {
     const saved = savedAttachmentsRef.current.get(endpointKey);
+    if (saved) {
+      lastAccessTimeRef.current.set(endpointKey, Date.now());
+    }
     setAttachments(saved ? new Map(saved) : new Map());
   }, []);
 
@@ -213,11 +222,53 @@ export function FileAttachmentsProvider({ children }: { children: ReactNode }) {
     return result;
   };
 
+  // 비활성 엔드포인트의 첨부파일 자동 정리
+  const cleanupStaleAttachments = useCallback(() => {
+    const now = Date.now();
+    const staleKeys: string[] = [];
+
+    for (const [key, lastAccess] of lastAccessTimeRef.current) {
+      if (now - lastAccess > STALE_THRESHOLD_MS) {
+        staleKeys.push(key);
+      }
+    }
+
+    for (const key of staleKeys) {
+      const saved = savedAttachmentsRef.current.get(key);
+      if (saved) {
+        for (const attachment of saved.values()) {
+          if (attachment.preview) {
+            URL.revokeObjectURL(attachment.preview);
+            previewUrlsRef.current.delete(attachment.preview);
+          }
+        }
+      }
+      savedAttachmentsRef.current.delete(key);
+      lastAccessTimeRef.current.delete(key);
+    }
+  }, []);
+
+  // 주기적으로 비활성 첨부파일 정리
+  useEffect(() => {
+    const timer = setInterval(cleanupStaleAttachments, CLEANUP_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [cleanupStaleAttachments]);
+
   useEffect(() => {
     const urls = previewUrlsRef.current;
+    const saved = savedAttachmentsRef.current;
     return () => {
+      // 컴포넌트 언마운트 시 모든 preview URL 해제
       for (const url of urls) {
         URL.revokeObjectURL(url);
+      }
+      // 저장된 첨부파일의 preview URL도 해제
+      for (const endpointMap of saved.values()) {
+        for (const attachment of endpointMap.values()) {
+          if (attachment.preview) {
+            URL.revokeObjectURL(attachment.preview);
+          }
+        }
       }
     };
   }, []);

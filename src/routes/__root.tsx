@@ -1,6 +1,4 @@
 /// <reference types="vite/client" />
-import 'react-lazy-load-image-component/src/effects/blur.css';
-
 import { type QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext } from '@tanstack/react-router';
 

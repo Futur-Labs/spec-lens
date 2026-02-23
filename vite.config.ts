@@ -77,19 +77,19 @@ export default defineConfig(({ mode }) => {
         },
         png: {
           // https://sharp.pixelplumbing.com/api-output#png
-          quality: 100,
+          quality: 95,
         },
         jpeg: {
           // https://sharp.pixelplumbing.com/api-output#jpeg
-          quality: 100,
+          quality: 95,
         },
         jpg: {
           // https://sharp.pixelplumbing.com/api-output#jpeg
-          quality: 100,
+          quality: 95,
         },
         tiff: {
           // https://sharp.pixelplumbing.com/api-output#tiff
-          quality: 100,
+          quality: 95,
         },
         // gif does not support lossless compression
         // https://sharp.pixelplumbing.com/api-output#gif
@@ -111,7 +111,6 @@ export default defineConfig(({ mode }) => {
     },
     assetsInclude: ['**/*.ttf', '**/*.woff', '**/*.woff2', '**/*.eot', '**/*.otf'],
     build: {
-      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks(id) {
