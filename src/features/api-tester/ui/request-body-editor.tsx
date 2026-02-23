@@ -6,14 +6,22 @@ import { ResetButton } from '@/shared/ui/button';
 export function RequestBodyEditor({
   bodyExample,
   jsonError,
-  setJsonError,
+  fixSuggestion,
+  validate,
 }: {
   bodyExample: string;
   jsonError: string | null;
-  setJsonError: (jsonError: string | null) => void;
+  fixSuggestion: string | null;
+  validate: (value: string) => void;
 }) {
   const colors = useColors();
   const requestBody = useRequestBody();
+
+  const handleApplyFix = () => {
+    if (!fixSuggestion) return;
+    testParamsStoreActions.setRequestBody(fixSuggestion);
+    validate(fixSuggestion);
+  };
 
   return (
     <div>
@@ -39,16 +47,7 @@ export function RequestBodyEditor({
         value={requestBody}
         onChange={(value) => {
           testParamsStoreActions.setRequestBody(value);
-          if (value.trim()) {
-            try {
-              JSON.parse(value);
-              setJsonError(null);
-            } catch (err) {
-              setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
-            }
-          } else {
-            setJsonError(null);
-          }
+          validate(value);
         }}
         multiline
         style={{
@@ -69,6 +68,9 @@ export function RequestBodyEditor({
       {jsonError && (
         <div
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
             marginTop: '0.6rem',
             padding: '0.8rem',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -78,7 +80,24 @@ export function RequestBodyEditor({
             fontSize: '1.2rem',
           }}
         >
-          Invalid JSON: {jsonError}
+          <span>Invalid JSON: {jsonError}</span>
+          {fixSuggestion && (
+            <button
+              onClick={handleApplyFix}
+              style={{
+                padding: '0.2rem 0.6rem',
+                backgroundColor: 'transparent',
+                border: `1px solid ${colors.feedback.error}`,
+                borderRadius: '0.3rem',
+                color: colors.feedback.error,
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              Auto Fix
+            </button>
+          )}
         </div>
       )}
     </div>

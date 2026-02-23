@@ -1,9 +1,8 @@
-import { useState } from 'react';
-
 import { HistoryKeyValueTable } from './history-key-value-table';
 import { formatBody } from '../lib/format-body';
 import { VariableAutocompleteInput } from '@/entities/api-spec/ui/variable-autocomplete-input';
 import type { HistoryEntry } from '@/entities/history';
+import { useJsonValidation } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 import { CollapsibleSection } from '@/shared/ui/section';
 
@@ -31,7 +30,7 @@ export function HistoryDetailRequest({
   onChangeBody: (v: string) => void;
 }) {
   const colors = useColors();
-  const [jsonError, setJsonError] = useState<string | null>(null);
+  const { jsonError, fixSuggestion, validate } = useJsonValidation();
 
   const hasPathParams = Object.keys(entry.request.pathParams).length > 0;
   const hasQueryParams = Object.keys(entry.request.queryParams).length > 0;
@@ -40,17 +39,13 @@ export function HistoryDetailRequest({
 
   const handleBodyChange = (value: string) => {
     onChangeBody(value);
-    // JSON 검증
-    if (value.trim()) {
-      try {
-        JSON.parse(value);
-        setJsonError(null);
-      } catch {
-        setJsonError('Invalid JSON format');
-      }
-    } else {
-      setJsonError(null);
-    }
+    validate(value);
+  };
+
+  const handleApplyFix = () => {
+    if (!fixSuggestion) return;
+    onChangeBody(fixSuggestion);
+    validate(fixSuggestion);
   };
 
   return (
@@ -144,12 +139,32 @@ export function HistoryDetailRequest({
               {jsonError && (
                 <div
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    marginTop: '0.4rem',
                     color: colors.feedback.error,
                     fontSize: '1.1rem',
-                    marginTop: '0.4rem',
                   }}
                 >
-                  {jsonError}
+                  <span>{jsonError}</span>
+                  {fixSuggestion && (
+                    <button
+                      onClick={handleApplyFix}
+                      style={{
+                        padding: '0.2rem 0.6rem',
+                        backgroundColor: 'transparent',
+                        border: `1px solid ${colors.feedback.error}`,
+                        borderRadius: '0.3rem',
+                        color: colors.feedback.error,
+                        fontSize: '1.1rem',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Auto Fix
+                    </button>
+                  )}
                 </div>
               )}
             </div>

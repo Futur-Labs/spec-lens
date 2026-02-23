@@ -30,6 +30,7 @@ import {
   usePathParams,
   useQueryParams,
 } from '@/entities/test-params';
+import { useJsonValidation } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 
 export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
@@ -43,7 +44,7 @@ export function TryItPanel({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
 function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec: ApiSpec }) {
   const colors = useColors();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [jsonError, setJsonError] = useState<string | null>(null);
+  const { jsonError, fixSuggestion, validate: validateJson } = useJsonValidation();
   const { clearAll, saveForEndpoint, loadForEndpoint, clearForEndpoint } = useFileAttachments();
 
   // Repeat request settings
@@ -217,7 +218,8 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
                   <RequestBodyEditor
                     bodyExample={bodyExample}
                     jsonError={jsonError}
-                    setJsonError={setJsonError}
+                    fixSuggestion={fixSuggestion}
+                    validate={validateJson}
                   />
                 ) : (
                   <FormDataEditor

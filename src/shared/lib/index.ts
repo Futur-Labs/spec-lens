@@ -52,3 +52,6 @@ export { useVirtualSmoothScroll } from './interaction/virtual-smooth-scroll.ts';
 
 export { koreanFuzzyMatch, createKoreanSearchRegex } from './search/korean-search.ts';
 export { highlightMatches } from './search/highlight-matches.tsx';
+
+export { validateJson, tryFixJson } from './json/json-utils.ts';
+export { useJsonValidation } from './json/use-json-validation.ts';
