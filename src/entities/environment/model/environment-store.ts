@@ -7,12 +7,14 @@ export const useEnvironmentStore = create<EnvironmentStore>()(
   persist(
     (set) => ({
       environments: [],
-      activeEnvironmentId: null,
+      activeEnvironmentIds: [],
 
       actions: {
         addEnvironment: (env) =>
           set((state) => ({
             environments: [...state.environments, env],
+            // 새 환경 추가 시 자동 활성화
+            activeEnvironmentIds: [...state.activeEnvironmentIds, env.id],
           })),
 
         updateEnvironment: (id, updates) =>
@@ -25,21 +27,36 @@ export const useEnvironmentStore = create<EnvironmentStore>()(
         removeEnvironment: (id) =>
           set((state) => ({
             environments: state.environments.filter((env) => env.id !== id),
-            // 활성 환경 삭제 시 비활성화
-            activeEnvironmentId:
-              state.activeEnvironmentId === id ? null : state.activeEnvironmentId,
+            activeEnvironmentIds: state.activeEnvironmentIds.filter((eid) => eid !== id),
           })),
 
-        setActiveEnvironment: (id) => set({ activeEnvironmentId: id }),
+        toggleEnvironment: (id) =>
+          set((state) => ({
+            activeEnvironmentIds: state.activeEnvironmentIds.includes(id)
+              ? state.activeEnvironmentIds.filter((eid) => eid !== id)
+              : [...state.activeEnvironmentIds, id],
+          })),
       },
     }),
     {
       name: 'api-tester-environments',
-      version: 1,
+      version: 2,
       partialize: (state) => ({
         environments: state.environments,
-        activeEnvironmentId: state.activeEnvironmentId,
+        activeEnvironmentIds: state.activeEnvironmentIds,
       }),
+      migrate: (persisted: unknown) => {
+        const state = persisted as Record<string, unknown>;
+        // v1 → v2: activeEnvironmentId → activeEnvironmentIds
+        if ('activeEnvironmentId' in state && !('activeEnvironmentIds' in state)) {
+          const oldId = state.activeEnvironmentId as string | null;
+          return {
+            ...state,
+            activeEnvironmentIds: oldId ? [oldId] : [],
+          } as EnvironmentStore;
+        }
+        return state as EnvironmentStore;
+      },
     },
   ),
 );
@@ -48,9 +65,4 @@ export const environmentStoreActions = useEnvironmentStore.getState().actions;
 
 export const useEnvironments = () => useEnvironmentStore((s) => s.environments);
 
-export const useActiveEnvironmentId = () => useEnvironmentStore((s) => s.activeEnvironmentId);
-
-export const useActiveEnvironment = () =>
-  useEnvironmentStore(
-    (s) => s.environments.find((env) => env.id === s.activeEnvironmentId) ?? null,
-  );
+export const useActiveEnvironmentIds = () => useEnvironmentStore((s) => s.activeEnvironmentIds);

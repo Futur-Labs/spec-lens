@@ -3,6 +3,5 @@ export type { Environment, EnvironmentVariable } from './model/environment-types
 export {
   environmentStoreActions,
   useEnvironments,
-  useActiveEnvironment,
-  useActiveEnvironmentId,
+  useActiveEnvironmentIds,
 } from './model/environment-store.ts';

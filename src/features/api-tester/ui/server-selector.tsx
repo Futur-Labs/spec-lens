@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
-import { EnvironmentSelector } from './environment-selector';
 import type { ApiSpec } from '@/entities/api-spec';
-import { useActiveEnvironment } from '@/entities/environment';
+import { useActiveEnvironmentIds, useEnvironments } from '@/entities/environment';
 import { testParamsStoreActions, useSelectedServer } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';
@@ -13,55 +12,54 @@ export function ServerSelector({ spec }: { spec: ApiSpec }) {
   const colors = useColors();
 
   const selectedServer = useSelectedServer();
-  const activeEnv = useActiveEnvironment();
+  const environments = useEnvironments();
+  const activeEnvIds = useActiveEnvironmentIds();
 
   const servers = spec.servers ?? DEFAULT_SERVERS;
 
-  // 환경의 baseUrl이 있으면 서버 자동 전환
-  const effectiveBaseUrl = activeEnv?.baseUrl || null;
-
-  useEffect(() => {
-    const serverList = spec.servers ?? DEFAULT_SERVERS;
-    if (effectiveBaseUrl) {
-      testParamsStoreActions.setSelectedServer(effectiveBaseUrl);
-    } else if (!selectedServer && serverList.length > 0) {
-      testParamsStoreActions.setSelectedServer(serverList[0].url);
+  // 비반응적 값 참조용 이벤트 핸들러
+  const onInitServer = useEffectEvent(() => {
+    if (!selectedServer && servers.length > 0) {
+      testParamsStoreActions.setSelectedServer(servers[0].url);
     }
-  }, [spec.servers, selectedServer, effectiveBaseUrl]);
+  });
 
-  // 환경 baseUrl을 서버 옵션에 포함
-  const serverOptions = effectiveBaseUrl
-    ? [
-        { label: `${effectiveBaseUrl} (${activeEnv!.name})`, value: effectiveBaseUrl },
-        ...servers
-          .filter((s) => s.url !== effectiveBaseUrl)
-          .map((s) => ({
-            label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
-            value: s.url,
-          })),
-      ]
-    : servers.map((s) => ({
-        label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
-        value: s.url,
-      }));
+  // 초기 서버 설정
+  useEffect(() => {
+    onInitServer();
+  }, [spec.servers]);
+
+  // 서버 옵션: spec 서버 + 활성화된 환경 baseUrl
+  const specServerOptions = servers.map((s) => ({
+    label: `${s.url}${s.description ? ` (${s.description})` : ''}`,
+    value: s.url,
+  }));
+
+  const envServerOptions = environments
+    .filter(
+      (e) => e.baseUrl && activeEnvIds.includes(e.id) && !servers.some((s) => s.url === e.baseUrl),
+    )
+    .map((e) => ({
+      label: `${e.baseUrl} (${e.name})`,
+      value: e.baseUrl,
+    }));
+
+  const serverOptions = [...envServerOptions, ...specServerOptions];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <label
-          style={{
-            color: colors.text.secondary,
-            fontSize: '1.2rem',
-            fontWeight: 500,
-          }}
-        >
-          Target Server
-        </label>
-        <EnvironmentSelector />
-      </div>
+      <label
+        style={{
+          color: colors.text.secondary,
+          fontSize: '1.2rem',
+          fontWeight: 500,
+        }}
+      >
+        Target Server
+      </label>
       <FuturSelect
         value={selectedServer}
-        onChange={(val) => testParamsStoreActions.setSelectedServer(val)}
+        onChange={(url) => testParamsStoreActions.setSelectedServer(url)}
         options={serverOptions}
         placeholder='Select a server'
       />

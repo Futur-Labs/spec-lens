@@ -13,14 +13,14 @@ export type Environment = {
 
 type EnvironmentState = {
   environments: Environment[];
-  activeEnvironmentId: string | null;
+  activeEnvironmentIds: string[];
 };
 
 type EnvironmentActions = {
   addEnvironment: (env: Environment) => void;
   updateEnvironment: (id: string, updates: Partial<Omit<Environment, 'id'>>) => void;
   removeEnvironment: (id: string) => void;
-  setActiveEnvironment: (id: string | null) => void;
+  toggleEnvironment: (id: string) => void;
 };
 
 export type EnvironmentStore = EnvironmentState & { actions: EnvironmentActions };

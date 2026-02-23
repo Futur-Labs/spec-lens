@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Check, ChevronDown, ChevronUp, Globe, Plus, Trash2 } from 'lucide-react';
 
 import { getInputStyle, INPUT_CLASS_NAME } from '../lib/input-style';
 import {
   environmentStoreActions,
-  useActiveEnvironmentId,
+  useActiveEnvironmentIds,
   useEnvironments,
   type Environment,
   type EnvironmentVariable,
 } from '@/entities/environment';
+import { testParamsStoreActions } from '@/entities/test-params';
 import { useColors } from '@/shared/theme';
 
 const ENV_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
@@ -17,7 +18,7 @@ const ENV_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b
 export function EnvironmentsTab() {
   const colors = useColors();
   const environments = useEnvironments();
-  const activeEnvId = useActiveEnvironmentId();
+  const activeEnvIds = useActiveEnvironmentIds();
   const inputStyle = getInputStyle(colors);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -38,6 +39,12 @@ export function EnvironmentsTab() {
     };
 
     environmentStoreActions.addEnvironment(env);
+
+    // 새 환경의 baseUrl이 있으면 서버도 전환
+    if (env.baseUrl) {
+      testParamsStoreActions.setSelectedServer(env.baseUrl);
+    }
+
     setNewName('');
     setNewBaseUrl('');
     setNewColor(ENV_COLORS[(environments.length + 1) % ENV_COLORS.length]);
@@ -66,7 +73,7 @@ export function EnvironmentsTab() {
         <EnvironmentCard
           key={env.id}
           env={env}
-          isActive={env.id === activeEnvId}
+          isActive={activeEnvIds.includes(env.id)}
           isExpanded={env.id === expandedId}
           onToggleExpand={() => setExpandedId(expandedId === env.id ? null : env.id)}
           inputStyle={inputStyle}
@@ -215,9 +222,11 @@ function EnvironmentCard({
 }) {
   const [newVarName, setNewVarName] = useState('');
   const [newVarValue, setNewVarValue] = useState('');
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const valueInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddVariable = () => {
-    if (!newVarName.trim()) return;
+    if (!newVarName.trim() || !newVarValue.trim()) return;
 
     const newVar: EnvironmentVariable = {
       name: newVarName.trim(),
@@ -229,6 +238,9 @@ function EnvironmentCard({
     });
     setNewVarName('');
     setNewVarValue('');
+
+    // 추가 후 name input으로 포커스 복귀
+    setTimeout(() => nameInputRef.current?.focus(), 0);
   };
 
   const handleRemoveVariable = (index: number) => {
@@ -307,11 +319,11 @@ function EnvironmentCard({
           </span>
         )}
 
-        {/* Active toggle */}
+        {/* Active toggle — 활성화/비활성화 토글 */}
         <button
           onClick={(e) => {
             e.stopPropagation();
-            environmentStoreActions.setActiveEnvironment(isActive ? null : env.id);
+            environmentStoreActions.toggleEnvironment(env.id);
           }}
           title={isActive ? 'Deactivate' : 'Activate'}
           style={{
@@ -430,43 +442,43 @@ function EnvironmentCard({
               </div>
             ))}
 
-            {/* Add Variable */}
+            {/* Add Variable — blur/Enter 시 자동 추가, Tab으로 다음 input 이동 */}
             <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
               <span style={{ color: colors.text.tertiary, fontSize: '1.1rem' }}>@</span>
               <input
+                ref={nameInputRef}
                 value={newVarName}
                 onChange={(e) => setNewVarName(e.target.value)}
                 placeholder='Name'
                 className={INPUT_CLASS_NAME}
                 style={{ ...inputStyle, flex: 1, fontFamily: 'monospace' }}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddVariable()}
+                onKeyDown={(e) => {
+                  if (e.nativeEvent.isComposing) return;
+                  if (e.key === 'Enter') handleAddVariable();
+                  if (e.key === 'Tab' && !e.shiftKey) {
+                    e.preventDefault();
+                    valueInputRef.current?.focus();
+                  }
+                }}
+                onBlur={handleAddVariable}
               />
               <input
+                ref={valueInputRef}
                 value={newVarValue}
                 onChange={(e) => setNewVarValue(e.target.value)}
                 placeholder='Value'
                 className={INPUT_CLASS_NAME}
                 style={{ ...inputStyle, flex: 2 }}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddVariable()}
-              />
-              <button
-                onClick={handleAddVariable}
-                disabled={!newVarName.trim()}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2rem',
-                  height: '2rem',
-                  backgroundColor: newVarName.trim() ? env.color : colors.bg.overlayHover,
-                  border: 'none',
-                  borderRadius: '0.4rem',
-                  cursor: newVarName.trim() ? 'pointer' : 'not-allowed',
-                  color: colors.text.onBrand,
+                onKeyDown={(e) => {
+                  if (e.nativeEvent.isComposing) return;
+                  if (e.key === 'Enter') handleAddVariable();
+                  if (e.key === 'Tab' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAddVariable();
+                  }
                 }}
-              >
-                <Plus size={12} />
-              </button>
+                onBlur={handleAddVariable}
+              />
             </div>
           </div>
 

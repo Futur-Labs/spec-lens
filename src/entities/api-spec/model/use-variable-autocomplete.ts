@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 
 import { useVariables } from './variable-store.ts';
-import { useActiveEnvironment } from '@/entities/environment';
+import { useEnvironments } from '@/entities/environment';
+import { useSelectedServer } from '@/entities/test-params';
 import { parseAtMention, filterVariables, replaceAtMention } from '../lib/variable-autocomplete.ts';
 
 export function useVariableAutocomplete(value: string, onChange: (v: string) => void) {
   const globalVariables = useVariables();
-  const activeEnv = useActiveEnvironment();
+  const environments = useEnvironments();
+  const selectedServer = useSelectedServer();
 
-  // 환경 변수와 글로벌 변수 병합 (환경 변수가 동일 이름일 때 우선)
+  // 선택된 서버 URL과 일치하는 환경의 변수를 글로벌 변수와 병합
   const variables = (() => {
+    const activeEnv = environments.find((e) => e.baseUrl === selectedServer) ?? null;
     const envVars = activeEnv?.variables ?? [];
     const envVarNames = new Set(envVars.map((v) => v.name));
     return [...envVars, ...globalVariables.filter((v) => !envVarNames.has(v.name))];
