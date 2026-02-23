@@ -40,7 +40,7 @@ export function HistoryDetailResponse({ entry }: { entry: HistoryEntry }) {
               ...iconButtonStyle,
               width: '2rem',
               height: '2rem',
-              marginLeft: '0.4rem',
+              marginLeft: '1rem',
             }}
             title='Copy response body'
           >
