@@ -1,15 +1,17 @@
 import { FlexRow } from '@jigoooo/shared-ui';
 import { type ReactNode, useState } from 'react';
 
-import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronsDownUp, ChevronsUpDown, Search, X } from 'lucide-react';
 
 import {
   endpointFilterStoreActions,
+  getAllTags,
   useSearchQuery,
   useSelectedMethods,
   useSelectedTags,
   useSpecStore,
 } from '@/entities/api-spec';
+import { sidebarStoreActions, useExpandedTags } from '@/entities/sidebar';
 import { MethodFilterChips, TagFilterChips } from '@/features/endpoint-filter';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
@@ -20,11 +22,14 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
   const searchQuery = useSearchQuery();
   const selectedMethods = useSelectedMethods();
   const selectedTags = useSelectedTags();
+  const expandedTags = useExpandedTags();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   if (!spec) return null;
 
   const activeFilterCount = selectedMethods.length + selectedTags.length;
+  const allTags = getAllTags(spec);
+  const isAllExpanded = allTags.length > 0 && allTags.every((tag) => expandedTags.includes(tag));
 
   return (
     <div
@@ -103,7 +108,29 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
       {/* Filters Toggle - Endpoints only */}
       {activeTab === 'endpoints' && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}
+          >
+            <button
+              onClick={() =>
+                isAllExpanded
+                  ? sidebarStoreActions.collapseAllTags()
+                  : sidebarStoreActions.expandAllTags(allTags)
+              }
+              title={isAllExpanded ? 'Collapse all' : 'Expand all'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.5rem',
+                backgroundColor: 'transparent',
+                border: `1px solid ${colors.border.subtle}`,
+                borderRadius: '0.4rem',
+                cursor: 'pointer',
+                color: colors.text.secondary,
+              }}
+            >
+              {isAllExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
+            </button>
             <button
               onClick={() => setFiltersOpen((prev) => !prev)}
               style={{

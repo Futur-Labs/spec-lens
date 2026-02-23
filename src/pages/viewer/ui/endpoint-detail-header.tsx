@@ -1,6 +1,9 @@
-import { ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+
+import { Check, Copy, ExternalLink } from 'lucide-react';
 
 import { MethodBadge, type OperationObject } from '@/entities/api-spec';
+import { copyToClipboard } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 import type { HttpMethod } from '@/shared/type';
 import { FormattedText } from '@/shared/ui/formatted-text';
@@ -15,6 +18,14 @@ export function EndpointDetailHeader({
   operation: OperationObject;
 }) {
   const colors = useColors();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyPath = () => {
+    copyToClipboard(path, () => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <div style={{ marginBottom: '2.4rem' }}>
@@ -61,6 +72,7 @@ export function EndpointDetailHeader({
             fontFamily: 'monospace',
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
+            flex: 1,
           }}
         >
           {path.split('/').map((segment, index) => (
@@ -75,6 +87,26 @@ export function EndpointDetailHeader({
             </span>
           ))}
         </h1>
+        <button
+          onClick={handleCopyPath}
+          title={copied ? 'Copied!' : 'Copy path'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0.6rem',
+            backgroundColor: copied ? `${colors.feedback.success}15` : 'transparent',
+            border: `1px solid ${copied ? colors.feedback.success : colors.border.subtle}`,
+            borderRadius: '0.4rem',
+            cursor: 'pointer',
+            color: copied ? colors.feedback.success : colors.text.tertiary,
+            transition: 'all 0.2s ease',
+            flexShrink: 0,
+            marginTop: '0.2rem',
+          }}
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+        </button>
       </div>
 
       {operation.summary && (
