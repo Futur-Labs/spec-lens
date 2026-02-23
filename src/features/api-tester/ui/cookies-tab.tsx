@@ -27,9 +27,9 @@ export function CookiesTab() {
       const removedCount = cookieStoreActions.removeExpiredCookies();
       if (removedCount > 0) {
         console.log(`[API Tester] Removed ${removedCount} expired session cookie(s)`);
+        // 만료된 쿠키가 있을 때만 리렌더
+        forceUpdate((n) => n + 1);
       }
-      // Force re-render to update expiration times
-      forceUpdate((n) => n + 1);
     }, 30000);
 
     return () => clearInterval(interval);
