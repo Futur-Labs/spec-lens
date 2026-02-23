@@ -3,12 +3,15 @@ import { useState } from 'react';
 
 import { ChevronRight } from 'lucide-react';
 
-import { SchemaViewer, useSpec } from '@/entities/api-spec';
+import { SchemaViewer, useSearchQuery, useSpec } from '@/entities/api-spec';
+import { useDebounceDeferredValue } from '@/shared/hooks';
 import { useColors } from '@/shared/theme';
 
 export function SidebarModelsList() {
   const colors = useColors();
   const spec = useSpec();
+  const searchQuery = useSearchQuery();
+  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 350, { immediateOnEmpty: true });
 
   const schemas = spec?.components?.schemas;
 
@@ -28,11 +31,30 @@ export function SidebarModelsList() {
     );
   }
 
-  const schemaNames = Object.keys(schemas).sort();
+  const allNames = Object.keys(schemas).sort();
+  const filteredNames = deferredSearchQuery
+    ? allNames.filter((name) => name.toLowerCase().includes(deferredSearchQuery.toLowerCase()))
+    : allNames;
+
+  if (filteredNames.length === 0) {
+    return (
+      <div
+        style={{
+          flex: 1,
+          padding: '3.2rem 1.6rem',
+          textAlign: 'center',
+          color: colors.text.tertiary,
+          fontSize: '1.3rem',
+        }}
+      >
+        No matching models
+      </div>
+    );
+  }
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '0.4rem 0' }}>
-      {schemaNames.map((name) => (
+      {filteredNames.map((name) => (
         <SchemaItem key={name} name={name} />
       ))}
     </div>

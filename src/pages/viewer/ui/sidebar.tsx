@@ -18,7 +18,7 @@ export function Sidebar() {
 
   return (
     <ResizableSidebarLayout>
-      <SidebarHeader />
+      <SidebarHeader activeTab={activeTab} />
 
       {hasSchemas && (
         <div

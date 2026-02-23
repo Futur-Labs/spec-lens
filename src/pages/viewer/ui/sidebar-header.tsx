@@ -14,7 +14,7 @@ import { MethodFilterChips, TagFilterChips } from '@/features/endpoint-filter';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
 
-export function SidebarHeader() {
+export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoints' | 'models' }) {
   const colors = useColors();
   const spec = useSpecStore((s) => s.spec);
   const searchQuery = useSearchQuery();
@@ -73,7 +73,7 @@ export function SidebarHeader() {
           type='text'
           value={searchQuery}
           onChange={(e) => endpointFilterStoreActions.setSearchQuery(e.target.value)}
-          placeholder='Search endpoints...'
+          placeholder={activeTab === 'models' ? 'Search models...' : 'Search endpoints...'}
           style={{
             flex: 1,
             backgroundColor: 'transparent',
@@ -100,80 +100,84 @@ export function SidebarHeader() {
         )}
       </div>
 
-      {/* Filters Toggle */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}>
-        <button
-          onClick={() => setFiltersOpen((prev) => !prev)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 0.8rem',
-            backgroundColor: 'transparent',
-            border: `1px solid ${activeFilterCount > 0 ? colors.feedback.info : colors.border.subtle}`,
-            borderRadius: '0.4rem',
-            cursor: 'pointer',
-            color: activeFilterCount > 0 ? colors.feedback.info : colors.text.secondary,
-            fontSize: '1.1rem',
-            fontWeight: 500,
-          }}
-        >
-          {filtersOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-          Filters
-          {activeFilterCount > 0 && (
-            <span
+      {/* Filters Toggle - Endpoints only */}
+      {activeTab === 'endpoints' && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}>
+            <button
+              onClick={() => setFiltersOpen((prev) => !prev)}
               style={{
-                padding: '0.1rem 0.5rem',
-                backgroundColor: `${colors.feedback.info}20`,
-                borderRadius: '1rem',
-                fontSize: '1rem',
-                color: colors.feedback.info,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 0.8rem',
+                backgroundColor: 'transparent',
+                border: `1px solid ${activeFilterCount > 0 ? colors.feedback.info : colors.border.subtle}`,
+                borderRadius: '0.4rem',
+                cursor: 'pointer',
+                color: activeFilterCount > 0 ? colors.feedback.info : colors.text.secondary,
+                fontSize: '1.1rem',
+                fontWeight: 500,
               }}
             >
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-        {activeFilterCount > 0 && (
-          <button
-            onClick={endpointFilterStoreActions.clearFilters}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              padding: '0.5rem 0.8rem',
-              backgroundColor: 'transparent',
-              border: `1px solid rgba(239, 68, 68, 0.3)`,
-              borderRadius: '0.4rem',
-              cursor: 'pointer',
-              color: colors.feedback.error,
-              fontSize: '1.1rem',
-              fontWeight: 500,
-            }}
-          >
-            <X size={12} />
-            Clear
-          </button>
-        )}
-      </div>
+              {filtersOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              Filters
+              {activeFilterCount > 0 && (
+                <span
+                  style={{
+                    padding: '0.1rem 0.5rem',
+                    backgroundColor: `${colors.feedback.info}20`,
+                    borderRadius: '1rem',
+                    fontSize: '1rem',
+                    color: colors.feedback.info,
+                  }}
+                >
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={endpointFilterStoreActions.clearFilters}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  padding: '0.5rem 0.8rem',
+                  backgroundColor: 'transparent',
+                  border: `1px solid rgba(239, 68, 68, 0.3)`,
+                  borderRadius: '0.4rem',
+                  cursor: 'pointer',
+                  color: colors.feedback.error,
+                  fontSize: '1.1rem',
+                  fontWeight: 500,
+                }}
+              >
+                <X size={12} />
+                Clear
+              </button>
+            )}
+          </div>
 
-      {filtersOpen && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <FilterSection
-            label='Method'
-            count={selectedMethods.length}
-            onClear={endpointFilterStoreActions.clearMethods}
-          >
-            <MethodFilterChips />
-          </FilterSection>
-          <FilterSection
-            label='Tag'
-            count={selectedTags.length}
-            onClear={endpointFilterStoreActions.clearTags}
-          >
-            <TagFilterChips />
-          </FilterSection>
-        </div>
+          {filtersOpen && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <FilterSection
+                label='Method'
+                count={selectedMethods.length}
+                onClear={endpointFilterStoreActions.clearMethods}
+              >
+                <MethodFilterChips />
+              </FilterSection>
+              <FilterSection
+                label='Tag'
+                count={selectedTags.length}
+                onClear={endpointFilterStoreActions.clearTags}
+              >
+                <TagFilterChips />
+              </FilterSection>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

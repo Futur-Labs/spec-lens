@@ -9,6 +9,7 @@ import {
   MethodBadge,
   type ParsedEndpoint,
 } from '@/entities/api-spec';
+import { useDebounceDeferredValue } from '@/shared/hooks';
 import { highlightMatches } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 import { Tooltip } from '@/shared/ui/tooltip';
@@ -23,6 +24,7 @@ export function SidebarEndpointItem({
   const colors = useColors();
   const selectedEndpoint = useSelectedEndpoint();
   const searchQuery = useSearchQuery();
+  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 350, { immediateOnEmpty: true });
   const textRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -129,7 +131,7 @@ export function SidebarEndpointItem({
             whiteSpace: 'nowrap',
           }}
         >
-          {highlightMatches(endpoint.path, searchQuery)}
+          {highlightMatches(endpoint.path, deferredSearchQuery)}
         </span>
       </motion.button>
     </Tooltip>
