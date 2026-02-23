@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ChevronDown, Play, Trash2 } from 'lucide-react';
 
-import { AuthCookieStatusBar } from './auth-cookie-status-bar';
 import { ExecuteActions } from './execute-actions';
 import { ExecuteResponseViewer } from './execute-response-viewer';
 import { FormDataEditor } from './form-data-editor';
@@ -171,7 +170,7 @@ function TryItPanelContent({ endpoint, spec }: { endpoint: ParsedEndpoint; spec:
             >
               <ServerSelector spec={spec} />
 
-              <AuthCookieStatusBar />
+              {/* <AuthCookieStatusBar /> */}
 
               {(pathParameters.length > 0 || queryParameters.length > 0) && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>

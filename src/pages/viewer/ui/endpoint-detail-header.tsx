@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Check, Copy, ExternalLink } from 'lucide-react';
+import { Check, Copy, ExternalLink, Share2 } from 'lucide-react';
 
 import { MethodBadge, type OperationObject } from '@/entities/api-spec';
 import { copyToClipboard } from '@/shared/lib';
@@ -19,6 +19,7 @@ export function EndpointDetailHeader({
 }) {
   const colors = useColors();
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
 
   const handleCopyPath = () => {
     copyToClipboard(path, () => {
@@ -26,6 +27,43 @@ export function EndpointDetailHeader({
       setTimeout(() => setCopied(false), 2000);
     });
   };
+
+  const handleShare = async () => {
+    const shareText = `${method.toUpperCase()} ${path}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareText, text: shareText });
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      } catch {
+        // User cancelled or share failed — ignore
+      }
+    } else {
+      copyToClipboard(shareText, () => {
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      });
+    }
+  };
+
+  const actionButtonStyle = (isActive: boolean) =>
+    ({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0.6rem',
+      backgroundColor: isActive ? `${colors.feedback.success}15` : 'transparent',
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderColor: isActive ? colors.feedback.success : colors.border.subtle,
+      borderRadius: '0.4rem',
+      cursor: 'pointer',
+      color: isActive ? colors.feedback.success : colors.text.tertiary,
+      transition: 'all 0.2s ease',
+      flexShrink: 0,
+      marginTop: '0.2rem',
+    }) as const;
 
   return (
     <div style={{ marginBottom: '2.4rem' }}>
@@ -90,22 +128,16 @@ export function EndpointDetailHeader({
         <button
           onClick={handleCopyPath}
           title={copied ? 'Copied!' : 'Copy path'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0.6rem',
-            backgroundColor: copied ? `${colors.feedback.success}15` : 'transparent',
-            border: `1px solid ${copied ? colors.feedback.success : colors.border.subtle}`,
-            borderRadius: '0.4rem',
-            cursor: 'pointer',
-            color: copied ? colors.feedback.success : colors.text.tertiary,
-            transition: 'all 0.2s ease',
-            flexShrink: 0,
-            marginTop: '0.2rem',
-          }}
+          style={actionButtonStyle(copied)}
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
+        </button>
+        <button
+          onClick={handleShare}
+          title={shared ? 'Shared!' : 'Share'}
+          style={actionButtonStyle(shared)}
+        >
+          {shared ? <Check size={14} /> : <Share2 size={14} />}
         </button>
       </div>
 
@@ -142,7 +174,9 @@ export function EndpointDetailHeader({
             padding: '0.8rem 1.2rem',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             borderRadius: '0.6rem',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'rgba(239, 68, 68, 0.2)',
           }}
         >
           <span style={{ color: colors.feedback.error, fontSize: '1.3rem', fontWeight: 500 }}>

@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 
-import { Upload } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
 
 import { specStoreActions } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
@@ -18,7 +18,7 @@ export function SpecClearButton() {
   };
 
   return (
-    <Tooltip content={'Change spec'} placement='bottom-start' delay={300}>
+    <Tooltip content={'Open spec'} placement='bottom-start' delay={300}>
       <motion.button
         onClick={handleClearSpec}
         whileHover={{
@@ -41,7 +41,7 @@ export function SpecClearButton() {
           fontWeight: 500,
         }}
       >
-        <Upload size={14} />
+        <FolderOpen size={14} />
       </motion.button>
     </Tooltip>
   );

@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 
-import { getInputStyle } from '../lib/input-style';
+import { getInputStyle, INPUT_CLASS_NAME } from '../lib/input-style';
 import { apiAuthStoreActions, useAuthConfig, type ApiAuthType } from '@/entities/api-auth';
 import { useColors } from '@/shared/theme';
 import { FuturSelect } from '@/shared/ui/select';
@@ -54,6 +54,7 @@ export function AuthTab() {
             value={authConfig.bearerToken || ''}
             onChange={(e) => apiAuthStoreActions.setApiAuthConfig({ bearerToken: e.target.value })}
             placeholder='Enter your bearer token'
+            className={INPUT_CLASS_NAME}
             style={inputStyle}
           />
         </div>
@@ -80,6 +81,7 @@ export function AuthTab() {
                   apiAuthStoreActions.setApiAuthConfig({ apiKeyName: e.target.value })
                 }
                 placeholder='X-API-Key'
+                className={INPUT_CLASS_NAME}
                 style={inputStyle}
               />
             </div>
@@ -126,6 +128,7 @@ export function AuthTab() {
                 apiAuthStoreActions.setApiAuthConfig({ apiKeyValue: e.target.value })
               }
               placeholder='Enter your API key'
+              className={INPUT_CLASS_NAME}
               style={inputStyle}
             />
           </div>
@@ -152,6 +155,7 @@ export function AuthTab() {
                 apiAuthStoreActions.setApiAuthConfig({ basicUsername: e.target.value })
               }
               placeholder='Username'
+              className={INPUT_CLASS_NAME}
               style={inputStyle}
             />
           </div>
@@ -173,6 +177,7 @@ export function AuthTab() {
                 apiAuthStoreActions.setApiAuthConfig({ basicPassword: e.target.value })
               }
               placeholder='Password'
+              className={INPUT_CLASS_NAME}
               style={inputStyle}
             />
           </div>

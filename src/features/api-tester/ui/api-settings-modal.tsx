@@ -13,7 +13,7 @@ import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
 import { useHistory } from '@/entities/history';
 import { useColors } from '@/shared/theme';
 
-export function GlobalAuthModal() {
+export function ApiSettingsModal() {
   const colors = useColors();
   const [activeTab, setActiveTab] = useState<'auth' | 'cookies' | 'variables' | 'history'>('auth');
 
@@ -51,7 +51,7 @@ export function GlobalAuthModal() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
           backdropFilter: 'blur(4px)',
           zIndex: 200,
         }}

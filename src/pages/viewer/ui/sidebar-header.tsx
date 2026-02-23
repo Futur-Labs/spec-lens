@@ -1,7 +1,7 @@
 import { FlexRow } from '@jigoooo/shared-ui';
 import { type ReactNode, useState } from 'react';
 
-import { ChevronDown, ChevronUp, ChevronsDownUp, ChevronsUpDown, Search, X } from 'lucide-react';
+import { ChevronsUpDown, Filter, Search, X } from 'lucide-react';
 
 import {
   endpointFilterStoreActions,
@@ -30,6 +30,7 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
   const activeFilterCount = selectedMethods.length + selectedTags.length;
   const allTags = getAllTags(spec);
   const isAllExpanded = allTags.length > 0 && allTags.every((tag) => expandedTags.includes(tag));
+  const isEndpoints = activeTab === 'endpoints';
 
   return (
     <div
@@ -61,7 +62,7 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
         <ThemeToggle />
       </FlexRow>
 
-      {/* Search */}
+      {/* Search + inline action icons */}
       <div
         style={{
           display: 'flex',
@@ -70,7 +71,9 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
           padding: '0.8rem 1.2rem',
           backgroundColor: colors.bg.input,
           borderRadius: '0.6rem',
-          border: `1px solid ${colors.border.default}`,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: colors.border.default,
         }}
       >
         <Search size={'1.4rem'} color={colors.text.tertiary} />
@@ -103,108 +106,131 @@ export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoi
             <X size={'1.4rem'} color={colors.text.tertiary} />
           </button>
         )}
+
+        {/* Action icons — always rendered for stable layout, hidden on models tab */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+            visibility: isEndpoints ? 'visible' : 'hidden',
+            pointerEvents: isEndpoints ? 'auto' : 'none',
+          }}
+        >
+          <div
+            style={{
+              width: '1px',
+              height: '1.6rem',
+              backgroundColor: colors.border.subtle,
+              flexShrink: 0,
+            }}
+          />
+          <button
+            onClick={() =>
+              isAllExpanded
+                ? sidebarStoreActions.collapseAllTags()
+                : sidebarStoreActions.expandAllTags(allTags)
+            }
+            title={isAllExpanded ? 'Collapse all' : 'Expand all'}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.2rem',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: isAllExpanded ? colors.feedback.info : colors.text.tertiary,
+              flexShrink: 0,
+            }}
+          >
+            <ChevronsUpDown size={14} />
+          </button>
+          <button
+            onClick={() => setFiltersOpen((prev) => !prev)}
+            title='Filters'
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              position: 'relative',
+              padding: '0.2rem',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color:
+                filtersOpen || activeFilterCount > 0 ? colors.feedback.info : colors.text.tertiary,
+              flexShrink: 0,
+            }}
+          >
+            <Filter size={14} />
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-0.3rem',
+                  right: '-0.4rem',
+                  minWidth: '1.4rem',
+                  height: '1.4rem',
+                  padding: '0 0.3rem',
+                  backgroundColor: colors.feedback.info,
+                  borderRadius: '1rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Filters Toggle - Endpoints only */}
-      {activeTab === 'endpoints' && (
-        <>
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minHeight: '2.8rem' }}
+      {/* Filter panels - Endpoints only */}
+      {isEndpoints && filtersOpen && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <FilterSection
+            label='Method'
+            count={selectedMethods.length}
+            onClear={endpointFilterStoreActions.clearMethods}
           >
+            <MethodFilterChips />
+          </FilterSection>
+          <FilterSection
+            label='Tag'
+            count={selectedTags.length}
+            onClear={endpointFilterStoreActions.clearTags}
+          >
+            <TagFilterChips />
+          </FilterSection>
+          {activeFilterCount > 0 && (
             <button
-              onClick={() =>
-                isAllExpanded
-                  ? sidebarStoreActions.collapseAllTags()
-                  : sidebarStoreActions.expandAllTags(allTags)
-              }
-              title={isAllExpanded ? 'Collapse all' : 'Expand all'}
+              onClick={endpointFilterStoreActions.clearFilters}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '0.5rem',
+                alignSelf: 'flex-start',
+                gap: '0.3rem',
+                padding: '0.4rem 0.8rem',
                 backgroundColor: 'transparent',
-                border: `1px solid ${colors.border.subtle}`,
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: 'rgba(239, 68, 68, 0.3)',
                 borderRadius: '0.4rem',
                 cursor: 'pointer',
-                color: colors.text.secondary,
-              }}
-            >
-              {isAllExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
-            </button>
-            <button
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 0.8rem',
-                backgroundColor: 'transparent',
-                border: `1px solid ${activeFilterCount > 0 ? colors.feedback.info : colors.border.subtle}`,
-                borderRadius: '0.4rem',
-                cursor: 'pointer',
-                color: activeFilterCount > 0 ? colors.feedback.info : colors.text.secondary,
+                color: colors.feedback.error,
                 fontSize: '1.1rem',
                 fontWeight: 500,
               }}
             >
-              {filtersOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-              Filters
-              {activeFilterCount > 0 && (
-                <span
-                  style={{
-                    padding: '0.1rem 0.5rem',
-                    backgroundColor: `${colors.feedback.info}20`,
-                    borderRadius: '1rem',
-                    fontSize: '1rem',
-                    color: colors.feedback.info,
-                  }}
-                >
-                  {activeFilterCount}
-                </span>
-              )}
+              <X size={12} />
+              Clear All Filters
             </button>
-            {activeFilterCount > 0 && (
-              <button
-                onClick={endpointFilterStoreActions.clearFilters}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  padding: '0.5rem 0.8rem',
-                  backgroundColor: 'transparent',
-                  border: `1px solid rgba(239, 68, 68, 0.3)`,
-                  borderRadius: '0.4rem',
-                  cursor: 'pointer',
-                  color: colors.feedback.error,
-                  fontSize: '1.1rem',
-                  fontWeight: 500,
-                }}
-              >
-                <X size={12} />
-                Clear
-              </button>
-            )}
-          </div>
-
-          {filtersOpen && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <FilterSection
-                label='Method'
-                count={selectedMethods.length}
-                onClear={endpointFilterStoreActions.clearMethods}
-              >
-                <MethodFilterChips />
-              </FilterSection>
-              <FilterSection
-                label='Tag'
-                count={selectedTags.length}
-                onClear={endpointFilterStoreActions.clearTags}
-              >
-                <TagFilterChips />
-              </FilterSection>
-            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

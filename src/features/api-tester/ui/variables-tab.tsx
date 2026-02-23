@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Plus, Trash2 } from 'lucide-react';
 
-import { getInputStyle } from '../lib/input-style';
+import { getInputStyle, INPUT_CLASS_NAME } from '../lib/input-style';
 import { useVariables, variableStoreActions } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
@@ -65,6 +65,7 @@ export function VariablesTab() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder='Variable name'
+          className={INPUT_CLASS_NAME}
           style={{ ...inputStyle, flex: 1 }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
         />
@@ -72,6 +73,7 @@ export function VariablesTab() {
           value={newValue}
           onChange={(e) => setNewValue(e.target.value)}
           placeholder='Variable value'
+          className={INPUT_CLASS_NAME}
           style={{ ...inputStyle, flex: 2 }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
         />
@@ -135,6 +137,7 @@ export function VariablesTab() {
                   variableStoreActions.updateVariable(index, { value: e.target.value })
                 }
                 placeholder='Value'
+                className={INPUT_CLASS_NAME}
                 style={{
                   ...inputStyle,
                   flex: 2,

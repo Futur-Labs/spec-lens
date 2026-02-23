@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { AlertTriangle, Check, Clock, Plus, Trash2, X } from 'lucide-react';
+import { AlertTriangle, Check, Clock, Plus, Trash2 } from 'lucide-react';
 
-import { getInputStyle } from '../lib/input-style';
+import { getInputStyle, INPUT_CLASS_NAME } from '../lib/input-style';
 import {
   cookieStoreActions,
   getCookieExpirationInfo,
@@ -10,6 +10,7 @@ import {
   useSessionCookies,
 } from '@/entities/cookie';
 import { useColors } from '@/shared/theme';
+import { HeadlessCheckbox } from '@/shared/ui/checkbox';
 
 export function CookiesTab() {
   const colors = useColors();
@@ -78,6 +79,7 @@ export function CookiesTab() {
           value={newCookieName}
           onChange={(e) => setNewCookieName(e.target.value)}
           placeholder='Cookie name'
+          className={INPUT_CLASS_NAME}
           style={{ ...inputStyle, flex: 1 }}
           onKeyDown={(e) => e.key === 'Enter' && handleAddCookie()}
         />
@@ -85,6 +87,7 @@ export function CookiesTab() {
           value={newCookieValue}
           onChange={(e) => setNewCookieValue(e.target.value)}
           placeholder='Cookie value'
+          className={INPUT_CLASS_NAME}
           style={{ ...inputStyle, flex: 2 }}
           onKeyDown={(e) => e.key === 'Enter' && handleAddCookie()}
         />
@@ -268,30 +271,31 @@ export function CookiesTab() {
               }}
             >
               {/* Toggle */}
-              <button
-                onClick={() =>
-                  cookieStoreActions.updateCustomCookie(index, { enabled: !cookie.enabled })
+              <HeadlessCheckbox
+                checked={cookie.enabled}
+                onChange={(checked) =>
+                  cookieStoreActions.updateCustomCookie(index, { enabled: checked })
                 }
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2rem',
-                  height: '2rem',
-                  backgroundColor: cookie.enabled
-                    ? 'rgba(34, 197, 94, 0.2)'
-                    : colors.bg.overlayHover,
-                  border: 'none',
-                  borderRadius: '0.4rem',
-                  cursor: 'pointer',
-                }}
               >
-                {cookie.enabled ? (
-                  <Check size={12} color={colors.feedback.success} />
-                ) : (
-                  <X size={12} color={colors.text.tertiary} />
+                {({ checked }) => (
+                  <div
+                    style={{
+                      width: '1.6rem',
+                      height: '1.6rem',
+                      borderRadius: '0.3rem',
+                      border: checked ? 'none' : `1.5px solid ${colors.border.default}`,
+                      backgroundColor: checked ? colors.feedback.success : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {checked && <Check size={11} color='#ffffff' strokeWidth={3} />}
+                  </div>
                 )}
-              </button>
+              </HeadlessCheckbox>
 
               {/* Name */}
               <input

@@ -90,8 +90,9 @@ export function StepperInput({
         style={{
           padding: '0.6rem 1rem',
           backgroundColor: colors.bg.overlay,
-          border: 'none',
-          borderRight: `1px solid ${colors.border.default}`,
+          borderWidth: '0 1px 0 0',
+          borderStyle: 'solid',
+          borderColor: colors.border.default,
           color: value <= min ? colors.text.tertiary : colors.text.secondary,
           fontSize: '1.4rem',
           cursor: value <= min ? 'not-allowed' : 'pointer',
@@ -126,8 +127,9 @@ export function StepperInput({
         style={{
           padding: '0.6rem 1rem',
           backgroundColor: colors.bg.overlay,
-          border: 'none',
-          borderLeft: `1px solid ${colors.border.default}`,
+          borderWidth: '0 0 0 1px',
+          borderStyle: 'solid',
+          borderColor: colors.border.default,
           color: value >= max ? colors.text.tertiary : colors.text.secondary,
           fontSize: '1.4rem',
           cursor: value >= max ? 'not-allowed' : 'pointer',

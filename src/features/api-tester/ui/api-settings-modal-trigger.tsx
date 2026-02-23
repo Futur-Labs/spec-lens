@@ -7,7 +7,7 @@ import { useVariables } from '@/entities/api-spec';
 import { useCustomCookies, useSessionCookies } from '@/entities/cookie';
 import { useColors } from '@/shared/theme';
 
-export function GlobalAuthTrigger() {
+export function ApiSettingsModalTrigger() {
   const colors = useColors();
   const navigate = useNavigate();
 
