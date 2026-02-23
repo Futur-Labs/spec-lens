@@ -22,6 +22,14 @@ export function SidebarEndpointList() {
 
   const hasActiveFilters = searchQuery || selectedMethods.length > 0 || selectedTags.length > 0;
 
+  // hash 검증용 Set — React Compiler가 자동 메모이제이션
+  const endpointHashSet = new Set(endpoints.map((ep) => generateEndpointHash(ep.method, ep.path)));
+  const flatItemHashSet = new Set(
+    flatItems
+      .filter((item) => item.type === 'endpoint')
+      .map((item) => generateEndpointHash(item.endpoint.method, item.endpoint.path)),
+  );
+
   if (flatItems.length === 0) {
     return (
       <div
@@ -40,18 +48,8 @@ export function SidebarEndpointList() {
 
   if (!hasActiveFilters) {
     const hash = window.location.hash.slice(1);
-    if (hash) {
-      const hashMatchesEndpoint = endpoints.some(
-        (ep) => generateEndpointHash(ep.method, ep.path) === hash,
-      );
-      const hashTargetInList = flatItems.some(
-        (item) =>
-          item.type === 'endpoint' &&
-          generateEndpointHash(item.endpoint.method, item.endpoint.path) === hash,
-      );
-      if (hashMatchesEndpoint && !hashTargetInList) {
-        return <div style={{ flex: 1 }} />;
-      }
+    if (hash && endpointHashSet.has(hash) && !flatItemHashSet.has(hash)) {
+      return <div style={{ flex: 1 }} />;
     }
   }
 

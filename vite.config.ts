@@ -121,6 +121,9 @@ export default defineConfig(({ mode }) => {
               if (id.includes('/@tanstack/react-router-devtools/')) {
                 return 'vendor-router-devtools';
               }
+              if (id.includes('/lucide-react/')) return 'vendor-icons';
+              if (id.includes('/@tanstack/react-query/')) return 'vendor-query';
+              if (id.includes('/@tanstack/react-router/')) return 'vendor-router';
             }
             return undefined;
           },

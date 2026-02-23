@@ -4,8 +4,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type { ApiSpec } from './api-types.ts';
 import type { SpecSource } from './spec-types.ts';
-import { parseEndpoints } from '../lib/parse-endpoints.ts';
 import { indexedDBStorage } from '@/shared/lib';
+import { HTTP_METHODS } from '@/shared/type';
 
 const MAX_HISTORY_ENTRIES = 15;
 
@@ -46,7 +46,13 @@ const useSpecHistoryStore = create<SpecHistoryStore>()(
             name: source.name,
             title: spec.info?.title || 'Untitled',
             version: spec.info?.version || '',
-            endpointCount: parseEndpoints(spec).length,
+            // parseEndpoints 전체 파싱 대신 직접 카운트 (히스토리 표시용)
+            endpointCount: Object.values(spec.paths).reduce(
+              (sum, pathItem) =>
+                sum +
+                (pathItem ? HTTP_METHODS.filter((m) => pathItem[m]).length : 0),
+              0,
+            ),
             timestamp: Date.now(),
             spec,
             specSource: source,
