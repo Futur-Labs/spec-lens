@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
 import { useFileAttachments } from './file-attachments-context';
@@ -102,11 +103,21 @@ export function useExecuteRequest(endpoint: ParsedEndpoint) {
     if (!selectedServer) return;
 
     testParamsStoreActions.setExecuting(true);
-    testParamsStoreActions.clearResponse();
 
     if (requestCount <= 1) {
-      await executeSingleRequest();
+      const result = await executeSingleRequest();
       testParamsStoreActions.setExecuting(false);
+
+      if (result.success) {
+        const status = result.response.status;
+        if (status >= 200 && status < 300) {
+          toast.success(`${status} ${endpoint.method.toUpperCase()} ${endpoint.path}`);
+        } else if (status >= 400) {
+          toast.warning(`${status} ${endpoint.method.toUpperCase()} ${endpoint.path}`);
+        }
+      } else {
+        toast.error(`요청 실패: ${result.error}`);
+      }
     } else {
       setIsRepeating(true);
       setCurrentRequestIndex(0);
@@ -124,6 +135,8 @@ export function useExecuteRequest(endpoint: ParsedEndpoint) {
       setIsRepeating(false);
       setCurrentRequestIndex(0);
       testParamsStoreActions.setExecuting(false);
+
+      toast.success(`${requestCount}건 반복 요청 완료`);
     }
   };
 
