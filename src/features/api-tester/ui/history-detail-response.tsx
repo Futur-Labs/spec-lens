@@ -73,17 +73,12 @@ export function HistoryDetailResponse({ entry }: { entry: HistoryEntry }) {
         <CollapsibleSection
           title='Response Headers'
           badge={
-            <span
-              style={{ fontSize: '1.1rem', color: colors.text.tertiary, marginLeft: '0.4rem' }}
-            >
+            <span style={{ fontSize: '1.1rem', color: colors.text.tertiary, marginLeft: '0.4rem' }}>
               ({Object.keys(entry.response.headers).length})
             </span>
           }
         >
-          <HistoryKeyValueTable
-            data={entry.response.headers}
-            emptyMessage='No response headers'
-          />
+          <HistoryKeyValueTable data={entry.response.headers} emptyMessage='No response headers' />
         </CollapsibleSection>
       )}
     </>
