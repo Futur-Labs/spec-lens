@@ -1,5 +1,8 @@
+import { useState } from 'react';
+
 import { HistoryKeyValueTable } from './history-key-value-table';
 import { formatBody } from '../lib/format-body';
+import { VariableAutocompleteInput } from '@/entities/api-spec/ui/variable-autocomplete-input';
 import type { HistoryEntry } from '@/entities/history';
 import { useColors } from '@/shared/theme';
 import { CollapsibleSection } from '@/shared/ui/section';
@@ -28,15 +31,31 @@ export function HistoryDetailRequest({
   onChangeBody: (v: string) => void;
 }) {
   const colors = useColors();
+  const [jsonError, setJsonError] = useState<string | null>(null);
 
   const hasPathParams = Object.keys(entry.request.pathParams).length > 0;
   const hasQueryParams = Object.keys(entry.request.queryParams).length > 0;
   const hasHeaders = Object.keys(entry.request.headers).length > 0;
   const hasBody = !!entry.request.body?.trim();
 
+  const handleBodyChange = (value: string) => {
+    onChangeBody(value);
+    // JSON 검증
+    if (value.trim()) {
+      try {
+        JSON.parse(value);
+        setJsonError(null);
+      } catch {
+        setJsonError('Invalid JSON format');
+      }
+    } else {
+      setJsonError(null);
+    }
+  };
+
   return (
     <>
-      {(hasPathParams || isEditMode) && (
+      {hasPathParams && (
         <CollapsibleSection
           title='Path Parameters'
           badge={
@@ -50,13 +69,14 @@ export function HistoryDetailRequest({
           <HistoryKeyValueTable
             data={isEditMode ? editedPathParams : entry.request.pathParams}
             editable={isEditMode}
+            inputType='variable'
             onChange={onChangePathParams}
             emptyMessage='No path parameters'
           />
         </CollapsibleSection>
       )}
 
-      {(hasQueryParams || isEditMode) && (
+      {hasQueryParams && (
         <CollapsibleSection
           title='Query Parameters'
           badge={
@@ -70,13 +90,14 @@ export function HistoryDetailRequest({
           <HistoryKeyValueTable
             data={isEditMode ? editedQueryParams : entry.request.queryParams}
             editable={isEditMode}
+            inputType='variable'
             onChange={onChangeQueryParams}
             emptyMessage='No query parameters'
           />
         </CollapsibleSection>
       )}
 
-      {(hasHeaders || isEditMode) && (
+      {hasHeaders && (
         <CollapsibleSection
           title='Request Headers'
           badge={
@@ -89,33 +110,49 @@ export function HistoryDetailRequest({
           <HistoryKeyValueTable
             data={isEditMode ? editedHeaders : entry.request.headers}
             editable={isEditMode}
+            inputType='header'
             onChange={onChangeHeaders}
             emptyMessage='No headers'
           />
         </CollapsibleSection>
       )}
 
-      {(hasBody || isEditMode) && (
+      {hasBody && (
         <CollapsibleSection title='Request Body' defaultExpanded={hasBody}>
           {isEditMode ? (
-            <textarea
-              value={editedBody}
-              onChange={(e) => onChangeBody(e.target.value)}
-              style={{
-                width: '100%',
-                minHeight: '12rem',
-                padding: '1rem',
-                backgroundColor: colors.bg.input,
-                border: `1px solid ${colors.border.default}`,
-                borderRadius: '0.6rem',
-                color: colors.text.primary,
-                fontSize: '1.2rem',
-                fontFamily: 'monospace',
-                resize: 'vertical',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
+            <div>
+              <VariableAutocompleteInput
+                value={editedBody}
+                onChange={handleBodyChange}
+                multiline
+                placeholder='Request body'
+                style={{
+                  width: '100%',
+                  minHeight: '12rem',
+                  padding: '1rem',
+                  backgroundColor: colors.bg.input,
+                  border: `1px solid ${jsonError ? colors.feedback.error : colors.border.default}`,
+                  borderRadius: '0.6rem',
+                  color: colors.text.primary,
+                  fontSize: '1.2rem',
+                  fontFamily: 'monospace',
+                  resize: 'vertical',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+              {jsonError && (
+                <div
+                  style={{
+                    color: colors.feedback.error,
+                    fontSize: '1.1rem',
+                    marginTop: '0.4rem',
+                  }}
+                >
+                  {jsonError}
+                </div>
+              )}
+            </div>
           ) : (
             <pre
               style={{

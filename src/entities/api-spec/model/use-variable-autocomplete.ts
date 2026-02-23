@@ -22,16 +22,30 @@ export function useVariableAutocomplete(value: string, onChange: (v: string) => 
     onChange(newValue);
 
     const cursorPos = e.target.selectionStart || 0;
-    const mention = parseAtMention(newValue, cursorPos);
+    const nativeEvent = e.nativeEvent as InputEvent;
 
-    if (mention && variables.length > 0) {
-      const filtered = filterVariables(variables, mention.searchTerm);
-      setFilteredVars(filtered);
-      setSelectedIndex(0);
-      setAtPosition(mention.atPosition);
-      setShowDropdown(filtered.length > 0);
-    } else {
-      setShowDropdown(false);
+    if (showDropdown) {
+      // 이미 autocomplete 활성화 상태 → 필터링 계속
+      const mention = parseAtMention(newValue, cursorPos);
+      if (mention && variables.length > 0) {
+        const filtered = filterVariables(variables, mention.searchTerm);
+        setFilteredVars(filtered);
+        setSelectedIndex(0);
+        setAtPosition(mention.atPosition);
+        setShowDropdown(filtered.length > 0);
+      } else {
+        setShowDropdown(false);
+      }
+    } else if (nativeEvent.data === '@' && variables.length > 0) {
+      // @ 키를 직접 타이핑한 경우에만 autocomplete 활성화
+      const mention = parseAtMention(newValue, cursorPos);
+      if (mention) {
+        const filtered = filterVariables(variables, mention.searchTerm);
+        setFilteredVars(filtered);
+        setSelectedIndex(0);
+        setAtPosition(mention.atPosition);
+        setShowDropdown(filtered.length > 0);
+      }
     }
   };
 

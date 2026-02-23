@@ -3,16 +3,22 @@ import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { getIconButtonStyle } from '../lib/icon-button-style';
+import { HeaderAutocompleteInput } from '@/entities/api-spec/ui/header-autocomplete-input';
+import { VariableAutocompleteInput } from '@/entities/api-spec/ui/variable-autocomplete-input';
 import { useColors } from '@/shared/theme';
+
+type InputType = 'default' | 'variable' | 'header';
 
 export function HistoryKeyValueTable({
   data,
   editable = false,
+  inputType = 'default',
   onChange,
   emptyMessage = 'No data',
 }: {
   data: Record<string, string>;
   editable?: boolean;
+  inputType?: InputType;
   onChange?: (updated: Record<string, string>) => void;
   emptyMessage?: string;
 }) {
@@ -37,6 +43,15 @@ export function HistoryKeyValueTable({
 
   const handleValueChange = (key: string, value: string) => {
     onChange?.({ ...data, [key]: value });
+  };
+
+  const handleKeyChange = (oldKey: string, newKey: string) => {
+    if (!newKey.trim() || (newKey !== oldKey && newKey in data)) return;
+    const updated: Record<string, string> = {};
+    for (const [k, v] of Object.entries(data)) {
+      updated[k === oldKey ? newKey : k] = v;
+    }
+    onChange?.(updated);
   };
 
   const handleRemove = (key: string) => {
@@ -64,6 +79,73 @@ export function HistoryKeyValueTable({
     outline: 'none',
   } as const;
 
+  // autocomplete 컴포넌트에 전달할 스타일
+  const autocompleteInputStyle = {
+    ...inputStyle,
+    width: '100%',
+    boxSizing: 'border-box' as const,
+  };
+
+  const renderValueInput = (value: string, onChangeValue: (v: string) => void, key?: string) => {
+    if (inputType === 'variable') {
+      return (
+        <div style={{ flex: 1 }}>
+          <VariableAutocompleteInput
+            value={value}
+            onChange={onChangeValue}
+            placeholder='Value'
+            style={autocompleteInputStyle}
+          />
+        </div>
+      );
+    }
+    if (inputType === 'header') {
+      return (
+        <div style={{ flex: 1 }}>
+          <HeaderAutocompleteInput
+            value={value}
+            onChange={onChangeValue}
+            placeholder='Value'
+            style={autocompleteInputStyle}
+            type='value'
+            headerName={key}
+          />
+        </div>
+      );
+    }
+    return (
+      <input value={value} onChange={(e) => onChangeValue(e.target.value)} style={inputStyle} />
+    );
+  };
+
+  const renderKeyInput = (key: string, onChangeKey: (v: string) => void) => {
+    if (inputType === 'header') {
+      return (
+        <div style={{ minWidth: '14rem', flexShrink: 0 }}>
+          <HeaderAutocompleteInput
+            value={key}
+            onChange={onChangeKey}
+            placeholder='Header name'
+            style={autocompleteInputStyle}
+            type='name'
+          />
+        </div>
+      );
+    }
+    return (
+      <span
+        style={{
+          color: '#3b82f6',
+          fontWeight: 600,
+          minWidth: '14rem',
+          flexShrink: 0,
+        }}
+      >
+        {key}
+      </span>
+    );
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
       {entries.map(([key, value]) => (
@@ -79,23 +161,10 @@ export function HistoryKeyValueTable({
             fontFamily: 'monospace',
           }}
         >
-          <span
-            style={{
-              color: '#3b82f6',
-              fontWeight: 600,
-              minWidth: '14rem',
-              flexShrink: 0,
-            }}
-          >
-            {key}
-          </span>
           {editable ? (
             <>
-              <input
-                value={value}
-                onChange={(e) => handleValueChange(key, e.target.value)}
-                style={inputStyle}
-              />
+              {renderKeyInput(key, (newName) => handleKeyChange(key, newName))}
+              {renderValueInput(value, (v) => handleValueChange(key, v), key)}
               <button
                 onClick={() => handleRemove(key)}
                 style={{
@@ -110,7 +179,19 @@ export function HistoryKeyValueTable({
               </button>
             </>
           ) : (
-            <span style={{ color: colors.text.primary, wordBreak: 'break-all' }}>{value}</span>
+            <>
+              <span
+                style={{
+                  color: '#3b82f6',
+                  fontWeight: 600,
+                  minWidth: '14rem',
+                  flexShrink: 0,
+                }}
+              >
+                {key}
+              </span>
+              <span style={{ color: colors.text.primary, wordBreak: 'break-all' }}>{value}</span>
+            </>
           )}
         </div>
       ))}
@@ -125,19 +206,25 @@ export function HistoryKeyValueTable({
             borderTop: entries.length > 0 ? 'none' : undefined,
           }}
         >
-          <input
-            value={newKey}
-            onChange={(e) => setNewKey(e.target.value)}
-            placeholder='Key'
-            style={{ ...inputStyle, minWidth: '14rem', flex: 'none', width: '14rem' }}
-          />
-          <input
-            value={newValue}
-            onChange={(e) => setNewValue(e.target.value)}
-            placeholder='Value'
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            style={inputStyle}
-          />
+          {inputType === 'header' ? (
+            <div style={{ minWidth: '14rem', flex: 'none', width: '14rem' }}>
+              <HeaderAutocompleteInput
+                value={newKey}
+                onChange={setNewKey}
+                placeholder='Header name'
+                style={autocompleteInputStyle}
+                type='name'
+              />
+            </div>
+          ) : (
+            <input
+              value={newKey}
+              onChange={(e) => setNewKey(e.target.value)}
+              placeholder='Key'
+              style={{ ...inputStyle, minWidth: '14rem', flex: 'none', width: '14rem' }}
+            />
+          )}
+          {renderValueInput(newValue, setNewValue, newKey)}
           <button
             onClick={handleAdd}
             disabled={!newKey.trim()}

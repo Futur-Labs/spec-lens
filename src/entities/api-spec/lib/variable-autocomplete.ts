@@ -7,13 +7,14 @@ export function parseAtMention(
   cursorPos: number,
 ): { searchTerm: string; atPosition: number } | null {
   const textBeforeCursor = text.slice(0, cursorPos);
-  const atMatch = textBeforeCursor.match(/@(\w*)$/);
+  // @ 앞이 텍스트 시작이거나 비-단어 문자일 때만 매칭 (email@ 같은 경우 무시)
+  const atMatch = textBeforeCursor.match(/(^|\W)@(\w*)$/);
 
   if (!atMatch) return null;
 
   return {
-    searchTerm: atMatch[1].toLowerCase(),
-    atPosition: cursorPos - atMatch[0].length,
+    searchTerm: atMatch[2].toLowerCase(),
+    atPosition: cursorPos - atMatch[2].length - 1,
   };
 }
 
