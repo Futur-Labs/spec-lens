@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Check, Copy, ExternalLink, Share2 } from 'lucide-react';
+import { Check, Copy, ExternalLink, Hash, Share2 } from 'lucide-react';
 
 import { MethodBadge, type OperationObject } from '@/entities/api-spec';
 import { copyToClipboard } from '@/shared/lib';
@@ -20,9 +20,10 @@ export function EndpointDetailHeader({
   const colors = useColors();
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const [operationIdCopied, setOperationIdCopied] = useState(false);
 
   const handleCopyPath = () => {
-    copyToClipboard(path, () => {
+    copyToClipboard(`${method.toUpperCase()}\n${path}`, () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -140,6 +141,49 @@ export function EndpointDetailHeader({
           {shared ? <Check size={14} /> : <Share2 size={14} />}
         </button>
       </div>
+
+      {operation.operationId && (
+        <button
+          onClick={() => {
+            copyToClipboard(operation.operationId!, () => {
+              setOperationIdCopied(true);
+              setTimeout(() => setOperationIdCopied(false), 2000);
+            });
+          }}
+          title={operationIdCopied ? 'Copied!' : 'Copy operationId'}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.3rem 0.8rem',
+            backgroundColor: operationIdCopied
+              ? `${colors.feedback.success}15`
+              : colors.bg.overlayHover,
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: operationIdCopied ? colors.feedback.success : colors.border.subtle,
+            borderRadius: '0.4rem',
+            cursor: 'pointer',
+            marginBottom: '1.6rem',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          {operationIdCopied ? (
+            <Check size={11} color={colors.feedback.success} />
+          ) : (
+            <Hash size={11} color={colors.text.tertiary} />
+          )}
+          <span
+            style={{
+              fontFamily: 'monospace',
+              fontSize: '1.1rem',
+              color: operationIdCopied ? colors.feedback.success : colors.text.tertiary,
+            }}
+          >
+            {operation.operationId}
+          </span>
+        </button>
+      )}
 
       {operation.summary && (
         <h2

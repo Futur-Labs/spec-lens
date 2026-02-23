@@ -16,7 +16,11 @@ import { MethodFilterChips, TagFilterChips } from '@/features/endpoint-filter';
 import { useColors } from '@/shared/theme';
 import { ThemeToggle } from '@/shared/ui/theme-toggle';
 
-export function SidebarHeader({ activeTab = 'endpoints' }: { activeTab?: 'endpoints' | 'models' }) {
+export function SidebarHeader({
+  activeTab = 'endpoints',
+}: {
+  activeTab?: 'endpoints' | 'models' | 'webhooks';
+}) {
   const colors = useColors();
   const spec = useSpecStore((s) => s.spec);
   const searchQuery = useSearchQuery();

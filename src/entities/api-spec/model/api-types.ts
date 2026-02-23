@@ -10,6 +10,7 @@ export type ApiSpec = {
   info: InfoObject;
   servers?: ServerObject[];
   paths: PathsObject;
+  webhooks?: Record<string, PathItemObject>;
   components?: ComponentsObject;
   security?: SecurityRequirementObject[];
   tags?: TagObject[];

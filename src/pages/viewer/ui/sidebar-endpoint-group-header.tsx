@@ -1,10 +1,16 @@
 import { motion } from 'framer-motion';
 
-import { ChevronRight, ExternalLink } from 'lucide-react';
+import { ChevronRight, ExternalLink, Info } from 'lucide-react';
 
-import { type EndpointFlatItem, useEndpoints, useSelectedEndpoint, useSpec } from '@/entities/api-spec';
+import {
+  type EndpointFlatItem,
+  useEndpoints,
+  useSelectedEndpoint,
+  useSpec,
+} from '@/entities/api-spec';
 import { sidebarStoreActions } from '@/entities/sidebar';
 import { useColors } from '@/shared/theme';
+import { Tooltip } from '@/shared/ui/tooltip';
 
 export function SidebarEndpointGroupHeader({
   endpointHeaderItem,
@@ -85,6 +91,31 @@ export function SidebarEndpointGroupHeader({
       >
         {endpointHeaderItem.count}
       </span>
+      {tagInfo?.description && (
+        <Tooltip
+          content={
+            <span
+              style={{ fontSize: '1.1rem', lineHeight: 1.5, maxWidth: '24rem', display: 'block' }}
+            >
+              {tagInfo.description}
+            </span>
+          }
+          placement='right'
+          delay={200}
+        >
+          <span
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.text.tertiary,
+              cursor: 'default',
+            }}
+          >
+            <Info size={12} />
+          </span>
+        </Tooltip>
+      )}
       {tagInfo?.externalDocs && (
         <a
           href={tagInfo.externalDocs.url}

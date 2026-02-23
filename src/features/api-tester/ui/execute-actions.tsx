@@ -1,8 +1,8 @@
 import { Loader2, Play } from 'lucide-react';
 
+import { SnippetCopyButton } from './snippet-copy-button';
 import type { ExecuteActionsProps } from '../model/execute-actions.types';
 import { useExecuteRequest } from '../model/use-execute-request';
-import { SnippetCopyButton } from './snippet-copy-button';
 import { useColors } from '@/shared/theme';
 
 export function ExecuteActions({

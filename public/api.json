@@ -90,7 +90,8 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": []
       }
     },
     "/common/bookmarks": {
@@ -10124,7 +10125,15 @@
           "404": {
             "description": "상품을 찾을 수 없음"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/products/{productId}/reviews": {
@@ -10254,7 +10263,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "oauth2": ["read:orders"]
+          }
+        ]
       }
     }
   },
@@ -20700,10 +20714,242 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Bearer 토큰 인증. `/auth/login` API로 발급받은 액세스 토큰을 `Authorization: Bearer <token>` 형식으로 전달합니다."
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API 키 인증. 관리자 콘솔에서 발급받은 API 키를 `X-API-Key` 헤더에 전달합니다."
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 인증. 외부 시스템 연동 시 사용합니다.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.example.com/oauth/authorize",
+            "tokenUrl": "https://auth.example.com/oauth/token",
+            "refreshUrl": "https://auth.example.com/oauth/refresh",
+            "scopes": {
+              "read:inventory": "재고 정보 조회",
+              "write:inventory": "재고 정보 수정",
+              "read:orders": "주문 정보 조회",
+              "write:orders": "주문 정보 수정",
+              "admin": "관리자 전체 권한"
+            }
+          }
+        }
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "SESSION_ID",
+        "description": "세션 쿠키 기반 인증. 레거시 시스템 호환용입니다."
+      }
     }
   },
   "externalDocs": {
     "description": "API 가이드 문서",
     "url": "https://docs.example.com/api-guide"
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "webhooks": {
+    "orderStatusChanged": {
+      "post": {
+        "operationId": "onOrderStatusChanged",
+        "summary": "주문 상태 변경 알림",
+        "description": "주문 상태가 변경될 때 등록된 콜백 URL로 전송되는 webhook입니다.\n\n### 이벤트 발생 조건\n- 주문 상태가 `PENDING` → `PROCESSING` → `SHIPPED` → `DELIVERED`로 변경될 때\n- 주문이 취소(`CANCELLED`)될 때\n\n### 재시도 정책\n- 응답 코드가 2xx가 아닌 경우 최대 3회 재시도\n- 재시도 간격: 1분, 5분, 30분",
+        "tags": ["Webhooks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["eventId", "eventType", "orderId", "status", "timestamp"],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "이벤트 고유 ID (중복 방지용)"
+                  },
+                  "eventType": {
+                    "type": "string",
+                    "enum": ["ORDER_STATUS_CHANGED"],
+                    "description": "이벤트 유형"
+                  },
+                  "orderId": {
+                    "type": "string",
+                    "description": "주문 ID"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"],
+                    "description": "변경된 주문 상태"
+                  },
+                  "previousStatus": {
+                    "type": "string",
+                    "enum": ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"],
+                    "description": "이전 주문 상태"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "상태 변경 시각"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {
+                      "carrier": {
+                        "type": "string",
+                        "description": "배송 업체명"
+                      },
+                      "trackingNumber": {
+                        "type": "string",
+                        "description": "송장 번호"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook 수신 확인"
+          },
+          "400": {
+            "description": "잘못된 요청 형식"
+          }
+        }
+      }
+    },
+    "inventoryAlert": {
+      "post": {
+        "operationId": "onInventoryAlert",
+        "summary": "재고 부족 알림",
+        "description": "재고 수량이 설정된 임계값 이하로 떨어질 때 발송되는 webhook입니다.",
+        "tags": ["Webhooks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["alertId", "eventType", "productCode", "currentQuantity", "threshold"],
+                "properties": {
+                  "alertId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "알림 고유 ID"
+                  },
+                  "eventType": {
+                    "type": "string",
+                    "enum": ["INVENTORY_LOW", "INVENTORY_OUT_OF_STOCK"],
+                    "description": "알림 유형"
+                  },
+                  "productCode": {
+                    "type": "string",
+                    "description": "상품 코드"
+                  },
+                  "productName": {
+                    "type": "string",
+                    "description": "상품명"
+                  },
+                  "currentQuantity": {
+                    "type": "integer",
+                    "description": "현재 재고 수량"
+                  },
+                  "threshold": {
+                    "type": "integer",
+                    "description": "알림 임계값"
+                  },
+                  "warehouseCode": {
+                    "type": "string",
+                    "description": "창고 코드"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "알림 발생 시각"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "알림 수신 확인"
+          }
+        }
+      }
+    },
+    "newUserRegistered": {
+      "post": {
+        "operationId": "onNewUserRegistered",
+        "summary": "신규 사용자 등록 알림",
+        "description": "새로운 사용자가 시스템에 등록될 때 발송되는 webhook입니다.",
+        "tags": ["Webhooks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "eventType", "username", "registeredAt"],
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "사용자 ID"
+                  },
+                  "eventType": {
+                    "type": "string",
+                    "enum": ["USER_REGISTERED"],
+                    "description": "이벤트 유형"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "사용자명"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "이메일 주소"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["ADMIN", "MANAGER", "OPERATOR", "VIEWER"],
+                    "description": "할당된 역할"
+                  },
+                  "registeredAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "등록 시각"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "알림 수신 확인"
+          }
+        }
+      }
+    }
   }
 }

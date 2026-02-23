@@ -13,6 +13,7 @@ export type {
   ParsedEndpoint,
   EndpointFlatItem,
   OperationObject,
+  PathItemObject,
   ParameterObject,
   ResponseObject,
   ResponsesObject,
@@ -20,6 +21,7 @@ export type {
   ReferenceObject,
   MediaTypeObject,
   RequestBodyObject,
+  SecuritySchemeObject,
 } from './model/api-types.ts';
 export { isReferenceObject } from './model/api-types.ts';
 export {
@@ -39,9 +41,10 @@ export {
 } from './model/endpoint-selection-store.ts';
 export {
   useSelectedEndpoint,
+  useSelectedWebhook,
   useEndpointSelectionStoreHydration,
 } from './model/endpoint-selection-store.ts';
-export type { SelectedEndpoint } from './model/endpoint-selection-types.ts';
+export type { SelectedEndpoint, SelectedWebhook } from './model/endpoint-selection-types.ts';
 
 export { parseEndpoints, groupEndpointsByTag, getAllTags } from './lib/parse-endpoints.ts';
 export { resolveSchema, getMergedParameters } from './lib/resolve-schema.ts';

@@ -7,10 +7,12 @@ import { useColors } from '@/shared/theme';
 
 export function CollapsibleSection({
   title,
+  badge,
   children,
   defaultExpanded = true,
 }: {
   title: string;
+  badge?: React.ReactNode;
   children: React.ReactNode;
   defaultExpanded?: boolean;
 }) {
@@ -55,6 +57,7 @@ export function CollapsibleSection({
           >
             {title}
           </h2>
+          {badge}
         </button>
       </div>
 

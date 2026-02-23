@@ -4,6 +4,7 @@ import { EndpointDetailHeader } from './endpoint-detail-header';
 import { EndpointParametersSection } from './endpoint-parameters-section';
 import { EndpointRequestBodySection } from './endpoint-request-body-section';
 import { EndpointResponsesSection } from './endpoint-responses-section';
+import { EndpointSecuritySection } from './endpoint-security-section';
 import { type ParsedEndpoint, useSpec } from '@/entities/api-spec';
 import { TryItPanel } from '@/features/api-tester';
 
@@ -33,6 +34,8 @@ export function EndpointDetail({ endpoint }: { endpoint: ParsedEndpoint }) {
       }}
     >
       <EndpointDetailHeader method={method} path={path} operation={operation} />
+
+      <EndpointSecuritySection operation={operation} spec={spec} />
 
       <EndpointParametersSection endpoint={endpoint} spec={spec} />
 

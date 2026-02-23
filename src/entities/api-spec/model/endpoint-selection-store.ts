@@ -7,6 +7,7 @@ import type { HttpMethod } from '@/shared/type';
 
 const initialState: EndpointSelectionState = {
   selectedEndpoint: null,
+  selectedWebhook: null,
 };
 
 export const useEndpointSelectionStore = create<EndpointSelectionStore>()(
@@ -19,11 +20,18 @@ export const useEndpointSelectionStore = create<EndpointSelectionStore>()(
           const { selectedEndpoint } = get();
           if (selectedEndpoint?.path === path && selectedEndpoint?.method === method) return;
 
-          set({ selectedEndpoint: { path, method } });
+          set({ selectedEndpoint: { path, method }, selectedWebhook: null });
+        },
+
+        selectWebhook: (name: string, method: HttpMethod) => {
+          const { selectedWebhook } = get();
+          if (selectedWebhook?.name === name && selectedWebhook?.method === method) return;
+
+          set({ selectedWebhook: { name, method }, selectedEndpoint: null });
         },
 
         clearSelection: () => {
-          set({ selectedEndpoint: null });
+          set({ selectedEndpoint: null, selectedWebhook: null });
         },
       },
     }),
@@ -31,6 +39,7 @@ export const useEndpointSelectionStore = create<EndpointSelectionStore>()(
       name: 'endpoint-selection-storage',
       partialize: (state) => ({
         selectedEndpoint: state.selectedEndpoint,
+        selectedWebhook: state.selectedWebhook,
       }),
       skipHydration: true,
     },
@@ -43,6 +52,9 @@ export const endpointSelectionStoreActions = useEndpointSelectionStore.getState(
 // Selector hooks
 export const useSelectedEndpoint = () =>
   useEndpointSelectionStore((state) => state.selectedEndpoint);
+
+export const useSelectedWebhook = () =>
+  useEndpointSelectionStore((state) => state.selectedWebhook);
 
 // SSR-safe hydration hook
 const emptySubscribe = () => () => {};

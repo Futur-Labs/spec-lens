@@ -4,10 +4,11 @@ import { ResizableSidebarLayout } from './resizable-sidebar-layout';
 import { SidebarEndpointList } from './sidebar-endpoint-list';
 import { SidebarHeader } from './sidebar-header';
 import { SidebarModelsList } from './sidebar-models-list';
+import { SidebarWebhookList } from './sidebar-webhook-list';
 import { useSpec } from '@/entities/api-spec';
 import { useColors } from '@/shared/theme';
 
-type SidebarTab = 'endpoints' | 'models';
+type SidebarTab = 'endpoints' | 'models' | 'webhooks';
 
 export function Sidebar() {
   const colors = useColors();
@@ -15,18 +16,20 @@ export function Sidebar() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('endpoints');
 
   const hasSchemas = spec?.components?.schemas && Object.keys(spec.components.schemas).length > 0;
+  const hasWebhooks = spec?.webhooks && Object.keys(spec.webhooks).length > 0;
+  const hasTabs = hasSchemas || hasWebhooks;
 
   return (
     <ResizableSidebarLayout>
       <SidebarHeader activeTab={activeTab} />
 
-      {hasSchemas && (
+      {hasTabs && (
         <div
           style={{
             display: 'flex',
             gap: '0.3rem',
             margin: '1rem 1.6rem',
-            padding: '0.3rem',
+            padding: '0.4rem',
             borderRadius: '0.8rem',
             backgroundColor: colors.bg.subtle,
             marginBottom: '0.8rem',
@@ -38,16 +41,28 @@ export function Sidebar() {
             onClick={() => setActiveTab('endpoints')}
             colors={colors}
           />
-          <TabButton
-            label='Models'
-            isActive={activeTab === 'models'}
-            onClick={() => setActiveTab('models')}
-            colors={colors}
-          />
+          {hasSchemas && (
+            <TabButton
+              label='Models'
+              isActive={activeTab === 'models'}
+              onClick={() => setActiveTab('models')}
+              colors={colors}
+            />
+          )}
+          {hasWebhooks && (
+            <TabButton
+              label='Webhooks'
+              isActive={activeTab === 'webhooks'}
+              onClick={() => setActiveTab('webhooks')}
+              colors={colors}
+            />
+          )}
         </div>
       )}
 
-      {activeTab === 'endpoints' ? <SidebarEndpointList /> : <SidebarModelsList />}
+      {activeTab === 'endpoints' && <SidebarEndpointList />}
+      {activeTab === 'models' && <SidebarModelsList />}
+      {activeTab === 'webhooks' && <SidebarWebhookList />}
     </ResizableSidebarLayout>
   );
 }
