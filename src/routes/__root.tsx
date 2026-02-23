@@ -11,39 +11,41 @@ export type RouterContext = {
   queryClient: QueryClient;
 };
 
+const SITE_URL = import.meta.env.VITE_PRODUCTION_API_URL || '';
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {},
   head: () => ({
     links: [
       {
         rel: 'icon',
-        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo.svg`,
+        href: '/logo.svg',
         type: 'image/svg+xml',
       },
       {
         rel: 'icon',
-        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_48x48.png`,
+        href: '/logo_48x48.png',
         type: 'image/png',
         sizes: '48x48',
       },
       {
         rel: 'icon',
-        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_96x96.png`,
+        href: '/logo_96x96.png',
         type: 'image/png',
         sizes: '96x96',
       },
       {
         rel: 'icon',
-        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_144x144.png`,
+        href: '/logo_144x144.png',
         type: 'image/png',
         sizes: '144x144',
       },
       {
         rel: 'apple-touch-icon',
-        href: `${import.meta.env.VITE_PRODUCTION_API_URL}/logo_180x180.png`,
+        href: '/logo_180x180.png',
         sizes: '180x180',
       },
-      { rel: 'canonical', href: `${import.meta.env.VITE_PRODUCTION_API_URL}` },
+      { rel: 'canonical', href: SITE_URL },
       {
         rel: 'preload',
         href: '/fonts/PretendardVariable.woff2',
@@ -107,18 +109,18 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content:
           'OpenAPI/Swagger 스펙 JSON 파일을 업로드하여 API 문서를 쉽게 시각화하고 탐색할 수 있는 뷰어입니다.',
       },
-      { property: 'og:url', content: `${import.meta.env.VITE_PRODUCTION_API_URL}` },
+      { property: 'og:url', content: SITE_URL },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
       { property: 'og:site_name', content: 'SpecLens' },
       // Main Image
       {
         property: 'og:image',
-        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
+        content: `${SITE_URL}/speclens_main.png`,
       },
       {
         property: 'og:image:secure_url',
-        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
+        content: `${SITE_URL}/speclens_main.png`,
       },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
@@ -137,7 +139,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: 'twitter:creator', content: '@SpecLens' },
       {
         name: 'twitter:image',
-        content: `${import.meta.env.VITE_PRODUCTION_API_URL}/speclens_main.png`,
+        content: `${SITE_URL}/speclens_main.png`,
       },
       { name: 'twitter:image:alt', content: 'SpecLens Main Banner' },
     ],

@@ -3,8 +3,8 @@ module.exports = {
     {
       name: 'spec-lens',
       script: './server/index.mjs',
-      instances: '1',
-      exec_mode: 'cluster',
+      instances: 1,
+      exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
         PORT: 3001,
@@ -14,7 +14,7 @@ module.exports = {
       out_file: './logs/out.log',
       log_file: './logs/combined.log',
       time: true,
-      wait_ready: true,
+      kill_timeout: 5000,
     },
   ],
 };
