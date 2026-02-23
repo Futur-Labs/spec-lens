@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useShallow } from 'zustand/shallow';
 
 import type { HistoryStore } from './history-types.ts';
 
@@ -22,6 +23,11 @@ export const useHistoryStore = create<HistoryStore>()(
           })),
 
         clearHistory: () => set({ history: [] }),
+
+        clearHistoryBySpec: (specId: string) =>
+          set((state) => ({
+            history: state.history.filter((h) => h.specId !== specId),
+          })),
       },
     }),
     {
@@ -49,3 +55,9 @@ export const useHistoryStore = create<HistoryStore>()(
 export const historyStoreActions = useHistoryStore.getState().actions;
 
 export const useHistory = () => useHistoryStore((s) => s.history);
+
+export function useHistoryBySpec(specId: string | null) {
+  return useHistoryStore(
+    useShallow((s) => (specId ? s.history.filter((h) => h.specId === specId) : s.history)),
+  );
+}

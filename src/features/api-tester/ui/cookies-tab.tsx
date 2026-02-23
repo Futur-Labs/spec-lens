@@ -253,7 +253,7 @@ export function CookiesTab() {
       {customCookies.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <span style={{ color: colors.text.secondary, fontSize: '1.2rem', fontWeight: 500 }}>
-            🍪 Custom Cookies
+            Custom Cookies
           </span>
           {customCookies.map((cookie, index) => (
             <div

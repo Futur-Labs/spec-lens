@@ -19,6 +19,7 @@ export type HistoryEntry = {
   error: string | null;
   // Metadata
   duration?: number; // Request duration (ms)
+  specId?: string; // specSource.name — spec별 history 필터링용
 };
 
 export type HistoryState = {
@@ -29,6 +30,7 @@ export type HistoryActions = {
   addToHistory: (entry: HistoryEntry) => void;
   removeHistoryEntry: (id: string) => void;
   clearHistory: () => void;
+  clearHistoryBySpec: (specId: string) => void;
 };
 
 export type HistoryStore = HistoryState & { actions: HistoryActions };

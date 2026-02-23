@@ -5,12 +5,15 @@ import { Trash2 } from 'lucide-react';
 
 import { HistoryDetail } from './history-detail';
 import { HistoryItem } from './history-item';
-import { historyStoreActions, useHistory, type HistoryEntry } from '@/entities/history';
+import { useSpecSource } from '@/entities/api-spec';
+import { historyStoreActions, useHistoryBySpec, type HistoryEntry } from '@/entities/history';
 import { useColors } from '@/shared/theme';
 
 export function HistoryTab() {
   const colors = useColors();
-  const history = useHistory();
+  const specSource = useSpecSource();
+  const specId = specSource?.name ?? null;
+  const history = useHistoryBySpec(specId);
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
 
   if (history.length === 0 && !selectedEntry) {
@@ -66,7 +69,11 @@ export function HistoryTab() {
                 Recent Requests ({history.length})
               </span>
               <button
-                onClick={() => historyStoreActions.clearHistory()}
+                onClick={() =>
+                  specId
+                    ? historyStoreActions.clearHistoryBySpec(specId)
+                    : historyStoreActions.clearHistory()
+                }
                 style={{
                   display: 'flex',
                   alignItems: 'center',

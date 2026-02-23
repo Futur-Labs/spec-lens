@@ -54,6 +54,7 @@ export function useReplayRequest() {
         response: result.success ? result.response : null,
         error: result.success ? null : result.error,
         duration,
+        specId: entry.specId,
       };
 
       historyStoreActions.addToHistory(newEntry);

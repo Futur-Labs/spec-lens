@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { executeApiTestRequest } from '../lib/execute-api-test-request';
 import { useFileAttachments } from './file-attachments-context';
 import { useAuthConfig } from '@/entities/api-auth';
-import type { ParsedEndpoint } from '@/entities/api-spec';
+import { useSpecSource, type ParsedEndpoint } from '@/entities/api-spec';
 import { cookieStoreActions, useCustomCookies } from '@/entities/cookie';
 import { historyStoreActions } from '@/entities/history';
 import {
@@ -25,6 +25,7 @@ export function useExecuteRequest(endpoint: ParsedEndpoint) {
   const authConfig = useAuthConfig();
   const customCookies = useCustomCookies();
   const isExecuting = useIsExecuting();
+  const specSource = useSpecSource();
   const { attachments, toBase64Map } = useFileAttachments();
 
   const [currentRequestIndex, setCurrentRequestIndex] = useState(0);
@@ -76,6 +77,7 @@ export function useExecuteRequest(endpoint: ParsedEndpoint) {
       response: result.success ? result.response : null,
       error: result.success ? null : result.error,
       duration,
+      specId: specSource?.name,
     };
 
     if (result.success) {
