@@ -3,15 +3,27 @@ import { useState } from 'react';
 
 import { ChevronRight } from 'lucide-react';
 
-import { SchemaViewer, useSearchQuery, useSpec } from '@/entities/api-spec';
+import {
+  SchemaViewer,
+  isReferenceObject,
+  resolveSchema,
+  useSearchQuery,
+  useSpec,
+  type ApiSpec,
+  type SchemaObject,
+  type ReferenceObject,
+} from '@/entities/api-spec';
 import { useDebounceDeferredValue } from '@/shared/hooks';
+import { koreanFuzzyMatch, highlightMatches } from '@/shared/lib';
 import { useColors } from '@/shared/theme';
 
 export function SidebarModelsList() {
   const colors = useColors();
   const spec = useSpec();
   const searchQuery = useSearchQuery();
-  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 350, { immediateOnEmpty: true });
+  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 150, {
+    immediateOnEmpty: true,
+  });
 
   const schemas = spec?.components?.schemas;
 
@@ -33,7 +45,11 @@ export function SidebarModelsList() {
 
   const allNames = Object.keys(schemas).sort();
   const filteredNames = deferredSearchQuery
-    ? allNames.filter((name) => name.toLowerCase().includes(deferredSearchQuery.toLowerCase()))
+    ? allNames.filter(
+        (name) =>
+          koreanFuzzyMatch(name, deferredSearchQuery) ||
+          matchesSchemaContent(schemas[name], deferredSearchQuery, spec),
+      )
     : allNames;
 
   if (filteredNames.length === 0) {
@@ -55,13 +71,55 @@ export function SidebarModelsList() {
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '0.4rem 0' }}>
       {filteredNames.map((name) => (
-        <SchemaItem key={name} name={name} />
+        <SchemaItem key={name} name={name} searchQuery={deferredSearchQuery} />
       ))}
     </div>
   );
 }
 
-function SchemaItem({ name }: { name: string }) {
+function matchesSchemaContent(
+  schemaOrRef: SchemaObject | ReferenceObject,
+  query: string,
+  spec: ApiSpec,
+  depth = 0,
+): boolean {
+  if (depth > 3) return false;
+
+  const schema = isReferenceObject(schemaOrRef) ? resolveSchema(schemaOrRef, spec) : schemaOrRef;
+  if (!schema) return false;
+
+  if (schema.description && koreanFuzzyMatch(schema.description, query)) return true;
+  if (schema.title && koreanFuzzyMatch(schema.title, query)) return true;
+
+  if (schema.enum) {
+    for (const val of schema.enum) {
+      if (typeof val === 'string' && koreanFuzzyMatch(val, query)) return true;
+    }
+  }
+
+  if (schema.properties) {
+    for (const [propName, propSchema] of Object.entries(schema.properties)) {
+      if (koreanFuzzyMatch(propName, query)) return true;
+      if (matchesSchemaContent(propSchema, query, spec, depth + 1)) return true;
+    }
+  }
+
+  if (schema.type === 'array' && schema.items) {
+    if (matchesSchemaContent(schema.items, query, spec, depth + 1)) return true;
+  }
+
+  for (const key of ['allOf', 'oneOf', 'anyOf'] as const) {
+    if (schema[key]) {
+      for (const sub of schema[key]!) {
+        if (matchesSchemaContent(sub, query, spec, depth + 1)) return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function SchemaItem({ name, searchQuery }: { name: string; searchQuery: string }) {
   const colors = useColors();
   const spec = useSpec();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -109,7 +167,7 @@ function SchemaItem({ name }: { name: string }) {
             whiteSpace: 'nowrap',
           }}
         >
-          {name}
+          {highlightMatches(name, searchQuery)}
         </span>
       </button>
 

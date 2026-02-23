@@ -24,7 +24,9 @@ export function SidebarEndpointItem({
   const colors = useColors();
   const selectedEndpoint = useSelectedEndpoint();
   const searchQuery = useSearchQuery();
-  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 350, { immediateOnEmpty: true });
+  const deferredSearchQuery = useDebounceDeferredValue(searchQuery, 150, {
+    immediateOnEmpty: true,
+  });
   const textRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 

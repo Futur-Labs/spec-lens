@@ -114,14 +114,15 @@ function buildLastSyllablePattern(code: number): string {
  * - 종성→초성 분리 ("갈" → 갈 or 가+[라~맇])
  * - 띄어쓰기 무시
  * - 영문 대소문자 무시
+ * - 구분자(_, -) 무시 ("username" ↔ "user_name" ↔ "user-name")
  */
 export function createKoreanSearchRegex(query: string): RegExp {
   if (!query) return new RegExp('', 'i');
 
-  const normalized = query.replace(/\s+/g, '');
+  const normalized = query.replace(/[\s_-]+/g, '');
   if (!normalized) return new RegExp('', 'i');
 
-  const spacer = '\\s*';
+  const spacer = '[\\s_-]*';
 
   if (isAllChoseong(normalized)) {
     return new RegExp(buildChosungRegex(normalized, spacer), 'i');
