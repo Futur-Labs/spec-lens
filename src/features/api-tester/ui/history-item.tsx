@@ -1,8 +1,13 @@
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { useEffect, useRef, useState } from 'react';
+
 import { Trash2 } from 'lucide-react';
 
 import { getMethodColor } from '@/entities/api-spec';
 import { historyStoreActions, type HistoryEntry } from '@/entities/history';
 import { useColors } from '@/shared/theme';
+import { Tooltip } from '@/shared/ui/tooltip';
 
 export function HistoryItem({ entry, onClick }: { entry: HistoryEntry; onClick: () => void }) {
   const colors = useColors();
@@ -12,12 +17,28 @@ export function HistoryItem({ entry, onClick }: { entry: HistoryEntry; onClick: 
       ? colors.feedback.warning
       : colors.feedback.success;
 
-  const formattedTime = new Date(entry.timestamp).toLocaleString('ko-KR', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const formattedTime = format(new Date(entry.timestamp), 'M월 d일 HH:mm', { locale: ko });
+  const pathRef = useRef<HTMLSpanElement>(null);
+  const [isPathTruncated, setIsPathTruncated] = useState(false);
+
+  useEffect(() => {
+    const element = pathRef.current;
+    if (!element) return;
+
+    const checkTruncation = () => {
+      setIsPathTruncated(element.scrollWidth > element.clientWidth + 1);
+    };
+
+    const rafId = requestAnimationFrame(checkTruncation);
+
+    const resizeObserver = new ResizeObserver(checkTruncation);
+    resizeObserver.observe(element);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+    };
+  }, [entry.path]);
 
   return (
     <div
@@ -58,20 +79,40 @@ export function HistoryItem({ entry, onClick }: { entry: HistoryEntry; onClick: 
       </span>
 
       {/* Path */}
-      <span
-        style={{
-          flex: 1,
-          color: colors.text.primary,
-          fontSize: '1.2rem',
-          fontFamily: 'monospace',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-        title={entry.url}
-      >
-        {entry.path}
-      </span>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+        <Tooltip
+          content={
+            entry.summary ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '1.1rem' }}>{entry.path}</span>
+                <span style={{ fontSize: '1rem', opacity: 0.7 }}>{entry.summary}</span>
+              </div>
+            ) : (
+              entry.path
+            )
+          }
+          contentStyle={{ padding: '0.6rem 1rem', fontSize: '1.4rem' }}
+          placement='top'
+          delay={0}
+          fullWidth
+          disabled={!isPathTruncated}
+        >
+          <span
+            ref={pathRef}
+            style={{
+              display: 'block',
+              color: colors.text.primary,
+              fontSize: '1.2rem',
+              fontFamily: 'monospace',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {entry.path}
+          </span>
+        </Tooltip>
+      </div>
 
       {/* Status */}
       <span

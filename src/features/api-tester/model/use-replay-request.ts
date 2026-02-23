@@ -50,6 +50,7 @@ export function useReplayRequest() {
         method: entry.method,
         url: entry.url,
         path: entry.path,
+        summary: entry.summary,
         request: params,
         response: result.success ? result.response : null,
         error: result.success ? null : result.error,

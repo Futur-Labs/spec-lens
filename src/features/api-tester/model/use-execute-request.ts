@@ -68,6 +68,7 @@ export function useExecuteRequest(endpoint: ParsedEndpoint) {
       method: endpoint.method,
       url: `${selectedServer}${endpoint.path}`,
       path: endpoint.path,
+      summary: endpoint.operation.summary,
       request: {
         pathParams,
         queryParams,

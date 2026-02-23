@@ -7,6 +7,7 @@ export type HistoryEntry = {
   method: HttpMethod;
   url: string; // Full URL (baseUrl + path)
   path: string; // Endpoint path
+  summary?: string; // Operation summary
   // Request parameters (for replay)
   request: {
     pathParams: Record<string, string>;

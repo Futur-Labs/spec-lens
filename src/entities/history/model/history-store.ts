@@ -39,15 +39,20 @@ export const useHistoryStore = create<HistoryStore>()(
         history: state.history.map((entry) => {
           if (!entry.response) return entry;
 
-          const dataStr = JSON.stringify(entry.response.data);
-          const isTooLarge = dataStr.length > 100000;
-
-          return {
-            ...entry,
-            response: isTooLarge
-              ? { ...entry.response, data: '[Response too large]' }
-              : entry.response,
-          };
+          const data = entry.response.data;
+          // 이미 truncated된 엔트리는 스킵
+          if (data === '[Response too large]') return entry;
+          // 문자열은 직접 길이 체크 (JSON.stringify 불필요)
+          if (typeof data === 'string') {
+            return data.length > 100000
+              ? { ...entry, response: { ...entry.response, data: '[Response too large]' } }
+              : entry;
+          }
+          // 객체/배열만 JSON.stringify
+          const dataStr = JSON.stringify(data);
+          return dataStr.length > 100000
+            ? { ...entry, response: { ...entry.response, data: '[Response too large]' } }
+            : entry;
         }),
       }),
     },
