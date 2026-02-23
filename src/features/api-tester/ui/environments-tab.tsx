@@ -21,7 +21,7 @@ export function EnvironmentsTab() {
   const activeEnvIds = useActiveEnvironmentIds();
   const inputStyle = getInputStyle(colors);
 
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newBaseUrl, setNewBaseUrl] = useState('');
@@ -64,8 +64,8 @@ export function EnvironmentsTab() {
           color: colors.feedback.info,
         }}
       >
-        환경을 생성하면 서버 URL과 변수를 환경별로 관리할 수 있습니다. 환경 변수는 글로벌 변수보다
-        우선합니다.
+        Create environments to manage server URLs and variables per environment. Environment
+        variables take priority over global variables.
       </div>
 
       {/* Environment List */}
@@ -74,8 +74,15 @@ export function EnvironmentsTab() {
           key={env.id}
           env={env}
           isActive={activeEnvIds.includes(env.id)}
-          isExpanded={env.id === expandedId}
-          onToggleExpand={() => setExpandedId(expandedId === env.id ? null : env.id)}
+          isExpanded={expandedIds.has(env.id)}
+          onToggleExpand={() =>
+            setExpandedIds((prev) => {
+              const next = new Set(prev);
+              if (next.has(env.id)) next.delete(env.id);
+              else next.add(env.id);
+              return next;
+            })
+          }
           inputStyle={inputStyle}
           colors={colors}
         />
